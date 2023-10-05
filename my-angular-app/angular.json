@@ -1,0 +1,115 @@
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "newProjectRoot": "projects",
+  "projects": {
+    "my-angular-app": {
+      "projectType": "application",
+      "schematics": {},
+      "root": "",
+      "sourceRoot": "src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "dist/my-angular-app",
+            "index": "src/index.html",
+            "main": "src/main.ts",
+            "polyfills": ["zone.js"],
+            "tsConfig": "tsconfig.app.json",
+            "assets": ["src/favicon.ico", "src/assets"],
+            "styles": [
+              "src/styles.css",
+              "src/assets/css/bootstrap.min.css",
+              "src/assets/css/swiper-bundle.css",
+              "src/assets/css/aos.css",
+              "src/assets/css/basicClass.css",
+              "src/assets/css/basicStyle.css",
+              "src/assets/css/formStyle.css"
+            ],
+            "scripts": [
+              "src/assets/js/jquery-3.7.0.min.js",
+              "src/assets/js/bootstrap.bundle.min.js",
+              "src/assets/js/color-change.js",
+              "src/assets/js/made.js",
+              "src/assets/js/apexcharts.min.js",
+              "src/assets/js/apexcharts-light.js"
+            ]
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kb",
+                  "maximumError": "1mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "2kb",
+                  "maximumError": "4kb"
+                }
+              ],
+              "outputHashing": "all"
+            },
+            "development": {
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "configurations": {
+            "production": {
+              "browserTarget": "my-angular-app:build:production",
+              "host": "0.0.0.0"
+            },
+            "development": {
+              "browserTarget": "my-angular-app:build:development",
+              "host": "0.0.0.0"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "my-angular-app:build"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "polyfills": ["zone.js", "zone.js/testing"],
+            "tsConfig": "tsconfig.spec.json",
+            "assets": ["src/favicon.ico", "src/assets"],
+            "styles": [
+              "src/styles.css",
+              "src/assets/css/bootstrap.min.css",
+              "src/assets/css/swiper-bundle.css",
+              "src/assets/css/aos.css",
+              "src/assets/css/basicClass.css",
+              "src/assets/css/basicStyle.css",
+              "src/assets/css/formStyle.css"
+            ],
+            "scripts": [
+              "src/assets/js/jquery-3.7.0.min.js",
+              "src/assets/js/bootstrap.bundle.min.js",
+              "src/assets/js/color-change.js",
+              "src/assets/js/made.js",
+              "src/assets/js/apexcharts.min.js",
+              "src/assets/js/apexcharts-light.js"
+            ]
+          }
+        }
+      }
+    }
+  }
+}
