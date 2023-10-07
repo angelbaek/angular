@@ -32,7 +32,7 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.ngxFavicon.setFavicon('/images/favicon.ico');
+    this.ngxFavicon.setFavicon('../assets/images/favicon.ico');
   }
 
   // getMessage(): void {
