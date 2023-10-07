@@ -3,6 +3,8 @@ import { AngularFaviconService } from 'angular-favicon';
 import { HttpClient } from '@angular/common/http';
 import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
+// import NeoVis from 'neovis.js/dist/neovis.js';
+import NeoVis from 'neovis.js';
 
 @Component({
   selector: 'app-root',
@@ -32,8 +34,38 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.draw();
     this.ngxFavicon.setFavicon('../assets/images/favicon.ico');
   }
+
+  draw() {
+    const config: any  = {
+        containerId: 'viz',
+        neo4j: {
+            serverUrl: "bolt://localhost:7687",
+            serverUser: 'neo4j',
+            serverPassword: '1234qwer'
+        },
+				labels: {
+					Character: {
+						label: "name",
+						value: "pagerank",
+						group: "community"
+					}
+				},
+				relationships: {
+					INTERACTS: {
+						value: "weight"
+					}
+				},
+        initialCypher: "MATCH (n)-[r:INTERACTS]->(m) RETURN n,r,m"
+    };
+
+    const viz = new NeoVis(config);
+    console.log(viz);
+    viz.render();
+}
+
 
   // getMessage(): void {
   //   this.http.get<{ message: string }>(this.url).subscribe(
@@ -79,4 +111,6 @@ export class AppComponent implements OnInit {
         console.log('Now Address: ', this.currentUrl);
       });
   }
+
+  
 }
