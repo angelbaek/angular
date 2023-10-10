@@ -35,7 +35,8 @@
               "src/assets/js/made.js",
               "src/assets/js/apexcharts.min.js",
               "src/assets/js/apexcharts-light.js"
-            ]
+            ],
+            "allowedCommonJsDependencies": ["neovis.js"]
           },
           "configurations": {
             "production": {

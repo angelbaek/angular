@@ -2081,3 +2081,29 @@ select option:hover {
 .head-nav-center .head-nav-menu .item:hover {
   border-bottom: 2px solid var(--color-main);
 }
+
+/* AI CHAT, Public Chat 숨기기 */
+.right {
+  visibility: hidden;
+}
+
+#viz {
+  width: 100%;
+  height: 90%;
+}
+
+#node-info-td-title {
+  min-width: 100px;
+  max-width: 100px;
+  vertical-align: text-top;
+}
+
+#node-info-td-value > .text-container {
+  vertical-align: text-top;
+  min-width: 230px;
+  max-width: 230px;
+  vertical-align: text-top;
+  max-height: 100px;
+  overflow: hidden; /* 텍스트가 박스를 넘어갈 경우 숨김 */
+  text-overflow: ellipsis;
+}

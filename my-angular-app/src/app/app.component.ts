@@ -3,7 +3,8 @@ import { AngularFaviconService } from 'angular-favicon';
 import { HttpClient } from '@angular/common/http';
 import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
-// import NeoVis from 'neovis.js/dist/neovis.js';
+import { LabelConfig, Nodeimage } from './labelConfig';
+import { Neo4jConfig } from './neo4jConfig';
 import NeoVis from 'neovis.js';
 
 @Component({
@@ -21,8 +22,16 @@ import NeoVis from 'neovis.js';
 })
 export class AppComponent implements OnInit {
   url: string = 'http://localhost:3000/api/greet';
-  message: string = '';
+  message: string = ''; // api 테스트
   currentUrl: string = ''; // 현재 브라우저 URL을 저장할 속성
+  viz: any; // 그래프
+  /**
+   * 노드 인포 관련 객체
+   */
+  nodeInfoCreated: string = '';
+  nodeInfoName: string = '';
+  nodeInfoModified: string = '';
+  nodeInfo: string = '';
 
   constructor(
     private http: HttpClient,
@@ -37,51 +46,99 @@ export class AppComponent implements OnInit {
     this.draw();
     this.ngxFavicon.setFavicon('../assets/images/favicon.ico');
   }
-
+  selectedNodeData: any;
   draw() {
-    const config: any  = {
-        containerId: 'viz',
-        neo4j: {
-            serverUrl: "bolt://localhost:7687",
-            serverUser: 'neo4j',
-            serverPassword: '1234qwer'
+    const config: any = {
+      containerId: 'viz',
+      neo4j: {
+        ...Neo4jConfig,
+      },
+      labels: {
+        ...LabelConfig,
+      },
+      visConfig: {
+        nodes: {
+          // shape: 'image',
+          // image: '../assets/images/Email/Email_3.png',
+          size: 55,
+          font: {
+            // background: 'black',
+            color: '#343434',
+            size: 30, // px
+            face: 'pretendard',
+            strokeWidth: 2, // px
+            // strokeColor: "blue",
+          },
         },
-				labels: {
-					Character: {
-						label: "name",
-						value: "pagerank",
-						group: "community"
-					}
-				},
-				relationships: {
-					INTERACTS: {
-						value: "weight"
-					}
-				},
-        initialCypher: "MATCH (n)-[r:INTERACTS]->(m) RETURN n,r,m"
+      },
+      relationships: {
+        refers_to: {
+          // value: 'weight',
+        },
+      },
+      // initialCypher: 'MATCH (n) RETURN n, labels(n)[0] as nodeLabel LIMIT 25',
+      initialCypher: 'MATCH p=()-[r:refers_to]->() RETURN p LIMIT 100',
+      // initialCypher: 'MATCH (n:Technique) RETURN n LIMIT 25',
     };
 
-    const viz = new NeoVis(config);
-    console.log(viz);
-    viz.render();
-}
+    this.viz = new NeoVis(config);
+    console.log(this.viz);
 
+    this.viz.render();
 
-  // getMessage(): void {
-  //   this.http.get<{ message: string }>(this.url).subscribe(
-  //     (data) => (this.message = data.message),
-  //     (error) => console.error(error)
-  //   );
-  // }
-  // getMessage(): void {
-  //   this.http.get<{ message: string }>(this.url).subscribe(
-  //     (res) => {
-  //       console.log(res);
-  //       this.message = res.message;
-  //     },
-  //     (error) => console.error(error)
-  //   );
-  // }
+    this.viz.registerOnEvent('completed', () => {
+      // console.log(this.viz._network); // Now, it should be available.
+      console.log(this.viz.network);
+      // Nodeimage 설정을 가져옵니다.
+      const nodeImages = Nodeimage;
+
+      // 모든 노드를 순회합니다.
+      this.viz.nodes.forEach((node: any) => {
+        console.log(node);
+        // 노드의 라벨을 확인합니다.
+        const label = node.group; // 노드의 첫 번째 라벨을 가져옵니다.
+
+        // 라벨에 맞는 이미지를 찾습니다.
+        const imageUrl = nodeImages[label];
+
+        // 이미지 URL이 있으면, 노드의 이미지를 업데이트합니다.
+        if (imageUrl) {
+          console.log('이미지 찾음');
+          node.shape = 'image';
+          node.image = imageUrl;
+        }
+        this.viz.network.setData({
+          nodes: this.viz.network.body.data.nodes,
+          edges: this.viz.network.body.data.edges,
+        });
+      });
+
+      // 노드를 선택했을때 이벤트
+      this.viz.network.on('selectNode', (properties: any) => {
+        const selectedNodeId = properties.nodes[0];
+        const selectedNode = this.viz.nodes.get(selectedNodeId);
+        this.onNodeClick(selectedNode);
+      });
+    });
+  }
+
+  onNodeClick(nodeData: any) {
+    console.log('Selected node :', nodeData);
+    console.log('Selected node label:', nodeData.label);
+    // 선택된 노드의 데이터를 컴포넌트의 상태로 설정합니다.
+    this.selectedNodeData = nodeData;
+  }
+
+  // 선택된 노드 데이터를 키-값 쌍의 배열로 변환합니다.
+  get nodeDataArray() {
+    // `selectedNodeData.raw.properties` 객체를 기준으로 키-값 쌍 배열을 생성합니다.
+    return this.selectedNodeData
+      ? Object.keys(this.selectedNodeData.raw.properties).map((key) => ({
+          key,
+          value: this.selectedNodeData.raw.properties[key],
+        }))
+      : [];
+  }
 
   getMessage(): void {
     this.http.get<{ message: string }>(this.url).subscribe({
@@ -96,13 +153,6 @@ export class AppComponent implements OnInit {
     });
   }
 
-  // 새로운 메서드를 만들어 현재 URL을 가져옵니다.
-  // getCurrentUrl(): void {
-  //   this.router.events.subscribe(() => {
-  //     this.currentUrl = this.router.url;
-  //     console.log('Now Address: ', this.currentUrl);
-  //   });
-  // }
   getCurrentUrl(): void {
     this.router.events
       .pipe(filter((event) => event instanceof NavigationEnd))
@@ -111,6 +161,4 @@ export class AppComponent implements OnInit {
         console.log('Now Address: ', this.currentUrl);
       });
   }
-
-  
 }
