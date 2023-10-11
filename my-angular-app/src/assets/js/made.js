@@ -596,6 +596,7 @@ $(function () {
 
 //좌측 두번째 /
 $(function () {
+  console.log("클릭 됨");
   var duration = 0;
   var $bnav = $(".find-body");
   var $side = $(".side-box");

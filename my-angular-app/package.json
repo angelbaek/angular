@@ -21,6 +21,7 @@
     "angular-favicon": "^1.0.9",
     "deepmerge": "^4.3.1",
     "jquery": "^3.7.1",
+    "neo4j-driver": "^5.13.0",
     "neovis.js": "^2.1.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",

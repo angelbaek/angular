@@ -5,6 +5,7 @@ import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { LabelConfig, Nodeimage } from './labelConfig';
 import { Neo4jConfig } from './neo4jConfig';
+import { Neo4jService } from './neo4j.service';
 import NeoVis from 'neovis.js';
 
 @Component({
@@ -12,12 +13,12 @@ import NeoVis from 'neovis.js';
   templateUrl: './app.component.html',
   styleUrls: [
     './app.component.css',
-    '../assets/css/aos.css',
-    '../assets/css/basicClass.css',
-    '../assets/css/basicStyle.css',
-    '../assets/css/bootstrap.min.css',
-    '../assets/css/formStyle.css',
-    '../assets/css/swiper-bundle.css',
+    // '../assets/css/aos.css',
+    // '../assets/css/basicClass.css',
+    // '../assets/css/basicStyle.css',
+    // '../assets/css/bootstrap.min.css',
+    // '../assets/css/formStyle.css',
+    // '../assets/css/swiper-bundle.css',
   ],
 })
 export class AppComponent implements OnInit {
@@ -36,7 +37,8 @@ export class AppComponent implements OnInit {
   constructor(
     private http: HttpClient,
     private router: Router,
-    private ngxFavicon: AngularFaviconService
+    private ngxFavicon: AngularFaviconService,
+    private neo4jService: Neo4jService
   ) {
     this.getMessage();
     this.getCurrentUrl();
@@ -45,6 +47,11 @@ export class AppComponent implements OnInit {
   ngOnInit(): void {
     this.draw();
     this.ngxFavicon.setFavicon('../assets/images/favicon.ico');
+    this.neo4jService
+      .runQuery('MATCH (n)-[r:refers_to]->(m) RETURN n,r,m LIMIT 5')
+      .then((records) => {
+        console.log('Query result:', records);
+      });
   }
   selectedNodeData: any;
   draw() {
@@ -70,14 +77,30 @@ export class AppComponent implements OnInit {
             // strokeColor: "blue",
           },
         },
+        edges: {
+          label: 'refers_to',
+          arrows: {
+            to: { enabled: true },
+          },
+          font: {
+            // background: 'black',
+            color: '#343434',
+            size: 30, // px
+            face: 'pretendard',
+            strokeWidth: 2, // px
+            // strokeColor: "blue",
+          },
+        },
       },
       relationships: {
         refers_to: {
           // value: 'weight',
+          thickness: '2',
+          color: 'blue',
         },
       },
       // initialCypher: 'MATCH (n) RETURN n, labels(n)[0] as nodeLabel LIMIT 25',
-      initialCypher: 'MATCH p=()-[r:refers_to]->() RETURN p LIMIT 100',
+      initialCypher: 'MATCH (n)-[r:refers_to]->(m) RETURN n,r,m LIMIT 100',
       // initialCypher: 'MATCH (n:Technique) RETURN n LIMIT 25',
     };
 
@@ -103,7 +126,7 @@ export class AppComponent implements OnInit {
 
         // 이미지 URL이 있으면, 노드의 이미지를 업데이트합니다.
         if (imageUrl) {
-          console.log('이미지 찾음');
+          // console.log('이미지 찾음');
           node.shape = 'image';
           node.image = imageUrl;
         }
@@ -117,7 +140,11 @@ export class AppComponent implements OnInit {
       this.viz.network.on('selectNode', (properties: any) => {
         const selectedNodeId = properties.nodes[0];
         const selectedNode = this.viz.nodes.get(selectedNodeId);
+        // 노드 정보 표출하기
         this.onNodeClick(selectedNode);
+
+        // 인접노드 관계정보 가져오기
+        this.logAdjacentNodesAndRelationships(selectedNodeId);
       });
     });
   }
@@ -160,5 +187,37 @@ export class AppComponent implements OnInit {
         this.currentUrl = this.router.url;
         console.log('Now Address: ', this.currentUrl);
       });
+  }
+
+  async logAdjacentNodesAndRelationships(nodeId: any) {
+    const query = `
+      MATCH (n)-[r]-(m)
+      WHERE id(n) = ${nodeId}
+      RETURN n, r, m
+    `;
+
+    try {
+      const result = await this.neo4jService.runQuery(query);
+      console.log('Query Result:', result);
+      console.log('레코드', result[0]);
+      console.log(`Adjacent nodes and relationships for node ${nodeId}:`);
+      // result를 직접 순회합니다.
+      result.forEach((record: any, index: any) => {
+        const [node, relationship, relatedNode] = record._fields;
+
+        // 콘솔에 로깅
+        console.log(`Record ${index + 1}:`);
+        console.log('Node:', node.properties);
+        console.log('Relationship:', {
+          type: relationship.type,
+          startNodeElementId: relationship.startNodeElementId,
+          endNodeElementId: relationship.endNodeElementId,
+          properties: relationship.properties,
+        });
+        console.log('Related Node:', relatedNode.properties);
+      });
+    } catch (error) {
+      console.error('Error:', error);
+    }
   }
 }
