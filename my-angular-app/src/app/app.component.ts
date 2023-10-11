@@ -26,13 +26,9 @@ export class AppComponent implements OnInit {
   message: string = ''; // api 테스트
   currentUrl: string = ''; // 현재 브라우저 URL을 저장할 속성
   viz: any; // 그래프
-  /**
-   * 노드 인포 관련 객체
-   */
-  nodeInfoCreated: string = '';
-  nodeInfoName: string = '';
-  nodeInfoModified: string = '';
-  nodeInfo: string = '';
+  selectedNodeData: any; // 선택한 노드정보 객체
+  cyperQueryRel: string = ''; // 쿼리 릴레이션 문자열
+  initialCypher: string = ''; // 사이퍼쿼리 문자열
 
   constructor(
     private http: HttpClient,
@@ -44,16 +40,17 @@ export class AppComponent implements OnInit {
     this.getCurrentUrl();
   }
 
+  // 초기화
   ngOnInit(): void {
+    this.cyperQueryRel = 'refers_to';
+    this.initialCypher = `MATCH (n)-[r:${this.cyperQueryRel}]->(m) RETURN n,r,m LIMIT 100`;
     this.draw();
     this.ngxFavicon.setFavicon('../assets/images/favicon.ico');
-    this.neo4jService
-      .runQuery('MATCH (n)-[r:refers_to]->(m) RETURN n,r,m LIMIT 5')
-      .then((records) => {
-        console.log('Query result:', records);
-      });
+    this.neo4jService.runQuery(this.initialCypher).then((records) => {
+      console.log('Query result:', records);
+    });
   }
-  selectedNodeData: any;
+
   draw() {
     const config: any = {
       containerId: 'viz',
@@ -78,7 +75,7 @@ export class AppComponent implements OnInit {
           },
         },
         edges: {
-          label: 'refers_to',
+          label: this.cyperQueryRel,
           arrows: {
             to: { enabled: true },
           },
@@ -100,7 +97,7 @@ export class AppComponent implements OnInit {
         },
       },
       // initialCypher: 'MATCH (n) RETURN n, labels(n)[0] as nodeLabel LIMIT 25',
-      initialCypher: 'MATCH (n)-[r:refers_to]->(m) RETURN n,r,m LIMIT 100',
+      initialCypher: this.initialCypher,
       // initialCypher: 'MATCH (n:Technique) RETURN n LIMIT 25',
     };
 
