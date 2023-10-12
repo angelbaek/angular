@@ -19,23 +19,8 @@
             "polyfills": ["zone.js"],
             "tsConfig": "tsconfig.app.json",
             "assets": ["src/favicon.ico", "src/assets"],
-            "styles": [
-              "src/styles.css",
-              "src/assets/css/bootstrap.min.css",
-              "src/assets/css/swiper-bundle.css",
-              "src/assets/css/aos.css",
-              "src/assets/css/basicClass.css",
-              "src/assets/css/basicStyle.css",
-              "src/assets/css/formStyle.css"
-            ],
-            "scripts": [
-              "src/assets/js/jquery-3.7.0.min.js",
-              "src/assets/js/bootstrap.bundle.min.js",
-              "src/assets/js/color-change.js",
-              "src/assets/js/apexcharts.min.js",
-              "src/assets/js/apexcharts-light.js",
-              "src/assets/js/made.js"
-            ],
+            "styles": [],
+            "scripts": [],
             "allowedCommonJsDependencies": ["neovis.js"]
           },
           "configurations": {
@@ -91,23 +76,9 @@
             "polyfills": ["zone.js", "zone.js/testing"],
             "tsConfig": "tsconfig.spec.json",
             "assets": ["src/favicon.ico", "src/assets"],
-            "styles": [
-              "src/styles.css",
-              "src/assets/css/bootstrap.min.css",
-              "src/assets/css/swiper-bundle.css",
-              "src/assets/css/aos.css",
-              "src/assets/css/basicClass.css",
-              "src/assets/css/basicStyle.css",
-              "src/assets/css/formStyle.css"
-            ],
-            "scripts": [
-              "src/assets/js/jquery-3.7.0.min.js",
-              "src/assets/js/bootstrap.bundle.min.js",
-              "src/assets/js/color-change.js",
-              "src/assets/js/apexcharts.min.js",
-              "src/assets/js/apexcharts-light.js",
-              "src/assets/js/made.js"
-            ]
+            "styles": [],
+            "scripts": [],
+            "allowedCommonJsDependencies": ["neovis.js"]
           }
         }
       }
