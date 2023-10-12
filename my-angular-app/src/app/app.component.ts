@@ -11,15 +11,7 @@ import NeoVis from 'neovis.js';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: [
-    './app.component.css',
-    // '../assets/css/aos.css',
-    // '../assets/css/basicClass.css',
-    // '../assets/css/basicStyle.css',
-    // '../assets/css/bootstrap.min.css',
-    // '../assets/css/formStyle.css',
-    // '../assets/css/swiper-bundle.css',
-  ],
+  styleUrls: ['./app.component.css'],
 })
 export class AppComponent implements OnInit {
   url: string = 'http://localhost:3000/api/greet';
@@ -43,12 +35,60 @@ export class AppComponent implements OnInit {
   // 초기화
   ngOnInit(): void {
     this.cyperQueryRel = 'refers_to';
-    this.initialCypher = `MATCH (n)-[r:${this.cyperQueryRel}]->(m) RETURN n,r,m LIMIT 100`;
+    // this.initialCypher = `MATCH (n)-[r:${this.cyperQueryRel}]->(m) RETURN n,r,m LIMIT 100`;
+    this.initialCypher =
+      'MATCH (n)-[r]->(m) RETURN n, r, m, TYPE(r) AS type LIMIT 10';
     this.draw();
     this.ngxFavicon.setFavicon('../assets/images/favicon.ico');
-    this.neo4jService.runQuery(this.initialCypher).then((records) => {
-      console.log('Query result:', records);
-    });
+    this.neo4jService
+      .runQuery('MATCH (n)-[r]->(m) RETURN n, r, m, type(r) LIMIT 10')
+      .then((records) => {
+        console.log('Query result:', records);
+        const nodesData: any = [];
+        const edgesData: any = [];
+
+        // records.forEach((record: any) => {
+        //   const node_n = record.get('n');
+        //   const node_m = record.get('m');
+        //   const edge_r = record.get('r');
+        //   const edge_type = record.get('type(r)');
+
+        //   // Check if node_n and node_m are already in nodesData to avoid duplicate ids
+        //   if (!nodesData.some((node: any) => node.id === node_n.identity.low)) {
+        //     nodesData.push({
+        //       id: node_n.identity.low,
+        //       label: node_n.properties.name,
+        //     });
+        //   }
+        //   if (!nodesData.some((node: any) => node.id === node_m.identity.low)) {
+        //     nodesData.push({
+        //       id: node_m.identity.low,
+        //       label: node_m.properties.name,
+        //     });
+        //   }
+
+        //   // Edge ids should also be unique. We might create a unique id by concatenating the ids of the connected nodes.
+        //   const edgeId = `${node_n.identity.low}-${node_m.identity.low}`;
+        //   if (!edgesData.some((edge: any) => edge.id === edgeId)) {
+        //     edgesData.push({
+        //       id: edgeId,
+        //       from: node_n.identity.low,
+        //       to: node_m.identity.low,
+        //       label: edge_type,
+        //     });
+        //   }
+        // });
+
+        // console.log(nodesData);
+        // console.log(edgesData);
+        // // Move the clear and setData calls outside of the loop
+        // // this.viz.clearNetwork();
+        // this.viz.network.setData({
+        //   nodes: nodesData,
+        //   edges: edgesData,
+        // });
+        // console.log(this.viz.nodes.get());
+      });
   }
 
   draw() {
@@ -62,8 +102,6 @@ export class AppComponent implements OnInit {
       },
       visConfig: {
         nodes: {
-          // shape: 'image',
-          // image: '../assets/images/Email/Email_3.png',
           size: 55,
           font: {
             // background: 'black',
@@ -75,7 +113,6 @@ export class AppComponent implements OnInit {
           },
         },
         edges: {
-          label: this.cyperQueryRel,
           arrows: {
             to: { enabled: true },
           },
@@ -91,18 +128,17 @@ export class AppComponent implements OnInit {
       },
       relationships: {
         refers_to: {
-          // value: 'weight',
-          thickness: '2',
-          color: 'blue',
+          // title: 'type',
+          // label: 'type',
+          // thickness: 'weight',
         },
       },
-      // initialCypher: 'MATCH (n) RETURN n, labels(n)[0] as nodeLabel LIMIT 25',
-      initialCypher: this.initialCypher,
-      // initialCypher: 'MATCH (n:Technique) RETURN n LIMIT 25',
+      // initialCypher: this.initialCypher,
+      initialCypher: 'match (n)-[r]->(m) return n,r,m limit 100',
     };
 
     this.viz = new NeoVis(config);
-    console.log(this.viz);
+    console.log('viz result:::', this.viz);
 
     this.viz.render();
 
@@ -186,24 +222,42 @@ export class AppComponent implements OnInit {
       });
   }
 
+  menuData: any;
+
   async logAdjacentNodesAndRelationships(nodeId: any) {
     const query = `
-      MATCH (n)-[r]-(m)
-      WHERE id(n) = ${nodeId}
-      RETURN n, r, m
-    `;
+    MATCH (n)-[r]-(m)
+    WHERE id(n) = ${nodeId}
+    RETURN n, r, m
+  `;
 
     try {
       const result = await this.neo4jService.runQuery(query);
+
+      // 데이터를 정리하는 객체를 초기화합니다.
+      const typeInfo: {
+        [relType: string]: {
+          count: number;
+          relatedNodeTypes: {
+            [relatedNodeType: string]: {
+              count: number;
+              values: string[];
+            };
+          };
+        };
+      } = {};
+
       console.log('Query Result:', result);
-      console.log('레코드', result[0]);
       console.log(`Adjacent nodes and relationships for node ${nodeId}:`);
-      // result를 직접 순회합니다.
-      result.forEach((record: any, index: any) => {
+
+      result.forEach((record: any) => {
         const [node, relationship, relatedNode] = record._fields;
 
+        const relType = relationship.type;
+        const relatedNodeType = relatedNode.properties.type;
+        const nodeName = relatedNode.properties.name;
+
         // 콘솔에 로깅
-        console.log(`Record ${index + 1}:`);
         console.log('Node:', node.properties);
         console.log('Relationship:', {
           type: relationship.type,
@@ -212,7 +266,36 @@ export class AppComponent implements OnInit {
           properties: relationship.properties,
         });
         console.log('Related Node:', relatedNode.properties);
+
+        // 관계 타입이 typeInfo에 없다면 초기화합니다.
+        if (!typeInfo[relType]) {
+          typeInfo[relType] = {
+            count: 0,
+            relatedNodeTypes: {},
+          };
+        }
+
+        // 관련 노드 타입이 해당 관계 타입 아래에 없다면 초기화합니다.
+        if (!typeInfo[relType].relatedNodeTypes[relatedNodeType]) {
+          typeInfo[relType].relatedNodeTypes[relatedNodeType] = {
+            count: 0,
+            values: [],
+          };
+        }
+
+        // 해당 관련 노드 타입의 count를 증가시킵니다.
+        typeInfo[relType].relatedNodeTypes[relatedNodeType].count += 1;
+
+        // 노드의 이름을 추가합니다.
+        typeInfo[relType].relatedNodeTypes[relatedNodeType].values.push(
+          nodeName
+        );
+
+        // 해당 관계 타입의 count를 증가시킵니다.
+        typeInfo[relType].count += 1;
       });
+
+      console.log('Type Info:', typeInfo);
     } catch (error) {
       console.error('Error:', error);
     }

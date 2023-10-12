@@ -199,119 +199,37 @@
         <!--뎁스 리스트-->
         <div class="box-depth">
           <ul class="left-depth-list-one">
-            <!--1뎁스 리스트 한칸-->
-            <li class="left-m1-1">
+            <li *ngFor="let menuItem of menuData" class="left-m1-1">
               <div class="depth-icon">
                 <div class="depth-plus">
                   <img src="assets/images/depth-plus.png" alt="" />
                 </div>
               </div>
-              <div class="depth-title">Fisrst Step Menu</div>
-              <div class="depth-num">3</div>
-            </li>
+              <div class="depth-title">{{ menuItem.type }}</div>
+              <div class="depth-num">{{ menuItem.count }}</div>
 
-            <!--2뎁스 들어갈 칸-->
-            <li class="depth-under left-m1-1-under wrap-h-0">
+              <!-- 2nd Step Menu -->
               <ul class="left-depth-list-two">
-                <!--두번째 뎁스 리스트-->
-                <!--2뎁스 리스트-->
                 <li class="left-m2-1">
                   <div class="depth-icon">
                     <div class="depth-plus">
                       <img src="assets/images/depth-plus.png" alt="" />
                     </div>
                   </div>
-                  <div class="depth-title">Second Step Menu</div>
-                  <div class="depth-num">3</div>
-                </li>
-                <!--2뎁스 리스트 끝-->
-                <!--3뎁스 들어갈 칸-->
-                <li class="depth-under left-m2-1-under wrap-h-0">
+                  <div class="depth-title">{{ menuItem.type }} Info</div>
+                  <div class="depth-num">{{ menuItem.count }}</div>
+
+                  <!-- 3rd Step Menu -->
                   <ul class="left-depth-list-third">
-                    <li>
+                    <li *ngFor="let name of menuItem.names">
                       <div class="depth-icon">
                         <div class="depth-line"></div>
                       </div>
-                      <div class="depth-title">Third Step Menu</div>
-                    </li>
-                    <li>
-                      <div class="depth-icon">
-                        <div class="depth-line"></div>
-                      </div>
-                      <div class="depth-title">Third Step Menu</div>
-                    </li>
-                    <li>
-                      <div class="depth-icon">
-                        <div class="depth-line"></div>
-                      </div>
-                      <div class="depth-title">Third Step Menu</div>
+                      <div class="depth-title">{{ name }}</div>
                     </li>
                   </ul>
                 </li>
-                <li class="left-m2-2">
-                  <div class="depth-icon">
-                    <div class="depth-minus">
-                      <img src="assets/images/depth-minus.png" alt="" />
-                    </div>
-                  </div>
-                  <div class="depth-title">Second Step Menu</div>
-                  <div class="depth-num">0</div>
-                </li>
-
-                <li class="left-m2-3">
-                  <!--선택된 리스트에 붙는 클래스-->
-                  <div class="depth-icon">
-                    <div class="depth-plus">
-                      <img src="assets/images/depth-plus.png" alt="" />
-                    </div>
-                  </div>
-                  <div class="depth-title">Second Step Menu</div>
-                  <div class="depth-num">3</div>
-                </li>
-                <!--3뎁스 들어갈 칸-->
-                <li class="depth-under left-m2-3-under wrap-h-0">
-                  3뎁스 들어갈 칸
-                </li>
               </ul>
-            </li>
-
-            <li class="left-m1-2">
-              <div class="depth-icon">
-                <div class="depth-plus">
-                  <img src="assets/images/depth-plus.png" alt="" />
-                </div>
-              </div>
-              <div class="depth-title">Fisrst Step Menu</div>
-              <div class="depth-num">3</div>
-            </li>
-            <!--2뎁스 들어갈 칸-->
-            <li class="depth-under left-m1-2-under wrap-h-0">
-              두번째 메뉴 2뎁스
-            </li>
-
-            <li class="left-m1-3">
-              <!--선택된 리스트에 붙는 클래스-->
-              <div class="depth-icon">
-                <div class="depth-plus">
-                  <img src="assets/images/depth-plus.png" alt="" />
-                </div>
-              </div>
-              <div class="depth-title">Fisrst Step Menu</div>
-              <div class="depth-num">3</div>
-            </li>
-            <!--2뎁스 들어갈 칸-->
-            <li class="depth-under left-m1-3-under wrap-h-0">
-              세번째 메뉴 2뎁스
-            </li>
-            <li class="left-m1-4">
-              <div class="depth-icon">
-                <div class="depth-minus">
-                  <img src="assets/images/depth-minus.png" alt="" />
-                </div>
-              </div>
-              <div class="depth-title">Fisrst Step Menu</div>
-              sdf
-              <div class="depth-num">0</div>
             </li>
           </ul>
         </div>
