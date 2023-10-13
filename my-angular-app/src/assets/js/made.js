@@ -163,7 +163,6 @@ $(document).ready(function () {
     if ($(this).hasClass("depth-choice")) {
       $(".left-m1-1").removeClass("depth-choice");
       $(".left-m1-1-under").addClass("wrap-h-0");
-
       $(".left-m1-2").removeClass("depth-choice");
       $(".left-m1-3").removeClass("depth-choice");
       $(".left-m1-4").removeClass("depth-choice");
@@ -175,7 +174,6 @@ $(document).ready(function () {
     } else {
       $(".left-m1-1").addClass("depth-choice");
       $(".left-m1-1-under").removeClass("wrap-h-0");
-
       $(".left-m1-2").removeClass("depth-choice");
       $(".left-m1-3").removeClass("depth-choice");
       $(".left-m1-4").removeClass("depth-choice");
@@ -191,7 +189,6 @@ $(document).ready(function () {
     if ($(this).hasClass("depth-choice")) {
       $(".left-m1-2").removeClass("depth-choice");
       $(".left-m1-2-under").addClass("wrap-h-0");
-
       $(".left-m1-1").removeClass("depth-choice");
       $(".left-m1-3").removeClass("depth-choice");
       $(".left-m1-4").removeClass("depth-choice");
@@ -203,7 +200,6 @@ $(document).ready(function () {
     } else {
       $(".left-m1-2").addClass("depth-choice");
       $(".left-m1-2-under").removeClass("wrap-h-0");
-
       $(".left-m1-1").removeClass("depth-choice");
       $(".left-m1-3").removeClass("depth-choice");
       $(".left-m1-4").removeClass("depth-choice");

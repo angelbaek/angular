@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { AngularFaviconService } from 'angular-favicon';
 import { HttpClient } from '@angular/common/http';
 import { Router, NavigationEnd } from '@angular/router';
@@ -7,6 +7,40 @@ import { LabelConfig, Nodeimage } from './labelConfig';
 import { Neo4jConfig } from './neo4jConfig';
 import { Neo4jService } from './neo4j.service';
 import NeoVis from 'neovis.js';
+import { RealtionshipConfig } from './relationConfig';
+// 타입 인터페이스를 정의합니다.
+interface RelatedNodeType {
+  count: number;
+  values: string[];
+  isExpanded?: boolean; // 추가된 속성
+}
+
+interface RelationshipType {
+  count: number;
+  relatedNodeTypes: {
+    [key: string]: RelatedNodeType;
+  };
+}
+
+// interface MenuItem {
+//   type: string;
+//   data: RelationshipType;
+// }
+
+interface MenuItem {
+  type: string;
+  data: {
+    count: number;
+    relatedNodeTypes: { [key: string]: RelatedNodeType };
+  };
+  isExpanded?: boolean; // isExpanded 속성 추가
+}
+
+interface RelatedNodeType {
+  count: number;
+  values: string[];
+  isExpanded?: boolean; // isExpanded 속성 추가
+}
 
 @Component({
   selector: 'app-root',
@@ -44,50 +78,6 @@ export class AppComponent implements OnInit {
       .runQuery('MATCH (n)-[r]->(m) RETURN n, r, m, type(r) LIMIT 10')
       .then((records) => {
         console.log('Query result:', records);
-        const nodesData: any = [];
-        const edgesData: any = [];
-
-        // records.forEach((record: any) => {
-        //   const node_n = record.get('n');
-        //   const node_m = record.get('m');
-        //   const edge_r = record.get('r');
-        //   const edge_type = record.get('type(r)');
-
-        //   // Check if node_n and node_m are already in nodesData to avoid duplicate ids
-        //   if (!nodesData.some((node: any) => node.id === node_n.identity.low)) {
-        //     nodesData.push({
-        //       id: node_n.identity.low,
-        //       label: node_n.properties.name,
-        //     });
-        //   }
-        //   if (!nodesData.some((node: any) => node.id === node_m.identity.low)) {
-        //     nodesData.push({
-        //       id: node_m.identity.low,
-        //       label: node_m.properties.name,
-        //     });
-        //   }
-
-        //   // Edge ids should also be unique. We might create a unique id by concatenating the ids of the connected nodes.
-        //   const edgeId = `${node_n.identity.low}-${node_m.identity.low}`;
-        //   if (!edgesData.some((edge: any) => edge.id === edgeId)) {
-        //     edgesData.push({
-        //       id: edgeId,
-        //       from: node_n.identity.low,
-        //       to: node_m.identity.low,
-        //       label: edge_type,
-        //     });
-        //   }
-        // });
-
-        // console.log(nodesData);
-        // console.log(edgesData);
-        // // Move the clear and setData calls outside of the loop
-        // // this.viz.clearNetwork();
-        // this.viz.network.setData({
-        //   nodes: nodesData,
-        //   edges: edgesData,
-        // });
-        // console.log(this.viz.nodes.get());
       });
   }
 
@@ -127,14 +117,12 @@ export class AppComponent implements OnInit {
         },
       },
       relationships: {
-        refers_to: {
-          // title: 'type',
-          // label: 'type',
-          // thickness: 'weight',
-        },
+        ...RealtionshipConfig,
       },
       // initialCypher: this.initialCypher,
-      initialCypher: 'match (n)-[r]->(m) return n,r,m limit 100',
+      initialCypher: 'MATCH (m)-[r]->(n) RETURN * LIMIT 10',
+      // initialCypher:
+      //   'MATCH (n)-[r]->(m) WHERE toLower(n.name) = toLower("Cacti 0.8.8d Cross-site Scripting Vulnerability") RETURN n, r',
     };
 
     this.viz = new NeoVis(config);
@@ -222,13 +210,43 @@ export class AppComponent implements OnInit {
       });
   }
 
-  menuData: any;
+  menuData: { [key: string]: RelationshipType } = {};
+  menuDataArray: MenuItem[] = [];
+
+  // toggleMenu(menuItem: MenuItem): void {
+  //   menuItem.isExpanded = !menuItem.isExpanded;
+  // }
+  // toggleSubMenu(relatedNode: { value: RelatedNodeType }): void {
+  //   relatedNode.value.isExpanded = !relatedNode.value.isExpanded;
+  // }
+  toggleMenu(index: number): void {
+    // 모든 메뉴 항목의 isExpanded 상태를 false로 설정
+    this.menuDataArray.forEach((item) => (item.isExpanded = false));
+    // 클릭된 메뉴 항목의 isExpanded 상태를 토글
+    this.menuDataArray[index].isExpanded =
+      !this.menuDataArray[index].isExpanded;
+  }
+  toggleSubMenu(i: number, j: number): void {
+    this.menuDataArray[i].data.relatedNodeTypes[j].isExpanded =
+      !this.menuDataArray[i].data.relatedNodeTypes[j].isExpanded;
+  }
+  // toggleSubMenu(i: number, j: number): void {
+  //   const relatedNode = this.menuDataArray[i].data.relatedNodeTypes[j];
+  //   relatedNode.isExpanded = !relatedNode.isExpanded;
+  // }
+
+  test() {
+    console.log('li클릭함');
+  }
+
+  target: number = 10;
 
   async logAdjacentNodesAndRelationships(nodeId: any) {
     const query = `
     MATCH (n)-[r]-(m)
     WHERE id(n) = ${nodeId}
     RETURN n, r, m
+    limit ${this.target}
   `;
 
     try {
@@ -247,8 +265,8 @@ export class AppComponent implements OnInit {
         };
       } = {};
 
-      console.log('Query Result:', result);
-      console.log(`Adjacent nodes and relationships for node ${nodeId}:`);
+      // console.log('Query Result:', result);
+      // console.log(`Adjacent nodes and relationships for node ${nodeId}:`);
 
       result.forEach((record: any) => {
         const [node, relationship, relatedNode] = record._fields;
@@ -258,14 +276,14 @@ export class AppComponent implements OnInit {
         const nodeName = relatedNode.properties.name;
 
         // 콘솔에 로깅
-        console.log('Node:', node.properties);
-        console.log('Relationship:', {
-          type: relationship.type,
-          startNodeElementId: relationship.startNodeElementId,
-          endNodeElementId: relationship.endNodeElementId,
-          properties: relationship.properties,
-        });
-        console.log('Related Node:', relatedNode.properties);
+        // console.log('Node:', node.properties);
+        // console.log('Relationship:', {
+        //   type: relationship.type,
+        //   startNodeElementId: relationship.startNodeElementId,
+        //   endNodeElementId: relationship.endNodeElementId,
+        //   properties: relationship.properties,
+        // });
+        // console.log('Related Node:', relatedNode.properties);
 
         // 관계 타입이 typeInfo에 없다면 초기화합니다.
         if (!typeInfo[relType]) {
@@ -294,7 +312,12 @@ export class AppComponent implements OnInit {
         // 해당 관계 타입의 count를 증가시킵니다.
         typeInfo[relType].count += 1;
       });
+      // this.menuData = typeInfo;
 
+      this.menuData = typeInfo;
+      this.menuDataArray = Object.keys(this.menuData).map((key) => {
+        return { type: key, data: this.menuData[key] };
+      });
       console.log('Type Info:', typeInfo);
     } catch (error) {
       console.error('Error:', error);
