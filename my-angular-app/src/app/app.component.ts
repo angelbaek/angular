@@ -8,6 +8,8 @@ import { Neo4jConfig } from './neo4jConfig';
 import { Neo4jService } from './neo4j.service';
 import NeoVis from 'neovis.js';
 import { RealtionshipConfig } from './relationConfig';
+
+
 // 타입 인터페이스를 정의합니다.
 interface RelatedNodeType {
   count: number;
