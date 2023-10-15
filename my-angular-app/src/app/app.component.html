@@ -199,67 +199,57 @@
         <!--뎁스 리스트-->
         <div class="box-depth">
           <ul class="left-depth-list-one">
-            //1st Step Menu
-            <li
-              *ngFor="let menuItem of menuDataArray; let i = index"
-              [class.depth-choice]="menuItem.isExpanded"
-              (click)="toggleMenu(i)"
-              class="left-m1-1"
-            >
-              <div class="depth-icon">
-                <div class="depth-plus">
-                  <img src="assets/images/depth-plus.png" alt="" />
-                </div>
+              <!-- 1st Step Menu -->
+              <li
+                  *ngFor="let menuItem of menuDataArray; let i = index"
+                  [class.depth-choice]="menuItem.isExpanded"
+                  (click)="toggleMenu(i)"
+                  class="left-m1-1"
+              >
+              <div class="left-depth-list-one_div">
+                <div class="depth-icon">
+                  <div class="depth-plus">
+                      <img src="assets/images/depth-plus.png" alt="" />
+                  </div>
               </div>
               <div class="depth-title">{{ menuItem.type }}</div>
               <div class="depth-num">{{ menuItem.data.count }}</div>
-            </li>
-
-            // 2nd Step Menu
-            <li
-              *ngFor="let menuItem of menuDataArray"
-              [class.wrap-h-0]="!menuItem.isExpanded"
-              class="depth-under left-m1-1-under"
-            >
-              <ul class="left-depth-list-two">
-                <li
-                  *ngFor="
-                    let relatedNode of menuItem.data.relatedNodeTypes | keyvalue
-                  "
-                  class="left-m2-1"
-                >
-                  <div class="depth-icon">
-                    <div class="depth-plus">
-                      <img src="assets/images/depth-plus.png" alt="" />
-                    </div>
-                  </div>
-                  <div class="depth-title">{{ relatedNode.key }}</div>
-                  <div class="depth-num">{{ relatedNode.value.count }}</div>
-                </li>
-
-                // 3rd Step Menu
-                <!-- 3rd Step Menu -->
-                <li
-                  *ngFor="
-                    let relatedNode of menuItem.data.relatedNodeTypes | keyvalue
-                  "
-                  [class.wrap-h-0]="!relatedNode.value.isExpanded"
-                  class="depth-under left-m2-1-under"
-                >
-                  <ul class="left-depth-list-third">
-                    <!-- <li *ngFor="let name of relatedNode.value.values"> -->
-                    <li *ngFor="let name of relatedNode?.['value']?.values">
-                      <div class="depth-icon">
-                        <div class="depth-line"></div>
+              </div>
+                
+                  
+                  <!-- 2nd Step Menu -->
+                  <ul *ngIf="menuItem.isExpanded" class="left-depth-list-two">
+                      <li
+                          *ngFor="let relatedNode of menuItem.data.relatedNodeTypes | keyvalue; let j = index"
+                          class="left-m2-1"
+                          (click)="toggleSubMenu(i, relatedNode.key)" 
+                      >
+                      <div class="left-depth-list-two">
+                        <div class="depth-icon">
+                          <div class="depth-plus">
+                              <img src="assets/images/depth-plus.png" alt="" />
+                          </div>
                       </div>
-                      <div class="depth-title">{{ name }}</div>
-                    </li>
+                      <div class="depth-title">{{ relatedNode.key }}</div>
+                      <div class="depth-num">{{ relatedNode.value.count }}</div>
+                      </div>
+                         
+                          
+                          <!-- 3rd Step Menu -->
+                          <ul *ngIf="relatedNode.value.isExpanded" class="left-depth-list-third">
+                              <li *ngFor="let name of relatedNode?.['value']?.values">
+                                  <div class="depth-icon">
+                                      <div class="depth-line"></div>
+                                  </div>
+                                  <div class="depth-title">{{ name }}</div>
+                              </li>
+                          </ul>
+                      </li>
                   </ul>
-                </li>
-              </ul>
-            </li>
+              </li>
           </ul>
-        </div>
+      </div>
+      
         <!-- <div class="box-depth">
           <ul class="left-depth-list-one">
             //1뎁스 리스트 한칸
