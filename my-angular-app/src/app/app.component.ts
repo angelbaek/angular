@@ -8,6 +8,8 @@ import { Neo4jConfig } from './neo4jConfig';
 import { Neo4jService } from './neo4j.service';
 import NeoVis from 'neovis.js';
 import { RealtionshipConfig } from './relationConfig';
+
+
 // 타입 인터페이스를 정의합니다.
 interface RelatedNodeType {
   count: number;
@@ -213,12 +215,6 @@ export class AppComponent implements OnInit {
   menuData: { [key: string]: RelationshipType } = {};
   menuDataArray: MenuItem[] = [];
 
-  // toggleMenu(menuItem: MenuItem): void {
-  //   menuItem.isExpanded = !menuItem.isExpanded;
-  // }
-  // toggleSubMenu(relatedNode: { value: RelatedNodeType }): void {
-  //   relatedNode.value.isExpanded = !relatedNode.value.isExpanded;
-  // }
   toggleMenu(index: number): void {
     // 모든 메뉴 항목의 isExpanded 상태를 false로 설정
     this.menuDataArray.forEach((item) => (item.isExpanded = false));
@@ -226,14 +222,34 @@ export class AppComponent implements OnInit {
     this.menuDataArray[index].isExpanded =
       !this.menuDataArray[index].isExpanded;
   }
-  toggleSubMenu(i: number, j: number): void {
-    this.menuDataArray[i].data.relatedNodeTypes[j].isExpanded =
-      !this.menuDataArray[i].data.relatedNodeTypes[j].isExpanded;
-  }
+  
   // toggleSubMenu(i: number, j: number): void {
-  //   const relatedNode = this.menuDataArray[i].data.relatedNodeTypes[j];
-  //   relatedNode.isExpanded = !relatedNode.isExpanded;
+  //   // i: 첫 번째 메뉴 항목의 인덱스
+  //   // j: 두 번째 메뉴 항목의 인덱스
+  
+  //   // 모든 두 번째 메뉴 항목의 isExpanded 상태를 false로 설정
+  //   Object.values(this.menuDataArray[i].data.relatedNodeTypes).forEach(
+  //     (item: RelatedNodeType) => (item.isExpanded = false)
+  //   );
+  
+  //   // 클릭된 두 번째 메뉴 항목의 isExpanded 상태를 토글
+  //   const relatedNodeKeys = Object.keys(this.menuDataArray[i].data.relatedNodeTypes);
+  //   const key = relatedNodeKeys[j];
+  //   console.log("키",key)
+  //   this.menuDataArray[i].data.relatedNodeTypes[key].isExpanded = 
+  //     !this.menuDataArray[i].data.relatedNodeTypes[key].isExpanded;
   // }
+  toggleSubMenu(i: number, key: string): void {
+    // 모든 두 번째 메뉴 항목의 isExpanded 상태를 false로 설정
+    Object.values(this.menuDataArray[i].data.relatedNodeTypes).forEach(
+        (item: RelatedNodeType) => (item.isExpanded = false)
+    );
+
+    // 클릭된 두 번째 메뉴 항목의 isExpanded 상태를 토글
+    this.menuDataArray[i].data.relatedNodeTypes[key].isExpanded = 
+        !this.menuDataArray[i].data.relatedNodeTypes[key].isExpanded;
+}
+
 
   test() {
     console.log('li클릭함');
