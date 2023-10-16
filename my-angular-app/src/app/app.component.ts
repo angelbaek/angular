@@ -6,8 +6,9 @@ import { filter } from 'rxjs/operators';
 import { LabelConfig, Nodeimage } from './labelConfig';
 import { Neo4jConfig } from './neo4jConfig';
 import { Neo4jService } from './neo4j.service';
-import NeoVis from 'neovis.js';
 import { RealtionshipConfig } from './relationConfig';
+import NeoVis from 'neovis.js';
+
 
 // 타입 인터페이스를 정의합니다.
 interface RelatedNodeType {
@@ -44,8 +45,8 @@ interface RelatedNodeType {
   styleUrls: ['./app.component.css'],
 })
 export class AppComponent implements OnInit {
-  url: string = 'http://localhost:3000/api/greet';
-  message: string = ''; // api 테스트
+  url: string = 'http://localhost:8000/api/data';
+  message: any; // api 테스트
   currentUrl: string = ''; // 현재 브라우저 URL을 저장할 속성
   viz: any; // 그래프
   selectedNodeData: any; // 선택한 노드정보 객체
@@ -74,7 +75,7 @@ export class AppComponent implements OnInit {
       .runQuery('MATCH (n)-[r]->(m) RETURN n, r, m, type(r) LIMIT 10')
       .then((records) => {
         console.log('Query result:', records);
-      });
+      });      
   }
 
   draw() {
@@ -280,7 +281,7 @@ export class AppComponent implements OnInit {
   }
 
   getMessage(): void {
-    this.http.get<{ message: string }>(this.url).subscribe({
+    this.http.get<{ message: any }>(this.url).subscribe({
       next: (res) => {
         console.log(res);
         this.message = res.message;
@@ -296,7 +297,7 @@ export class AppComponent implements OnInit {
     this.router.events
       .pipe(filter((event) => event instanceof NavigationEnd))
       .subscribe(() => {
-        this.currentUrl = this.router.url;
+        this.currentUrl = 'http://localhost:8000'+this.router.url;
         console.log('Now Address: ', this.currentUrl);
       });
   }
@@ -330,7 +331,7 @@ export class AppComponent implements OnInit {
     MATCH (n)-[r]-(m)
     WHERE id(n) = ${nodeId}
     RETURN n, r, m
-    limit ${this.target}
+    // limit ${this.target}
   `;
 
     try {

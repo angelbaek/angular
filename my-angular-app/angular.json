@@ -64,10 +64,12 @@
           "configurations": {
             "production": {
               "browserTarget": "my-angular-app:build:production",
+              
               "host": "0.0.0.0"
             },
             "development": {
               "browserTarget": "my-angular-app:build:development",
+              
               "host": "0.0.0.0"
             }
           },
