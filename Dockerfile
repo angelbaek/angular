@@ -11,7 +11,6 @@ RUN npm install -g @angular/cli
 
 COPY ./my-angular-app .
 RUN ng build --configuration production  
-# 이 부분은 그대로 유지
 
 # 단계 2: Nginx를 이용하여 앱 서빙
 FROM nginx:1.21.1-alpine

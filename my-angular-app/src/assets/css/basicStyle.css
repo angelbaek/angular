@@ -862,29 +862,157 @@ select option:hover {
 }
 
 /*뎁스 리스트*/
-.left-depth-list-one_div{
-  margin-bottom: 10px;
-  width: 100%;
-  border: 1px solid black;
+.left-depth-list-one_div {
+  height: 3.3rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid var(--color-b2);
+  margin-bottom: 0.2rem;
+  cursor: pointer;
+  transition: 0.5s;
+  overflow: hidden;
+  word-break: keep-all;
 }
-.left-depth-list-two_div{
+.left-depth-list-one_div:hover {
+  color: #fff;
+  background-color: var(--color-main);
+  border: 0;
+}
+.left-depth-list-one_div:hover > .depth-num {
+  color: #fff;
+}
+.left-m2-1 {
+  padding-left: 1.5rem;
+}
+
+.left-depth-list-two_div {
   margin-top: 10px;
   width: auto;
   margin-left: 30px;
   border: 1px solid black;
 }
-.left-depth-list-third{
-  width: auto;
-  margin-left: 60px;
+.left-m2-1 > .left-depth-list-two:hover {
+  background-color: var(--color-sub-1);
+  color: #fff;
+  border: 0;
+}
+.left-m2-1 > .left-depth-list-two:hover > .depth-num {
+  color: #fff;
 }
 
-.left-depth-list-one_div >  div {
+.left-depth-list-third {
   width: auto;
- display: inline-block;
+  margin-left: 3rem;
 }
 
-.left-depth-list-two_div > div{
-  display: inline-block;
+.left-depth-list-one_div > div {
+  width: auto;
+  /* display: inline-block; */
+}
+
+.left-depth-list-two_div > div {
+  /* display: inline-block; */
+}
+
+.left-depth-list-one_div > .depth-icon > .depth-plus {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  background-color: var(--color-main);
+}
+.left-depth-list-one > li .depth-title {
+  flex-grow: 1;
+  font-weight: 500;
+}
+.left-depth-list-one > li .depth-num {
+  color: var(--color-main);
+  font-weight: 700;
+  padding: 0.9rem;
+  font-size: 1.5rem;
+}
+.left-depth-list-one > li .depth-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.9rem;
+}
+/* 두번째 뎁스 */
+.left-depth-list-two > li > div {
+  height: 3.3rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid var(--color-b2);
+  margin-bottom: 0.3rem;
+  cursor: pointer;
+  background-color: #f7f7f7;
+  transition: 0.5s;
+  overflow: hidden;
+  word-break: keep-all;
+}
+.left-depth-list-two > .depth-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.9rem;
+}
+.left-depth-list-two > .depth-title {
+  flex-grow: 1;
+  font-weight: 500;
+}
+.left-depth-list-two > .depth-num {
+  color: var(--color-main);
+  font-weight: 700;
+  padding: 0.9rem;
+  font-size: 1.5rem;
+}
+.left-depth-list-two > .depth-icon > .depth-plus {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  background-color: var(--color-sub-1);
+}
+/* 세번째 뎁스 */
+.left-depth-list-third {
+  padding-left: 2rem;
+  border: 0;
+  height: auto;
+  background: none;
+  overflow: hidden;
+  border: 1px solid var(--color-b2);
+  padding: 1rem 0;
+  margin-bottom: 1rem;
+}
+.left-depth-list-third > li {
+  height: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  word-break: keep-all;
+  margin-bottom: 0.3rem;
+}
+.left-depth-list-third > li .depth-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.left-depth-list-third > li .depth-title {
+  flex-grow: 1;
+  font-weight: 500;
+}
+.left-depth-list-third > li .depth-icon .depth-line {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 0.8rem;
+  height: 0.2rem;
+  background-color: var(--color-sub-1);
 }
 /* .box-depth {
   padding: 1.5rem;

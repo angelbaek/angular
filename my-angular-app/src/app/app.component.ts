@@ -9,7 +9,6 @@ import { Neo4jService } from './neo4j.service';
 import NeoVis from 'neovis.js';
 import { RealtionshipConfig } from './relationConfig';
 
-
 // 타입 인터페이스를 정의합니다.
 interface RelatedNodeType {
   count: number;
@@ -23,11 +22,6 @@ interface RelationshipType {
     [key: string]: RelatedNodeType;
   };
 }
-
-// interface MenuItem {
-//   type: string;
-//   data: RelationshipType;
-// }
 
 interface MenuItem {
   type: string;
@@ -131,8 +125,13 @@ export class AppComponent implements OnInit {
     console.log('viz result:::', this.viz);
 
     this.viz.render();
+    // 원하는 그룹 값을 저장할 배열
+    const desiredGroups: string[] = ['aaaaaa', 'b', 'aaa', 'b', 'c', 'd'];
 
+    // 결과 배열 초기화
+    const result: string[] = [];
     this.viz.registerOnEvent('completed', () => {
+      this.groupNodeAdd();
       // console.log(this.viz._network); // Now, it should be available.
       console.log(this.viz.network);
       // Nodeimage 설정을 가져옵니다.
@@ -140,9 +139,35 @@ export class AppComponent implements OnInit {
 
       // 모든 노드를 순회합니다.
       this.viz.nodes.forEach((node: any) => {
-        console.log(node);
+        console.log(node, '노드라벨', node.label);
         // 노드의 라벨을 확인합니다.
         const label = node.group; // 노드의 첫 번째 라벨을 가져옵니다.
+        if (label == 'report') {
+          // node.hidden = true;
+          console.log('리포트 노드 확인');
+          this.viz.network.body.data.edges.add({
+            id: 'report_' + node.label,
+            from: 'Report',
+            to: node.id,
+          });
+        } else if (node.id == 'Report') {
+          console.log('그룹노드 찾음');
+          node.shape = 'image';
+          node.image = '../assets/images/report/report_2.png';
+        }
+        // if (
+        //   node.id === 0 ||
+        //   node.id === 1 ||
+        //   node.id === 2 ||
+        //   node.id === 7 ||
+        //   node.id === 8 ||
+        //   node.id === 9 ||
+        //   node.id === 10 ||
+        //   node.id === 11
+        // ) {
+        //   console.log('히든!!');
+        //   node.hidden = true;
+        // }
 
         // 라벨에 맞는 이미지를 찾습니다.
         const imageUrl = nodeImages[label];
@@ -161,14 +186,78 @@ export class AppComponent implements OnInit {
 
       // 노드를 선택했을때 이벤트
       this.viz.network.on('selectNode', (properties: any) => {
+        /**
+         *  Related Node 메소드 구현....
+         */
+        const edgeLength: number = properties.edges.length;
+        console.log('Edge::', properties.edges);
+        console.log('Edge 길이:::', edgeLength);
+        const edgeNumber: any = [];
+        if (edgeLength == 1) {
+          edgeNumber.push(properties.edges[0]);
+        } else {
+          properties.edges.forEach((edge: any) => {
+            edgeNumber.push(edge);
+          });
+        }
+        console.log('Edge 결과물:::', edgeNumber);
+        edgeNumber.forEach((edge: any) => {
+          console.log(this.viz.network.body.data.edges.get(edge));
+        });
+
+        /**
+         * 노드 정보, 관계정보 메소드
+         */
         const selectedNodeId = properties.nodes[0];
+
+        //아이디 문자열 (그룹노드) 일때 예외처리
+        if (typeof selectedNodeId !== 'number') {
+          console.log('그룹노드:::', selectedNodeId);
+          return;
+        }
+
+        // if(properties.nodes[0])
         const selectedNode = this.viz.nodes.get(selectedNodeId);
+
         // 노드 정보 표출하기
         this.onNodeClick(selectedNode);
 
         // 인접노드 관계정보 가져오기
         this.logAdjacentNodesAndRelationships(selectedNodeId);
       });
+    });
+  }
+
+  groupNodeAdd() {
+    this.viz.network.body.data.nodes.add({
+      id: 'Report',
+      label: 'Report',
+      visConfig: {
+        nodes: {
+          size: 55,
+          font: {
+            // background: 'black',
+            color: '#343434',
+            size: 30, // px
+            face: 'pretendard',
+            strokeWidth: 2, // px
+            // strokeColor: "blue",
+          },
+        },
+        edges: {
+          arrows: {
+            to: { enabled: true },
+          },
+          font: {
+            // background: 'black',
+            color: '#343434',
+            size: 30, // px
+            face: 'pretendard',
+            strokeWidth: 2, // px
+            // strokeColor: "blue",
+          },
+        },
+      },
     });
   }
 
@@ -222,37 +311,16 @@ export class AppComponent implements OnInit {
     this.menuDataArray[index].isExpanded =
       !this.menuDataArray[index].isExpanded;
   }
-  
-  // toggleSubMenu(i: number, j: number): void {
-  //   // i: 첫 번째 메뉴 항목의 인덱스
-  //   // j: 두 번째 메뉴 항목의 인덱스
-  
-  //   // 모든 두 번째 메뉴 항목의 isExpanded 상태를 false로 설정
-  //   Object.values(this.menuDataArray[i].data.relatedNodeTypes).forEach(
-  //     (item: RelatedNodeType) => (item.isExpanded = false)
-  //   );
-  
-  //   // 클릭된 두 번째 메뉴 항목의 isExpanded 상태를 토글
-  //   const relatedNodeKeys = Object.keys(this.menuDataArray[i].data.relatedNodeTypes);
-  //   const key = relatedNodeKeys[j];
-  //   console.log("키",key)
-  //   this.menuDataArray[i].data.relatedNodeTypes[key].isExpanded = 
-  //     !this.menuDataArray[i].data.relatedNodeTypes[key].isExpanded;
-  // }
+
   toggleSubMenu(i: number, key: string): void {
     // 모든 두 번째 메뉴 항목의 isExpanded 상태를 false로 설정
     Object.values(this.menuDataArray[i].data.relatedNodeTypes).forEach(
-        (item: RelatedNodeType) => (item.isExpanded = false)
+      (item: RelatedNodeType) => (item.isExpanded = false)
     );
 
     // 클릭된 두 번째 메뉴 항목의 isExpanded 상태를 토글
-    this.menuDataArray[i].data.relatedNodeTypes[key].isExpanded = 
-        !this.menuDataArray[i].data.relatedNodeTypes[key].isExpanded;
-}
-
-
-  test() {
-    console.log('li클릭함');
+    this.menuDataArray[i].data.relatedNodeTypes[key].isExpanded =
+      !this.menuDataArray[i].data.relatedNodeTypes[key].isExpanded;
   }
 
   target: number = 10;
@@ -328,7 +396,6 @@ export class AppComponent implements OnInit {
         // 해당 관계 타입의 count를 증가시킵니다.
         typeInfo[relType].count += 1;
       });
-      // this.menuData = typeInfo;
 
       this.menuData = typeInfo;
       this.menuDataArray = Object.keys(this.menuData).map((key) => {
