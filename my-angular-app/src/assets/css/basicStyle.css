@@ -907,12 +907,7 @@ select option:hover {
 }
 
 .left-depth-list-one_div > div {
-  width: auto;
-  /* display: inline-block; */
-}
-
-.left-depth-list-two_div > div {
-  /* display: inline-block; */
+  width: auto;  
 }
 
 .left-depth-list-one_div > .depth-icon > .depth-plus {
