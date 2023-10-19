@@ -585,17 +585,13 @@ export class AppComponent implements OnInit {
       .post('http://localhost:3000/api/lgnafgn', params)
       .subscribe((response: any) => {
         console.log(response);
-        console.log('응답 노드 갯수:::', response.data.length);
-        let count = 0;
-        response.data.forEach((element: any) => {
+        response.forEach((element: any) => {
           console.log(element);
-          // 값들
-          const rawId = parseInt(element.n?.elementId || element.m?.elementId);
-          const rawProperties = element.n?.properties || element.m?.properties;
-          const rawName =
-            element.n?.properties.name || element.m?.properties.name;
-          const rawType =
-            element.n?.properties.type || element.m?.properties.type;
+          const rawId = element.m.identity.low;
+          const rawName = element.m.properties.name;
+          const rawType = element.m.properties.type;
+          const rawProperties = element.m.properties;
+          const edgeLabel = element.r.type;
 
           this.viz.network.body.data.nodes.add({
             id: rawId,
@@ -633,13 +629,67 @@ export class AppComponent implements OnInit {
           });
           //그룹노드와 원본노드 엣지 추가
           this.viz.network.body.data.edges.add({
-            id: rawId,
+            label: edgeLabel,
+            // id: rawId,
             from: nodeId,
             to: rawId,
           });
-          count++;
-          if (count == 10) return;
         });
+        // console.log('응답 노드 갯수:::', response.data.length);
+        // let count = 0;
+        // response.data.forEach((element: any) => {
+        //   console.log(element);
+        //   // 값들
+        //   const rawId = parseInt(element.n?.elementId || element.m?.elementId);
+        //   const rawProperties = element.n?.properties || element.m?.properties;
+        //   const rawName =
+        //     element.n?.properties.name || element.m?.properties.name;
+        //   const rawType =
+        //     element.n?.properties.type || element.m?.properties.type;
+
+        //   this.viz.network.body.data.nodes.add({
+        //     id: rawId,
+        //     label: rawName,
+        //     shape: 'image',
+        //     image: `../assets/images/${rawType}/${rawType}_3.png`,
+        //     raw: { properties: rawProperties },
+        //     visConfig: {
+        //       nodes: {
+        //         size: 55,
+        //         font: {
+        //           // background: 'black',
+        //           color: '#343434',
+        //           size: this.nodeFontSize, // px
+        //           face: 'pretendard',
+        //           strokeWidth: 2, // px
+        //           // strokeColor: "blue",
+        //         },
+        //       },
+
+        //       edges: {
+        //         arrows: {
+        //           to: { enabled: true },
+        //         },
+        //         font: {
+        //           // background: 'black',
+        //           color: '#343434',
+        //           size: this.edgeFontSize, // px
+        //           face: 'pretendard',
+        //           strokeWidth: 2, // px
+        //           // strokeColor: "blue",
+        //         },
+        //       },
+        //     },
+        //   });
+        //   //그룹노드와 원본노드 엣지 추가
+        //   this.viz.network.body.data.edges.add({
+        //     id: rawId,
+        //     from: nodeId,
+        //     to: rawId,
+        //   });
+        //   count++;
+        //   if (count == 10) return;
+        // });
       });
   }
 

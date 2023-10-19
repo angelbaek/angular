@@ -184,7 +184,7 @@ app.post("/api/lgnafln", async (req, res) => {
   }
 });
 
-// 상위 그룹노드가 있는 그룹노드 더블클릭 시 하위 노드 만들기
+// 상위 노드가 있는 그룹노드 더블클릭 시 하위 노드 만들기
 app.post("/api/lgnafgn", async (req, res) => {
   console.log("그룹노드 파생 하위 그룹노드 생성");
 
@@ -208,46 +208,54 @@ app.post("/api/lgnafgn", async (req, res) => {
     const session = driver.session();
     try {
       const result = await session.run(
-        "MATCH (n)-[r]-(m) WHERE ID(n) = $findID and m.type=$findType and tolower(n.name) contains tolower($content) RETURN m limit 10",
-        { findType: typePart, findID: idPart, content: word }
+        "MATCH (n)-[r]-(m) WHERE ID(n) = $findID and m.type=$findType RETURN r,m limit 10",
+        { findType: typePart, findID: idPart }
+        // "MATCH (n)-[r]-(m) WHERE ID(n) = $findID and m.type=$findType and tolower(n.name) contains tolower($content) RETURN m limit 10",
+        // { findType: typePart, findID: idPart, content: word }
       );
       console.log(
-        "MATCH (n)-[r]-(m) WHERE ID(n) = $findID and m.type=$findType and tolower(n.name) contains tolower($content) RETURN m limit 10",
-        { findType: typePart, findID: idPart, content: word }
+        "MATCH (n)-[r]-(m) WHERE ID(n) = $findID and m.type=$findType RETURN r,m limit 10",
+        { findType: typePart, findID: idPart }
+        // "MATCH (n)-[r]-(m) WHERE ID(n) = $findID and m.type=$findType and tolower(n.name) contains tolower($content) RETURN m limit 10",
+        // { findType: typePart, findID: idPart, content: word }
       );
       const records = result.records.map((record) => record.toObject());
-      console.log(records);
-      // let typeLength=[];
-      let typeLengthSet = new Set(); // Set 객체 생성
+      // console.log(records);
       records.forEach((element) => {
         console.log(element);
-        console.log(element.m.properties);
-        if (element.m.properties.type == "windows-registry-key") {
-          element.m.properties.type = "registry";
-        }
-        // console.log(element.n);
-        if (element.m.labels) {
-          element.m.labels.forEach((label) => {
-            typeLengthSet.add(label); // Set에 label 추가 (중복은 자동으로 제거됨)
-            console.log("라벨::::", label);
-          });
-        }
       });
+      res.json(records);
+      // let typeLength=[];
+      // let typeLengthSet = new Set(); // Set 객체 생성
+      // records.forEach((element) => {
+      //   console.log(element);
+      //   console.log(element.m.properties);
+      //   if (element.m.properties.type == "windows-registry-key") {
+      //     element.m.properties.type = "registry";
+      //   }
+      //   // console.log(element.n);
+      //   if (element.m.labels) {
+      //     element.m.labels.forEach((label) => {
+      //       typeLengthSet.add(label); // Set에 label 추가 (중복은 자동으로 제거됨)
+      //       console.log("라벨::::", label);
+      //     });
+      //   }
+      // });
 
-      let typeLength = [...typeLengthSet]; // Set을 배열로 변환
-      console.log(typeLength);
-      if (typeLength.length == 1) {
-        const response = {
-          // node: records.n,
-          // edge: records.r,
-          data: records,
-        };
-        res.json(response);
-      } else {
-        console.log("다중 노드그룹 확인!!!!! 추가 로직 필요");
-        console.log(typeLength.length);
-        res.json(response);
-      }
+      // let typeLength = [...typeLengthSet]; // Set을 배열로 변환
+      // console.log(typeLength);
+      // if (typeLength.length == 1) {
+      //   const response = {
+      //     // node: records.n,
+      //     // edge: records.r,
+      //     data: records,
+      //   };
+      //   res.json(response);
+      // } else {
+      //   console.log("다중 노드그룹 확인!!!!! 추가 로직 필요");
+      //   console.log(typeLength.length);
+      //   res.json(response);
+      // }
       // console.log(records);
     } catch (error) {
       console.error(error); // 에러 로그 출력
