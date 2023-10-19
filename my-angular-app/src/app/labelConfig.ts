@@ -89,7 +89,7 @@ export const Nodeimage: { [key: string]: string } = {
   artifact: '../assets/images/artifact/artifact_3.png',
   autonomous_system:
     '../assets/images/autonomous-system/autonomous-system_3.png',
-  domain_name: '../assets/images/domain_name/domain_name_3.png',
+  domain_name: '../assets/images/domain-name/domain-name_3.png',
   file: '../assets/images/file/file_3.png',
   ipv4_addr: '../assets/images/ipv4_addr/ipv4_addr_3.png',
   location: '../assets/images/location/location_3.png',
