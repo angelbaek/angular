@@ -204,22 +204,6 @@ export class AppComponent implements OnInit {
         const selectedNodeId = properties.nodes[0]; // 선택된 노드의 ID
         console.log('노드 ', properties);
 
-        // if (selectedNodeId) {
-        //   const connectedEdges =
-        //     this.viz.network.getConnectedEdges(selectedNodeId); // 선택된 노드와 연결된 엣지 가져오기
-
-        //   let parentNodes: any = [];
-
-        //   connectedEdges.forEach((edgeId: any) => {
-        //     const edge = this.viz.network.body.data.edges.get(edgeId);
-
-        //     if (edge.to === selectedNodeId) {
-        //       parentNodes.push(edge.from); // 'from' 노드는 부모 노드로 간주
-        //     }
-        //   });
-
-        //   console.log('Parent Nodes:', parentNodes);
-        // }
         if (selectedNodeId) {
           const allParentNodes = this.findParentNodes(selectedNodeId);
           console.log('All Parent Nodes:', allParentNodes);
@@ -231,8 +215,6 @@ export class AppComponent implements OnInit {
           return;
         }
 
-        // if(properties.nodes[0])
-        // const selectedNode = this.viz.nodes.get(selectedNodeId);
         const selectedNode =
           this.viz.network.body.data.nodes.get(selectedNodeId);
 
@@ -277,13 +259,53 @@ export class AppComponent implements OnInit {
             console.log(typeEdgeToObj);
             if (typeEdgeToObj != 'number') {
               console.log('하위 그룹노드 없음');
-              // 여기부터 다시 하위 그룹노드 만들기
-              // 보낼 객체 type과 target 보내기
-              const reqObj: any = {
-                type: clickedNodeId,
-                word: this.targetWord,
-              };
-              this.apiLowGroupNodeAddFromGroupNode(reqObj, clickedNodeId);
+
+              // 만약 그룹노드의 부모 노드가 keyword일 경우에 다른 로직처리
+              const connectedEdges =
+                this.viz.network.getConnectedEdges(clickedNodeId);
+              console.log('다른 로직 처리중...', connectedEdges);
+              console.log('이 그룹노드의 라벨은??', clickedNodeId);
+              const parentLabel =
+                this.viz.network.body.data.edges.get(connectedEdges)[0].from;
+              console.log(parentLabel);
+              if (parentLabel == 'keyword') {
+                console.log('keyword 하위 노드라 다른 api 접근 처리 로직 필요');
+                const reqObj: any = {
+                  type: clickedNodeId,
+                  word: this.targetWord,
+                };
+                this.apiKeywordFromGroupNode(reqObj);
+              } else {
+                // 여기부터 다시 하위 그룹노드 만들기
+
+                // 엣지 갯수 가져오기 test
+                console.log(clickedNodeId);
+                console.log(
+                  this.viz.network.body.data.edges.get(clickedNodeId)
+                );
+                const connEdgeCount =
+                  this.viz.network.getConnectedEdges(clickedNodeId);
+                console.log(connEdgeCount);
+                let count: number = 0;
+                connEdgeCount.forEach((edgeId: any) => {
+                  const edge = this.viz.network.body.data.edges.get(edgeId);
+                  console.log(edge);
+                  if (edge.to != clickedNodeId) {
+                    // 자신의 부모노드와의 관계 제외하기
+                    count++;
+                  }
+                });
+                if (count == 0 || count >= 10) {
+                  // 보낼 객체 type과 target 보내기
+                  const reqObj: any = {
+                    type: clickedNodeId,
+                    word: this.targetWord,
+                    limit: count,
+                  };
+                  console.log('자 count 보낸다', count);
+                  this.apiLowGroupNodeAddFromGroupNode(reqObj, clickedNodeId);
+                }
+              }
             } else if (typeEdgeToObj == 'number') {
               console.log('하위 노드 있음');
             }
@@ -311,38 +333,40 @@ export class AppComponent implements OnInit {
     });
   }
 
+  apiKeywordFromGroupNode(params: any) {
+    this.http
+      .post('http://localhost:3000/api/hnkgd', params)
+      .subscribe((response: any) => {
+        // console.log(response);
+      });
+  }
+
   apiAllNodeGet(params: any) {
     this.http
       .post('http://localhost:3000/api/all/node', params)
       .subscribe((response: any) => {
         console.log(response);
+
         const multiBoolean = response.multi;
         if (multiBoolean) {
           console.log('다중노드 발견');
           console.log('더블클릭 한 노드 id:', params.id);
-          response.data.forEach((element: any) => {
-            console.log(element);
-            let groupLabel = element;
+          for (var i = 0; i < response.data.mTypes.length; i++) {
+            let groupLabel = response.data.mTypes[i];
             let rawId = params.id;
-            // if (groupLabel == 'domain-name') {
-            //   groupLabel = 'domain_name';
-            // }
             this.viz.network.body.data.nodes.add({
               id: groupLabel + '_from_' + rawId,
               label: groupLabel,
               shape: 'image',
               image: `../assets/images/${groupLabel}/${groupLabel}_1.png`,
-              // raw: { properties: rawProperties },
               visConfig: {
                 nodes: {
                   size: 55,
                   font: {
-                    // background: 'black',
                     color: '#343434',
                     size: this.nodeFontSize, // px
                     face: 'pretendard',
                     strokeWidth: 2, // px
-                    // strokeColor: "blue",
                   },
                 },
                 edges: {
@@ -350,12 +374,10 @@ export class AppComponent implements OnInit {
                     to: { enabled: true },
                   },
                   font: {
-                    // background: 'black',
                     color: '#343434',
                     size: this.edgeFontSize, // px
                     face: 'pretendard',
                     strokeWidth: 2, // px
-                    // strokeColor: "blue",
                   },
                 },
               },
@@ -363,23 +385,22 @@ export class AppComponent implements OnInit {
             //그룹노드와 원본노드 엣지 추가
             this.viz.network.body.data.edges.add({
               // id: rawId,
-              label: response.rel[0],
+              label: response.data.rTypes[i],
               from: rawId,
               to: groupLabel + '_from_' + rawId,
             });
-          });
+          }
         } else if (!multiBoolean) {
           console.log('다중노드 아니고 상위 노드와 같은지 비교 로직 필요');
-          console.log(response.data[0]);
+          console.log(response.data);
           const connEdge = this.viz.network.getConnectedEdges(params.id);
-          // let edge:any;
           let connEdgeLabel;
           console.log(connEdge);
           connEdge.forEach((edgeId: any) => {
             const edge = this.viz.network.body.data.edges.get(edgeId);
             console.log(edge);
             connEdgeLabel = edge.from.replace(/_from_\d+$/, '');
-            console.log(connEdgeLabel); // "vulnerability"가 출력됩니다.
+            console.log(connEdgeLabel);
           });
           if (response.data[0] == connEdgeLabel) {
             console.log(
@@ -388,7 +409,7 @@ export class AppComponent implements OnInit {
           } else if (response.data[0] != connEdgeLabel) {
             console.log('서로 다른 라벨 노드그룹 만들필요 로직');
             const req = {
-              type: response.data[0],
+              type: response.data,
               id: params.id,
             };
             this.anotherLabelAddNodeGroup(req);
@@ -593,138 +614,64 @@ export class AppComponent implements OnInit {
           const rawProperties = element.m.properties;
           const edgeLabel = element.r.type;
 
-          this.viz.network.body.data.nodes.add({
-            id: rawId,
-            label: rawName,
-            shape: 'image',
-            image: `../assets/images/${rawType}/${rawType}_3.png`,
-            raw: { properties: rawProperties },
-            visConfig: {
-              nodes: {
-                size: 55,
-                font: {
-                  // background: 'black',
-                  color: '#343434',
-                  size: this.nodeFontSize, // px
-                  face: 'pretendard',
-                  strokeWidth: 2, // px
-                  // strokeColor: "blue",
+          // ID가 이미 존재하는지 확인
+          if (!this.viz.network.body.data.nodes.get(rawId)) {
+            this.viz.network.body.data.nodes.add({
+              id: rawId,
+              label: rawName,
+              shape: 'image',
+              image: `../assets/images/${rawType}/${rawType}_3.png`,
+              raw: { properties: rawProperties },
+              visConfig: {
+                nodes: {
+                  size: 55,
+                  font: {
+                    // background: 'black',
+                    color: '#343434',
+                    size: this.nodeFontSize, // px
+                    face: 'pretendard',
+                    strokeWidth: 2, // px
+                    // strokeColor: "blue",
+                  },
                 },
-              },
 
-              edges: {
-                arrows: {
-                  to: { enabled: true },
-                },
-                font: {
-                  // background: 'black',
-                  color: '#343434',
-                  size: this.edgeFontSize, // px
-                  face: 'pretendard',
-                  strokeWidth: 2, // px
-                  // strokeColor: "blue",
+                edges: {
+                  arrows: {
+                    to: { enabled: true },
+                  },
+                  font: {
+                    // background: 'black',
+                    color: '#343434',
+                    size: this.edgeFontSize, // px
+                    face: 'pretendard',
+                    strokeWidth: 2, // px
+                    // strokeColor: "blue",
+                  },
                 },
               },
-            },
-          });
-          //그룹노드와 원본노드 엣지 추가
-          this.viz.network.body.data.edges.add({
-            label: edgeLabel,
-            // id: rawId,
-            from: nodeId,
-            to: rawId,
-          });
+            });
+            //그룹노드와 원본노드 엣지 추가
+            this.viz.network.body.data.edges.add({
+              label: edgeLabel,
+              // id: rawId,
+              from: nodeId,
+              to: rawId,
+            });
+          } else {
+            console.warn(`Node with ID ${rawId} already exists!`);
+            //그룹노드와 원본노드 엣지 추가
+            this.viz.network.body.data.edges.add({
+              label: edgeLabel,
+              // id: rawId,
+              // from: nodeId,
+              // to: rawId,
+              from: rawId,
+              to: nodeId,
+            });
+          }
         });
-        // console.log('응답 노드 갯수:::', response.data.length);
-        // let count = 0;
-        // response.data.forEach((element: any) => {
-        //   console.log(element);
-        //   // 값들
-        //   const rawId = parseInt(element.n?.elementId || element.m?.elementId);
-        //   const rawProperties = element.n?.properties || element.m?.properties;
-        //   const rawName =
-        //     element.n?.properties.name || element.m?.properties.name;
-        //   const rawType =
-        //     element.n?.properties.type || element.m?.properties.type;
-
-        //   this.viz.network.body.data.nodes.add({
-        //     id: rawId,
-        //     label: rawName,
-        //     shape: 'image',
-        //     image: `../assets/images/${rawType}/${rawType}_3.png`,
-        //     raw: { properties: rawProperties },
-        //     visConfig: {
-        //       nodes: {
-        //         size: 55,
-        //         font: {
-        //           // background: 'black',
-        //           color: '#343434',
-        //           size: this.nodeFontSize, // px
-        //           face: 'pretendard',
-        //           strokeWidth: 2, // px
-        //           // strokeColor: "blue",
-        //         },
-        //       },
-
-        //       edges: {
-        //         arrows: {
-        //           to: { enabled: true },
-        //         },
-        //         font: {
-        //           // background: 'black',
-        //           color: '#343434',
-        //           size: this.edgeFontSize, // px
-        //           face: 'pretendard',
-        //           strokeWidth: 2, // px
-        //           // strokeColor: "blue",
-        //         },
-        //       },
-        //     },
-        //   });
-        //   //그룹노드와 원본노드 엣지 추가
-        //   this.viz.network.body.data.edges.add({
-        //     id: rawId,
-        //     from: nodeId,
-        //     to: rawId,
-        //   });
-        //   count++;
-        //   if (count == 10) return;
-        // });
       });
   }
-
-  // groupNodeAdd() {
-  //   this.viz.network.body.data.nodes.add({
-  //     id: 'Report',
-  //     label: 'Report',
-  //     visConfig: {
-  //       nodes: {
-  //         size: 55,
-  //         font: {
-  //           // background: 'black',
-  //           color: '#343434',
-  //           size: 30, // px
-  //           face: 'pretendard',
-  //           strokeWidth: 2, // px
-  //           // strokeColor: "blue",
-  //         },
-  //       },
-  //       edges: {
-  //         arrows: {
-  //           to: { enabled: true },
-  //         },
-  //         font: {
-  //           // background: 'black',
-  //           color: '#343434',
-  //           size: 30, // px
-  //           face: 'pretendard',
-  //           strokeWidth: 2, // px
-  //           // strokeColor: "blue",
-  //         },
-  //       },
-  //     },
-  //   });
-  // }
 
   onNodeClick(nodeData: any) {
     console.log('Selected node :', nodeData);
@@ -756,15 +703,6 @@ export class AppComponent implements OnInit {
       },
     });
   }
-
-  // getCurrentUrl(): void {
-  //   this.router.events
-  //     .pipe(filter((event) => event instanceof NavigationEnd))
-  //     .subscribe(() => {
-  //       this.currentUrl = this.router.url;
-  //       console.log('Now Address: ', this.currentUrl);
-  //     });
-  // }
 
   /**
    *

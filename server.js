@@ -21,11 +21,33 @@ app.get("/api/greet", (req, res) => {
   res.json({ message: "TIKA project Migrationing..." });
 });
 
+//상위 노드가 keyword인 그룹노드 더블클릭 시 api
+app.post("/api/hnkgd", async (req, res) => {
+  console.log(req.body);
+  // try {
+  //   const result = await session.run(
+  //     "match (n)-[r]-(m) where id(n) = $findId and m.type=$findType return m.type, r",
+  //     { findId: id, findType: type }
+  //   );
+  //   console.log(
+  //     "match (n)-[r]-(m) where id(n) = $findId and m.type=$findType return m.type, r",
+  //     { findId: id, findType: type }
+  //   );
+  //   res.json(resData);
+  //   // console.log(records);
+  // } catch (error) {
+  //   console.error(error); // 에러 로그 출력
+  //   res.status(500).send(error.message);
+  // } finally {
+  //   session.close();
+  // }
+});
+
 //api/other/ng
 app.post("/api/other/ng", async (req, res) => {
   console.log(req.body);
   const id = req.body.id;
-  const type = req.body.type;
+  const type = req.body.type.mTypes[0];
   const session = driver.session();
   try {
     const result = await session.run(
@@ -70,40 +92,52 @@ app.post("/api/all/node", async (req, res) => {
   const session = driver.session();
   try {
     const result = await session.run(
-      // MATCH (n)-[r]-(m) WHERE ID(n) = 35824 RETURN n, r, m, COLLECT(DISTINCT m.type) as types
-      //"MATCH (n)-[r]-(m) WHERE ID(n) = $findId RETURN n, r, m, m.type",
-      "MATCH (n)-[r]-(m) WHERE ID(n) = $findId WITH COLLECT(DISTINCT type(r)) as rTypes, COLLECT(DISTINCT m.type) as mTypes RETURN rTypes, mTypes",
+      "MATCH (n)-[r]-(m) WHERE ID(n) = $findId WITH COLLECT(type(r)) as rTypes, COLLECT(m.type) as mTypes RETURN rTypes, mTypes",
       { findId: id }
+      // "MATCH (n)-[r]-(m) WHERE ID(n) = $findId WITH COLLECT(DISTINCT type(r)) as rTypes, COLLECT(DISTINCT m.type) as mTypes RETURN rTypes, mTypes",
+      // { findId: id }
     );
     console.log(
-      // "MATCH (n)-[r]-(m) WHERE ID(n) = $findId RETURN n, r, m, m.type",
-      "MATCH (n)-[r]-(m) WHERE ID(n) = $findId WITH COLLECT(DISTINCT type(r)) as rTypes, COLLECT(DISTINCT m.type) as mTypes RETURN rTypes, mTypes",
+      "MATCH (n)-[r]-(m) WHERE ID(n) = $findId WITH COLLECT(type(r)) as rTypes, COLLECT(m.type) as mTypes RETURN rTypes, mTypes",
       { findId: id }
+      // "MATCH (n)-[r]-(m) WHERE ID(n) = $findId WITH COLLECT(DISTINCT type(r)) as rTypes, COLLECT(DISTINCT m.type) as mTypes RETURN rTypes, mTypes",
+      // { findId: id }
     );
     const records = result.records.map((record) => record.toObject());
 
     console.log(records);
-    console.log(records.length);
-    console.log(records[0]);
-    console.log(records[0].mTypes.length);
-    const uniqueTypeLength = records[0].mTypes.length;
-    const uniqueRelLength = records[0].rTypes.length;
+    let rTypes = records[0].rTypes;
+    let mTypes = records[0].mTypes;
+    let uniqueMTyps = [...new Set(mTypes)];
+    let uniqueRTyps = uniqueMTyps.map((mType) => rTypes[mTypes.indexOf(mType)]);
+    const uniqueTypeLength = uniqueMTyps.length;
+    console.log("새로운타입:::", uniqueMTyps);
+    console.log("새로운타입:::", uniqueRTyps);
+    console.log(uniqueTypeLength);
+    const responseObj = {
+      mTypes: uniqueMTyps,
+      rTypes: uniqueRTyps,
+    };
+    // console.log(records[0]);
+    // console.log(records[0].mTypes.length);
+    // const uniqueTypeLength = records[0].mTypes.length;
+    // const uniqueRelLength = records[0].rTypes.length;
     // 다중 그룹일때
     if (uniqueTypeLength > 1) {
       const response = {
         multi: true,
-        data: records[0].mTypes,
-        rel: records[0].rTypes,
+        data: responseObj,
       };
       res.json(response);
     } else if (uniqueTypeLength == 1) {
       const response = {
         multi: false,
-        data: records[0].mTypes,
-        rel: records[0].rTypes,
+        data: responseObj,
       };
       res.json(response);
     }
+    //작업중....
+
     // let uniqueMTypes = new Set();
     // let uniqueRTypes = new Set();
 
@@ -156,8 +190,10 @@ app.post("/api/lgnafln", async (req, res) => {
       { findId: id, findType: type }
     );
     console.log(
-      "match (n) where n.type=$typeName and n.name contains $wordName return n limit 10",
-      { typeName: type, wordName: word }
+      // "match (n) where n.type=$typeName and n.name contains $wordName return n limit 10",
+      // { typeName: type, wordName: word }
+      "MATCH (n)-[r]-(m) WHERE ID(n) = $findId and n.type=$findType RETURN distinct m.type",
+      { findId: id, findType: type }
     );
     const records = result.records.map((record) => record.toObject());
     console.log(records, "길이:", records.length);
@@ -190,6 +226,14 @@ app.post("/api/lgnafgn", async (req, res) => {
 
   let type = req.body.type;
   let word = req.body.word;
+  let limitValue = Number(req.body.limit);
+  if (isNaN(limitValue)) {
+    limitValue = 0; // or any default value you want
+  }
+
+  let limit = parseInt(limitValue + 10);
+  let skip = parseInt(limitValue);
+  console.log("새로운 기능 테스트중", limit, skip);
 
   if (type.includes("_from_")) {
     console.log("'_from_' is included in the input.");
@@ -205,24 +249,37 @@ app.post("/api/lgnafgn", async (req, res) => {
     //   typePart = "domain-name";
     // }
     console.log("파생 노드 확인!!!", typePart, idPart);
+    console.log("findSkip:", skip, typeof skip);
+    console.log("findLimit:", limit, typeof limit);
+
     const session = driver.session();
     try {
       const result = await session.run(
-        "MATCH (n)-[r]-(m) WHERE ID(n) = $findID and m.type=$findType RETURN r,m limit 10",
-        { findType: typePart, findID: idPart }
+        "MATCH (n)-[r]-(m) WHERE ID(n) = $findID and m.type=$findType RETURN r,m skip $findSkip limit $findLimit",
+        {
+          findType: typePart,
+          findID: idPart,
+          findSkip: neo4j.int(skip),
+          findLimit: neo4j.int(limit),
+        }
+        // "MATCH (n)-[r]-(m) WHERE ID(n) = $findID and m.type=$findType RETURN r,m skip 0 limit 10",
+        // { findType: typePart, findID: idPart }
+
         // "MATCH (n)-[r]-(m) WHERE ID(n) = $findID and m.type=$findType and tolower(n.name) contains tolower($content) RETURN m limit 10",
         // { findType: typePart, findID: idPart, content: word }
       );
       console.log(
-        "MATCH (n)-[r]-(m) WHERE ID(n) = $findID and m.type=$findType RETURN r,m limit 10",
-        { findType: typePart, findID: idPart }
+        "MATCH (n)-[r]-(m) WHERE ID(n) = $findID and m.type=$findType RETURN r,m skip $findSkip limit $findLimit",
+        { findType: typePart, findID: idPart, findSkip: skip, findLimit: limit }
+        // "MATCH (n)-[r]-(m) WHERE ID(n) = $findID and m.type=$findType RETURN r,m skip 0 limit 10",
+        // { findType: typePart, findID: idPart }
         // "MATCH (n)-[r]-(m) WHERE ID(n) = $findID and m.type=$findType and tolower(n.name) contains tolower($content) RETURN m limit 10",
         // { findType: typePart, findID: idPart, content: word }
       );
       const records = result.records.map((record) => record.toObject());
       // console.log(records);
       records.forEach((element) => {
-        console.log(element);
+        // console.log(element);
       });
       res.json(records);
       // let typeLength=[];
