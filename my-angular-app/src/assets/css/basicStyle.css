@@ -907,7 +907,7 @@ select option:hover {
 }
 
 .left-depth-list-one_div > div {
-  width: auto;  
+  width: auto;
 }
 
 .left-depth-list-one_div > .depth-icon > .depth-plus {
@@ -2240,6 +2240,11 @@ select option:hover {
 #viz {
   width: 100%;
   height: 99%;
+}
+
+#viz:focus {
+  outline: none;
+  border: none;
 }
 
 #node-info-td-title {

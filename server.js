@@ -24,23 +24,45 @@ app.get("/api/greet", (req, res) => {
 //상위 노드가 keyword인 그룹노드 더블클릭 시 api
 app.post("/api/hnkgd", async (req, res) => {
   console.log(req.body);
-  // try {
-  //   const result = await session.run(
-  //     "match (n)-[r]-(m) where id(n) = $findId and m.type=$findType return m.type, r",
-  //     { findId: id, findType: type }
-  //   );
-  //   console.log(
-  //     "match (n)-[r]-(m) where id(n) = $findId and m.type=$findType return m.type, r",
-  //     { findId: id, findType: type }
-  //   );
-  //   res.json(resData);
-  //   // console.log(records);
-  // } catch (error) {
-  //   console.error(error); // 에러 로그 출력
-  //   res.status(500).send(error.message);
-  // } finally {
-  //   session.close();
-  // }
+  const type = req.body.type;
+  const word = req.body.word;
+  let limitValue = Number(req.body.limit);
+  if (isNaN(limitValue)) {
+    limitValue = 0; // or any default value you want
+  }
+
+  let limit = parseInt(limitValue + 10);
+  let skip = parseInt(limitValue);
+  const session = driver.session();
+  try {
+    const result = await session.run(
+      // "match (n)-[r]-(m) where id(n) = $findId and m.type=$findType return m.type, r",
+      "MATCH (n)-[r]-(m) WHERE m.name CONTAINS $findWord AND m.type=$findType WITH m, COLLECT(DISTINCT type(r)) AS relationshipTypes RETURN m, relationshipTypes SKIP $findSkip LIMIT $findLimit",
+      {
+        findType: type,
+        findWord: word,
+        findSkip: neo4j.int(skip),
+        findLimit: neo4j.int(limit),
+      }
+    );
+    console.log(
+      "MATCH (n)-[r]-(m) WHERE m.name CONTAINS $findWord AND m.type=$findType WITH m, COLLECT(DISTINCT type(r)) AS relationshipTypes RETURN m, relationshipTypes SKIP $findSkip LIMIT $findLimit",
+      {
+        findType: type,
+        findWord: word,
+        findSkip: neo4j.int(skip),
+        findLimit: neo4j.int(limit),
+      }
+    );
+    const records = result.records.map((record) => record.toObject());
+    // console.log(records);
+    res.json(records);
+  } catch (error) {
+    console.error(error); // 에러 로그 출력
+    res.status(500).send(error.message);
+  } finally {
+    session.close();
+  }
 });
 
 //api/other/ng
@@ -233,7 +255,7 @@ app.post("/api/lgnafgn", async (req, res) => {
 
   let limit = parseInt(limitValue + 10);
   let skip = parseInt(limitValue);
-  console.log("새로운 기능 테스트중", limit, skip);
+  // console.log("새로운 기능 테스트중", limit, skip);
 
   if (type.includes("_from_")) {
     console.log("'_from_' is included in the input.");
