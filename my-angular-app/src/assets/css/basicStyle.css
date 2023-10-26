@@ -982,6 +982,8 @@ select option:hover {
   border: 1px solid var(--color-b2);
   padding: 1rem 0;
   margin-bottom: 1rem;
+  max-height: 300px;
+  overflow-y: scroll;
 }
 .left-depth-list-third > li {
   height: auto;
@@ -2261,4 +2263,196 @@ select option:hover {
   max-height: 100px;
   overflow: hidden; /* 텍스트가 박스를 넘어갈 경우 숨김 */
   text-overflow: ellipsis;
+}
+
+.left-m2-1 > button {
+  padding: 0.3rem 1.5rem;
+  border-radius: 0 0 1rem 1rem;
+  margin-left: 14rem;
+  margin-top: -1.5rem;
+}
+
+/**
+* 좌측 릴레이션 인포 첫번째 태그 클릭시
+*/
+.left-m1-1.active > .left-depth-list-one_div,
+.left-m1-1.active > .left-depth-list-one_div > .depth-num {
+  color: #fff;
+  background-color: var(--color-main);
+  border: 0;
+}
+
+/* 좌측 두번째 */
+.left-m2-1.active > .left-depth-list-two,
+.left-m2-1.active > .left-depth-list-two > .depth-num {
+  color: #fff;
+  background-color: var(--color-sub-1);
+  border: 0;
+}
+
+/* canvas 태그  */
+canvas,
+canvas:focus {
+  outline: none;
+  border: none;
+}
+
+/* 릴레이션 노드 css */
+/* #con-02 {
+  height: 3.3rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid var(--color-b2);
+  margin-bottom: 0.2rem;
+  cursor: pointer;
+  transition: 0.5s;
+  overflow: hidden;
+  word-break: keep-all;
+}
+#con-02 > .depth-R-one {
+  height: 3.3rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid var(--color-b2);
+  margin-bottom: 0.3rem;
+  cursor: pointer;
+  background-color: #f7f7f7;
+  transition: 0.5s;
+  overflow: hidden;
+  word-break: keep-all;
+}
+#con-02 > .depth-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.9rem;
+}
+
+#con-02 > .depth-icon > .depth-plus {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  background-color: var(--color-main);
+}
+
+#con-02 > .depth-title {
+  flex-grow: 1;
+  font-weight: 500;
+}
+
+#con-02 > .depth-num {
+  color: var(--color-main);
+  font-weight: 700;
+  padding: 0.9rem;
+  font-size: 1.5rem;
+} */
+
+.relatedNode_first {
+  height: 3.3rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid var(--color-b2);
+  margin-bottom: 0.3rem;
+  cursor: pointer;
+  background-color: #f7f7f7;
+  transition: 0.5s;
+  overflow: hidden;
+  word-break: keep-all;
+  margin: 5px 15px;
+}
+
+.relatedNode_first > .depth-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.9rem;
+}
+
+.relatedNode_first > .depth-icon > .depth-plus {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  background-color: var(--color-sub-1);
+}
+
+.relatedNode_first > .depth-title {
+  flex-grow: 1;
+  font-weight: 500;
+}
+
+.relatedNode_first > .depth-num {
+  color: var(--color-main);
+  font-weight: 700;
+  padding: 0.9rem;
+  font-size: 1.5rem;
+}
+
+/* 두번째 뎁스 */
+.relatedNode_second {
+  height: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  word-break: keep-all;
+  margin-bottom: 0.3rem;
+}
+
+.relatedNode_second > .depth-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.9rem;
+}
+
+.relatedNode_second > .depth-title {
+  flex-grow: 1;
+  font-weight: 500;
+}
+
+.relatedNode_second > .depth-icon > .depth-line {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 0.8rem;
+  height: 0.2rem;
+  background-color: var(--color-sub-1);
+}
+
+.relatedNode_second_ul {
+  padding-left: 2rem;
+  border: 0;
+  height: auto;
+  background: none;
+  overflow: hidden;
+  border: 1px solid var(--color-b2);
+  padding: 0.3rem;
+  margin-bottom: 1rem;
+  max-height: 300px;
+  overflow-y: scroll;
+  margin-left: 30px;
+  margin-right: 15px;
+}
+
+.relatedNode_first:hover {
+  background-color: var(--color-sub-1);
+  color: #fff;
+}
+.relatedNode_first:hover .depth-num {
+  color: #fff;
+}
+
+.active-group > .relatedNode_first {
+  background-color: var(--color-sub-1);
+  color: #fff;
+}
+.active-group > .relatedNode_first > .depth-num {
+  color: #fff;
 }

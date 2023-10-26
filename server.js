@@ -4,11 +4,14 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 const neo4j = require("neo4j-driver");
 const app = express();
+
+const specificIp = "192.168.32.22";
+const neo4jIp = "192.168.32.22";
 const port = 3000;
 
 //neo4j
 const driver = neo4j.driver(
-  "bolt://localhost",
+  `bolt://${neo4jIp}`,
   neo4j.auth.basic("neo4j", "root")
 );
 
@@ -17,14 +20,44 @@ app.use(cors());
 // JSON 요청 본문 파싱
 app.use(bodyParser.json());
 
-app.get("/api/greet", (req, res) => {
-  res.json({ message: "TIKA project Migrationing..." });
+// 좌측 탭 클릭 노드 추가
+app.post("/api/lsna", async (req, res) => {
+  console.log(req.body);
+  let id = req.body.id;
+  const session = driver.session();
+  try {
+    const result = await session.run(
+      // "match (n)-[r]-(m) where id(n) = $findId and m.type=$findType return m.type, r",
+      "match (n)-[r]-(m) where id(n)=$findId return n,r limit 1",
+      {
+        findId: id,
+      }
+    );
+    const records = result.records.map((record) => record.toObject());
+    console.log(records);
+    records.forEach((element) => {
+      if (element.n.properties.type == "windows-registry-key") {
+        element.n.properties.type = "registry";
+      }
+    });
+    res.json(records);
+  } catch (error) {
+    console.error(error); // 에러 로그 출력
+    res.status(500).send(error.message);
+  } finally {
+    session.close();
+  }
 });
+
+//하위노드 확장 시 다중그룹이 아닌 api
 
 //상위 노드가 keyword인 그룹노드 더블클릭 시 api
 app.post("/api/hnkgd", async (req, res) => {
   console.log(req.body);
-  const type = req.body.type;
+  let type = req.body.type;
+  if (type == "registry") {
+    type = "windows-registry-key";
+  }
   const word = req.body.word;
   let limitValue = Number(req.body.limit);
   if (isNaN(limitValue)) {
@@ -130,6 +163,19 @@ app.post("/api/all/node", async (req, res) => {
     console.log(records);
     let rTypes = records[0].rTypes;
     let mTypes = records[0].mTypes;
+    // mTypes.forEach((element) => {
+    //   if (element == "ipv4_addr") {
+    //     console.log(element);
+    //     element = "ipv4-addr";
+    //   }
+    // });
+    for (let i = 0; i < mTypes.length; i++) {
+      if (mTypes[i] == "ipv4_addr") {
+        mTypes[i] = "ipv4-addr";
+      } else if (mTypes[i] == "windows-registry-key") {
+        mTypes[i] = "registry";
+      }
+    }
     let uniqueMTyps = [...new Set(mTypes)];
     let uniqueRTyps = uniqueMTyps.map((mType) => rTypes[mTypes.indexOf(mType)]);
     const uniqueTypeLength = uniqueMTyps.length;
@@ -140,6 +186,7 @@ app.post("/api/all/node", async (req, res) => {
       mTypes: uniqueMTyps,
       rTypes: uniqueRTyps,
     };
+
     // console.log(records[0]);
     // console.log(records[0].mTypes.length);
     // const uniqueTypeLength = records[0].mTypes.length;
@@ -277,7 +324,8 @@ app.post("/api/lgnafgn", async (req, res) => {
     const session = driver.session();
     try {
       const result = await session.run(
-        "MATCH (n)-[r]-(m) WHERE ID(n) = $findID and m.type=$findType RETURN r,m skip $findSkip limit $findLimit",
+        // "MATCH (n)-[r]-(m) WHERE ID(n) = $findID and m.type=$findType RETURN r,m skip $findSkip limit $findLimit",
+        "MATCH (n)-[r]-(m) WHERE ID(n) = $findID and m.type=$findType WITH DISTINCT m, COLLECT(r) as rels RETURN rels,m skip $findSkip limit $findLimit",
         {
           findType: typePart,
           findID: idPart,
@@ -299,10 +347,15 @@ app.post("/api/lgnafgn", async (req, res) => {
         // { findType: typePart, findID: idPart, content: word }
       );
       const records = result.records.map((record) => record.toObject());
-      // console.log(records);
+      console.log(records);
       records.forEach((element) => {
-        // console.log(element);
+        // console.log("탐색중", element);
+        if (element.m.properties.type == "windows-registry-key") {
+          element.m.properties.type = "registry";
+          console.log("바뀜");
+        }
       });
+
       res.json(records);
       // let typeLength=[];
       // let typeLengthSet = new Set(); // Set 객체 생성
@@ -487,6 +540,6 @@ app.post("/api/data", async (req, res) => {
   console.log(targetQuery);
 });
 
-app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
+app.listen(port, specificIp, () => {
+  console.log(`Server is running on http://${specificIp}:${port}`);
 });

@@ -154,6 +154,7 @@
             class="nav-item tab-one left-bg active left-tab-1"
             data-bs-toggle="pill"
             href="#con-01"
+            (click)="isRelatedNodeClicked = !isRelatedNodeClicked"
           >
             Node Info
           </div>
@@ -161,6 +162,7 @@
             class="nav-item tab-one tab-basic-bg left-tab-2"
             data-bs-toggle="pill"
             href="#con-02"
+            (click)="isRelatedNodeClicked = !isRelatedNodeClicked"
           >
             Related Node
           </div>
@@ -188,7 +190,53 @@
           <!--첫번째 탭-->
 
           <!--두번째 탭-->
-          <div class="tab-pane fade plr-15" id="con-02">두번째 박스 내용</div>
+          <!-- <div class="tab-pane fade plr-15" id="con-02">두번째 박스 내용</div> -->
+          <!-- 첫번째 태그: 각 그룹 이름 표시 -->
+          <ng-container *ngIf="isRelatedNodeClicked">
+            <div
+              *ngFor="let group of groupKeys"
+              (click)="toggleGroup(group)"
+              [attr.data-group]="group"
+              [ngClass]="{ 'active-group': selectedGroups.includes(group) }"
+            >
+              <div class="relatedNode_first">
+                <div class="depth-icon">
+                  <div class="depth-plus">
+                    <!-- <img src="assets/images/depth-plus.png" /> -->
+                    <img
+                      [src]="
+                        selectedGroups.includes(group)
+                          ? 'assets/images/depth-minus.png'
+                          : 'assets/images/depth-plus.png'
+                      "
+                    />
+                  </div>
+                </div>
+                <div class="depth-title">{{ group }}</div>
+                <!-- <div class="depth-num">10</div> -->
+                <div class="depth-num">
+                  {{ groupedNodes.get(group)?.length }}
+                </div>
+              </div>
+              <!-- <ul *ngIf="selectedGroup === group" class="relatedNode_second_ul"> -->
+              <ul
+                *ngIf="selectedGroups.includes(group)"
+                class="relatedNode_second_ul"
+              >
+                <li
+                  *ngFor="let item of groupedNodes.get(group)"
+                  class="relatedNode_second"
+                  (click)="focusNode(item.rawid); $event.stopPropagation()"
+                >
+                  <div class="depth-icon">
+                    <div class="depth-line"></div>
+                  </div>
+                  <div class="depth-title">{{ item.name }}</div>
+                </li>
+              </ul>
+            </div>
+          </ng-container>
+
           <!--두번째 탭-->
         </div>
 
@@ -203,13 +251,21 @@
             <li
               *ngFor="let menuItem of menuDataArray; let i = index"
               [class.depth-choice]="menuItem.isExpanded"
+              [class.active]="menuItem.isExpanded"
               (click)="toggleMenu(i)"
               class="left-m1-1"
             >
               <div class="left-depth-list-one_div">
                 <div class="depth-icon">
                   <div class="depth-plus">
-                    <img src="assets/images/depth-plus.png" alt="" />
+                    <img
+                      [src]="
+                        menuItem.isExpanded
+                          ? 'assets/images/depth-minus.png'
+                          : 'assets/images/depth-plus.png'
+                      "
+                      alt=""
+                    />
                   </div>
                 </div>
                 <div class="depth-title">{{ menuItem.type }}</div>
@@ -225,12 +281,22 @@
                     let j = index
                   "
                   class="left-m2-1"
-                  (click)="toggleSubMenu(i, relatedNode.key)"
+                  (click)="
+                    toggleSubMenu(i, relatedNode.key); $event.stopPropagation()
+                  "
+                  [class.active]="relatedNode.value.isExpanded"
                 >
                   <div class="left-depth-list-two">
                     <div class="depth-icon">
                       <div class="depth-plus">
-                        <img src="assets/images/depth-plus.png" alt="" />
+                        <img
+                          [src]="
+                            relatedNode.value.isExpanded
+                              ? 'assets/images/depth-minus.png'
+                              : 'assets/images/depth-plus.png'
+                          "
+                          alt=""
+                        />
                       </div>
                     </div>
                     <div class="depth-title">{{ relatedNode.key }}</div>
@@ -242,13 +308,45 @@
                     *ngIf="relatedNode.value.isExpanded"
                     class="left-depth-list-third"
                   >
-                    <li *ngFor="let name of relatedNode?.['value']?.values">
+                    <li
+                      *ngFor="let item of relatedNode?.['value']?.combined | slice:0:displayedItemsCount[relatedNode.key]"
+                    >
                       <div class="depth-icon">
                         <div class="depth-line"></div>
                       </div>
-                      <div class="depth-title">{{ name }}</div>
+
+                      <div
+                        class="depth-title"
+                        (click)="
+                          clickNodeAdd(item.id, item.highNodeId);
+                          $event.stopPropagation()
+                        "
+                      >
+                        {{ item.value }}
+                      </div>
                     </li>
                   </ul>
+
+                  <!-- <button
+                    class="color-1"
+                    *ngIf="shouldShowMoreButton(relatedNode) && relatedNode?.['value']?.isExpanded"
+                    (click)="
+                      increaseDisplayedItems(relatedNode.key);
+                      $event.stopPropagation()
+                    "
+                  >
+                    더 보기
+                  </button> -->
+                  <button
+                    class="color-1"
+                    *ngIf="shouldShowMoreButton(relatedNode) && relatedNode?.['value']?.isExpanded"
+                    (click)="
+                      increaseDisplayedItems(relatedNode.key);
+                      $event.stopPropagation()
+                    "
+                  >
+                    더 보기
+                  </button>
                 </li>
               </ul>
             </li>
