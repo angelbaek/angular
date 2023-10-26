@@ -2293,6 +2293,7 @@ select option:hover {
 /* canvas 태그  */
 canvas,
 canvas:focus {
+  background-color: #e6eff4;
   outline: none;
   border: none;
 }

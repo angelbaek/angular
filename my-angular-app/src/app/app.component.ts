@@ -8,6 +8,7 @@ import { Neo4jConfig } from './neo4jConfig';
 import { Neo4jService } from './neo4j.service';
 import { RealtionshipConfig } from './relationConfig';
 import { ActivatedRoute } from '@angular/router';
+
 import NeoVis from 'neovis.js';
 
 // 타입 인터페이스를 정의합니다.
@@ -50,6 +51,7 @@ export class AppComponent implements OnInit {
   backendNodeExpressPort: string = '3000'; // 노드 익스프레스 ip
   neo4jPort: string = '7687';
   visibility: string = 'hidden'; // 기본값은 hidden으로 설정
+  loadingVisibility: string = 'visible'; // 로딩 애니메이션
   currentUrl: string = ''; // 현재 브라우저 URL을 저장할 속성
   viz: any; // 그래프
   selectedNodeData: any; // 선택한 노드정보 객체
@@ -70,6 +72,9 @@ export class AppComponent implements OnInit {
   groupKeys: string[] = [];
 
   isRelatedNodeClicked: boolean = false;
+
+  public chartOptions: any;
+  public chartSeries: any[] = [];
 
   // 생성자
   constructor(
@@ -109,6 +114,56 @@ export class AppComponent implements OnInit {
     this.draw();
     this.ngxFavicon.setFavicon('../assets/images/favicon.ico');
   }
+  setupNodeEventListeners() {
+    // 노드가 추가될 때의 이벤트 핸들러
+  }
+
+  // 챠트 그래프
+  chart() {
+    const nodesData = this.viz.network.body.data.nodes.get(); // 모든 노드 데이터 가져오기
+
+    console.log(nodesData);
+    // `created` 속성이 있는 노드만 필터링
+    const createdData = nodesData
+      .filter((node: any) => /^[0-9]+$/.test(node.id)) // ID가 숫자로만 이루어진 노드만 필터링
+      .map((node: any) => {
+        const yearMatch = node.raw.properties.created.match(/^\d{4}/);
+        return yearMatch ? yearMatch[0] : null; // 일치하는 경우 연도 값을 반환하고, 그렇지 않은 경우 null을 반환
+      })
+      .filter(Boolean); // 결과 배열에서 null 값을 제거
+
+    // 데이터 처리
+    const dataCount = createdData.reduce((acc: any, curr: any) => {
+      acc[curr] = (acc[curr] || 0) + 1;
+      return acc;
+    }, {});
+
+    console.log('챠트 결과', dataCount);
+
+    this.chartOptions = {
+      chart: {
+        type: 'bar',
+        fontFamily: 'pretendard, sans-serif',
+      },
+      xaxis: {
+        categories: Object.keys(dataCount),
+        labels: {
+          style: {
+            fontFamily: 'pretendard, sans-serif',
+            fontSize: '12px',
+          },
+        },
+      },
+    };
+
+    this.chartSeries = [
+      {
+        name: 'Node Count',
+        data: Object.values(dataCount),
+        color: '#143c7540', // 여기에 color 속성을 추가
+      },
+    ];
+  }
 
   draw() {
     const config: any = {
@@ -123,6 +178,7 @@ export class AppComponent implements OnInit {
       },
 
       visConfig: {
+        // backgroundColor: '#E6EFF4',
         nodes: {
           // hidden: true,
           size: 30,
@@ -136,7 +192,7 @@ export class AppComponent implements OnInit {
           // title: '',
         },
         edges: {
-          color: { color: '#597EAD', highlight: '	#B90E0A' },
+          color: { color: '#597EAD', highlight: '	#B90E0A', hover: '#B90E0A' },
 
           arrows: {
             to: { enabled: true },
@@ -149,6 +205,17 @@ export class AppComponent implements OnInit {
             strokeWidth: 2, // px
             // strokeColor: "blue",
           },
+        },
+        // 여기에 배경색을 설정합니다
+        interaction: {
+          hover: true,
+          // navigationButtons: true,
+        },
+        configure: {
+          enabled: false,
+        },
+        manipulation: {
+          enabled: false,
         },
       },
       relationships: {
@@ -299,6 +366,21 @@ export class AppComponent implements OnInit {
           }
         });
       });
+
+      // this.viz.network.on('addNode', (event: any) => {
+      //   console.error('노드가 추가되었습니다.');
+      //   // this.updateChart();
+      // });
+
+      // this.viz.network.on('updateNode', (event: any) => {
+      //   console.log('노드가 업데이트되었습니다.');
+      //   // this.updateChart();
+      // });
+
+      // this.viz.network.on('removeNode', (event: any) => {
+      //   console.log('노드가 제거되었습니다.');
+      //   // this.updateChart();
+      // });
 
       // 더블클릭 event
       this.viz.network.on('doubleClick', (properties: any) => {
@@ -455,6 +537,54 @@ export class AppComponent implements OnInit {
 
   selectedGroups: string[] = []; // 선택된 그룹들을 저장하는 배열
 
+  toggleFullScreen() {
+    const vizElement = document.getElementById('viz');
+
+    if (vizElement) {
+      if (!document.fullscreenElement) {
+        if (vizElement.requestFullscreen) {
+          vizElement.requestFullscreen();
+        } else if ((vizElement as any).mozRequestFullScreen) {
+          /* Firefox */
+          (vizElement as any).mozRequestFullScreen();
+        } else if ((vizElement as any).webkitRequestFullscreen) {
+          /* Chrome, Safari and Opera */
+          (vizElement as any).webkitRequestFullscreen();
+        } else if ((vizElement as any).msRequestFullscreen) {
+          /* IE/Edge */
+          (vizElement as any).msRequestFullscreen();
+        }
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        } else if ((document as any).mozCancelFullScreen) {
+          /* Firefox */
+          (document as any).mozCancelFullScreen();
+        } else if ((document as any).webkitExitFullscreen) {
+          /* Chrome, Safari and Opera */
+          (document as any).webkitExitFullscreen();
+        } else if ((document as any).msExitFullscreen) {
+          /* IE/Edge */
+          (document as any).msExitFullscreen();
+        }
+      }
+    }
+  }
+
+  zoomIn() {
+    const scale = this.viz.network.getScale();
+    this.viz.network.moveTo({
+      scale: scale * 1.2,
+    });
+  }
+
+  zoomOut() {
+    const scale = this.viz.network.getScale();
+    this.viz.network.moveTo({
+      scale: scale / 1.2,
+    });
+  }
+
   toggleGroup(group: string) {
     if (this.selectedGroups.includes(group)) {
       // 이미 선택된 그룹이면 배열에서 제거
@@ -603,6 +733,7 @@ export class AppComponent implements OnInit {
               from: nodeId,
               to: rawId,
             });
+            this.chart();
           }
         });
       });
@@ -1003,6 +1134,7 @@ export class AppComponent implements OnInit {
               from: nodeId,
               to: rawId,
             });
+            this.chart();
           } else {
             console.log(`Node with ID ${rawId} already exists!`);
             //만약 이미 추가된 엣지인지 확인
@@ -1064,7 +1196,9 @@ export class AppComponent implements OnInit {
         } else if (response.label == 'name') {
           this.firstGraphName(response);
         }
+        this.loadingVisibility = 'hidden';
         this.visibility = 'visible';
+        // this.chart();
       });
   }
 
@@ -1156,6 +1290,7 @@ export class AppComponent implements OnInit {
       from: name,
       to: rawId,
     });
+    this.chart();
   }
 
   firstGraphKeyword(response: any) {
@@ -1365,6 +1500,7 @@ export class AppComponent implements OnInit {
             from: word,
             to: rawId,
           });
+          this.chart();
         } else {
           console.log('포커스 이벤트 발동');
           this.focusNode(rawId);
@@ -1432,6 +1568,8 @@ export class AppComponent implements OnInit {
     console.log(nodeId, '로 관계정보 탐색중...');
     try {
       const result = await this.neo4jService.runQuery(query);
+
+      console.log('결과값::', result);
 
       // 데이터를 정리하는 객체를 초기화합니다.
       const typeInfo: {

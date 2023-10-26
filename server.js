@@ -494,6 +494,9 @@ app.post("/api/data", async (req, res) => {
         "MATCH (n) WHERE tolower(n.name) = tolower($name) RETURN n",
         { name: targetQuery }
       );
+      console.log("MATCH (n) WHERE tolower(n.name) = tolower($name) RETURN n", {
+        name: targetQuery,
+      });
       const records = result.records.map((record) => record.toObject());
       records.forEach((element) => {
         console.log(element);
