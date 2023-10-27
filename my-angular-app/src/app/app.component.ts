@@ -11,8 +11,9 @@ import { ActivatedRoute } from '@angular/router';
 
 import NeoVis from 'neovis.js';
 
-// 타입 인터페이스를 정의합니다.
+//인터페이스
 interface RelatedNodeType {
+  //연관된 노드
   count: number;
   values: string[];
   isExpanded?: boolean; // 추가된 속성
@@ -20,6 +21,7 @@ interface RelatedNodeType {
 }
 
 interface RelationshipType {
+  // 연관타입
   count: number;
   relatedNodeTypes: {
     [key: string]: RelatedNodeType;
@@ -27,6 +29,7 @@ interface RelationshipType {
 }
 
 interface MenuItem {
+  // html 바인딩 데이터
   type: string;
   data: {
     count: number;
@@ -34,12 +37,6 @@ interface MenuItem {
   };
   isExpanded?: boolean; // isExpanded 속성 추가
 }
-
-// interface RelatedNodeType {
-//   count: number;
-//   values: string[];
-//   isExpanded?: boolean; // isExpanded 속성 추가
-// }
 
 @Component({
   selector: 'app-root',
@@ -76,9 +73,8 @@ export class AppComponent implements OnInit {
   public chartOptions: any;
   public chartSeries: any[] = [];
 
-  // 생성자
   constructor(
-    // 의존성 주입
+    // 생성자
     private http: HttpClient,
     private router: Router,
     private ngxFavicon: AngularFaviconService,
@@ -125,7 +121,7 @@ export class AppComponent implements OnInit {
   chart() {
     const nodesData = this.viz.network.body.data.nodes.get(); // 모든 노드 데이터 가져오기
 
-    console.log(nodesData);
+    // console.log(nodesData);
     // `created` 속성이 있는 노드만 필터링
     const createdData = nodesData
       .filter((node: any) => /^[0-9]+$/.test(node.id)) // ID가 숫자로만 이루어진 노드만 필터링
@@ -164,6 +160,7 @@ export class AppComponent implements OnInit {
       bodyColor: '#000',
       cardBg: '',
     };
+
     this.chartOptions = {
       chart: {
         type: 'bar',
@@ -258,18 +255,6 @@ export class AppComponent implements OnInit {
     ];
   }
 
-  // onBarClick(event: any) {
-  //   console.log(event);
-  //   // 클릭된 막대의 인덱스와 `created` 값을 가져옵니다.
-  //   const clickedBarIndex = event.dataPointIndex;
-  //   const clickedYear = this.chartOptions.xaxis.categories[clickedBarIndex];
-  //   console.log(clickedBarIndex);
-  //   console.log(clickedYear);
-  //   console.log('그래프 탐색', clickedYear);
-  //   // 해당 `created` 값을 사용하여 노드를 필터링합니다.
-  //   this.showNodesByYear(clickedYear);
-  // }
-
   compareCreated: string = '';
   countCreatedClick: number = 0;
   showNodesByYear(year: string) {
@@ -332,7 +317,6 @@ export class AppComponent implements OnInit {
       },
 
       visConfig: {
-        // backgroundColor: '#E6EFF4',
         nodes: {
           hidden: false,
           size: 30,
@@ -341,9 +325,7 @@ export class AppComponent implements OnInit {
             size: 20, // px
             face: 'pretendard',
             strokeWidth: 2, // px
-            // strokeColor: "blue",
           },
-          // title: '',
         },
         edges: {
           color: { color: '#597EAD', highlight: '	#B90E0A', hover: '#B90E0A' },
@@ -352,12 +334,10 @@ export class AppComponent implements OnInit {
             to: { enabled: true },
           },
           font: {
-            // background: 'black',
             color: '#343434',
-            size: 15, // px
+            size: 15,
             face: 'pretendard',
-            strokeWidth: 2, // px
-            // strokeColor: "blue",
+            strokeWidth: 2,
           },
         },
         // 여기에 배경색을 설정합니다
@@ -380,7 +360,6 @@ export class AppComponent implements OnInit {
 
     this.viz = new NeoVis(config);
     this.viz.render();
-    // 선택 해제 시 넘겨주기 위한 노드 아이디
 
     // 결과 배열 초기화
     const result: string[] = [];
@@ -1521,8 +1500,9 @@ export class AppComponent implements OnInit {
     });
   }
 
-  clickNodeAdd(id: string, highNodeId: string) {
-    console.log(id);
+  // 좌측 탭 클릭 노드 추가
+  clickNodeAdd(id: string, highNodeId: string, rType: string) {
+    console.log(rType, '새로 받아봄');
     const req = {
       id: id,
     };
@@ -1594,7 +1574,8 @@ export class AppComponent implements OnInit {
           } else {
             console.log(
               '그룹노드 있음',
-              this.viz.network.body.data.nodes.get(word)
+              this.viz.network.body.data.nodes.get(word),
+              this.viz.network.body.data.nodes.get(rawType)
             );
           }
           this.viz.network.body.data.nodes.add({
@@ -1633,12 +1614,28 @@ export class AppComponent implements OnInit {
               },
             },
           });
-          //그룹노드와 원본노드 엣지 추가
-          this.viz.network.body.data.edges.add({
-            label: edgeLabel,
-            from: word,
-            to: rawId,
-          });
+          if (!this.viz.network.body.data.nodes.get(word)) {
+            //그룹노드와 원본노드 엣지 추가
+            console.log('내가 추가한 상위노드와 같을때');
+            //그룹노드와 원본노드 엣지 추가
+            this.viz.network.body.data.edges.add({
+              label: rType,
+              from: highNodeId,
+              to: rawId,
+            });
+          } else {
+            this.viz.network.body.data.edges.add({
+              label: rType,
+              from: word,
+              to: rawId,
+            });
+          }
+          // //그룹노드와 원본노드 엣지 추가
+          // this.viz.network.body.data.edges.add({
+          //   label: edgeLabel,
+          //   from: word,
+          //   to: rawId,
+          // });
           this.chart();
         } else {
           console.log('포커스 이벤트 발동');
@@ -1649,34 +1646,6 @@ export class AppComponent implements OnInit {
 
   menuData: { [key: string]: RelationshipType } = {};
   menuDataArray: MenuItem[] = [];
-
-  // toggleMenu(index: number): void {
-  //   // 모든 메뉴 항목의 isExpanded 상태를 false로 설정
-  //   this.menuDataArray.forEach((item) => (item.isExpanded = false));
-
-  //   // 클릭된 메뉴 항목의 isExpanded 상태를 토글
-  //   this.menuDataArray[index].isExpanded =
-  //     !this.menuDataArray[index].isExpanded;
-  // }
-
-  // toggleSubMenu(i: number, key: string): void {
-  //   // 모든 두 번째 메뉴 항목의 isExpanded 상태를 false로 설정
-  //   Object.values(this.menuDataArray[i].data.relatedNodeTypes).forEach(
-  //     (item: RelatedNodeType) => (item.isExpanded = false)
-  //   );
-
-  //   // 클릭된 두 번째 메뉴 항목의 isExpanded 상태를 토글
-  //   this.menuDataArray[i].data.relatedNodeTypes[key].isExpanded =
-  //     !this.menuDataArray[i].data.relatedNodeTypes[key].isExpanded;
-
-  //   // 만약 해당 relatedNode 항목이 확장되었고, displayedItemsCount에 해당 항목의 값이 없다면 초기화
-  //   if (
-  //     this.menuDataArray[i].data.relatedNodeTypes[key].isExpanded &&
-  //     !this.displayedItemsCount[key]
-  //   ) {
-  //     this.displayedItemsCount[key] = 10;
-  //   }
-  // }
 
   toggleMenu(index: number): void {
     // 클릭된 메뉴 항목의 isExpanded 상태를 토글
@@ -1726,7 +1695,6 @@ export class AppComponent implements OnInit {
       } = {};
 
       console.log('Query Result Length:', result.length);
-      // console.log('Query Result:', result);
       // console.log('Query Result:', result);
       // console.log(`Adjacent nodes and relationships for node ${nodeId}:`);
       const highNodeId = nodeId;

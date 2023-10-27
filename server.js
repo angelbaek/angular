@@ -33,6 +33,9 @@ app.post("/api/lsna", async (req, res) => {
         findId: id,
       }
     );
+    console.log("match (n)-[r]-(m) where id(n)=$findId return n,r limit 1", {
+      findId: id,
+    });
     const records = result.records.map((record) => record.toObject());
     console.log(records);
     records.forEach((element) => {
@@ -174,6 +177,10 @@ app.post("/api/all/node", async (req, res) => {
         mTypes[i] = "ipv4-addr";
       } else if (mTypes[i] == "windows-registry-key") {
         mTypes[i] = "registry";
+      } else if (mTypes[i] == "tool") {
+        mTypes[i] = "Software";
+      } else if (mTypes[i] == "attack-pattern") {
+        mTypes[i] = "Technique";
       }
     }
     let uniqueMTyps = [...new Set(mTypes)];
