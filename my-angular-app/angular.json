@@ -26,11 +26,9 @@
               "src/assets/js/jquery-latest.min.js",
               "src/assets/js/bootstrap.bundle.min.js",
               "src/assets/js/color-change.js",
-              "src/assets/js/made.js",
-              "src/assets/js/apexcharts.min.js",
-              "src/assets/js/apexcharts-light.js"
+              "src/assets/js/made.js"
             ],
-            "allowedCommonJsDependencies": ["neovis.js"]
+            "allowedCommonJsDependencies": ["neovis.js", "apexcharts"]
           },
           "configurations": {
             "production": {
@@ -92,11 +90,8 @@
               "src/assets/js/jquery-latest.min.js",
               "src/assets/js/bootstrap.bundle.min.js",
               "src/assets/js/color-change.js",
-              "src/assets/js/made.js",
-              "src/assets/js/apexcharts.min.js",
-              "src/assets/js/apexcharts-light.js"
-            ],
-            "allowedCommonJsDependencies": ["neovis.js"]
+              "src/assets/js/made.js"
+            ]
           }
         }
       }

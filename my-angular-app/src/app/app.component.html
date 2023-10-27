@@ -436,28 +436,50 @@
 
       <!--하단 그래프영역- 가운데 영역 넓이 따라감-->
       <div class="graph-box" style="display: flex">
-        <div *ngIf="chartOptions">
+        <!-- <div *ngIf="chartOptions">
           apexcharts 컴포넌트
           <apx-chart
             [series]="chartSeries"
             [chart]="chartOptions.chart"
             [xaxis]="chartOptions.xaxis"
+            (click)="onBarClick($event)"
           ></apx-chart>
-        </div>
+        </div> -->
 
-        <!-- <div class="graph-prev">
+        <div class="graph-prev">
           <span class="material-symbols-outlined d-none">arrow_back_ios</span>
         </div>
         <div class="graph-con">
           <div class="graph-num-out"></div>
-          <div class="apex-graph" id="apexBar2"></div>
-          <div class="graph-line"></div>
+          <!-- <div class="apex-graph" id="apexBar2"></div> -->
+          <div
+            class="typing_loader"
+            [style.visibility]="chartLoadingVisibility"
+          ></div>
+          <div *ngIf="chartOptions" style="padding-top: 10px">
+            <!-- apexcharts 컴포넌트 -->
+            <apx-chart
+              [series]="chartSeries"
+              [chart]="chartOptions.chart"
+              [xaxis]="chartOptions.xaxis"
+              [plotOptions]="chartOptions.plotOptions"
+              [xaxis]="chartOptions.xaxis"
+              [grid]="chartOptions.grid"
+              [legend]="chartOptions.legend"
+              [stroke]="chartOptions.stroke"
+              [theme]="chartOptions.theme"
+              [tooltip]="chartOptions.tooltip"
+            >
+              ></apx-chart
+            >
+          </div>
+          <!-- <div class="graph-line"></div> -->
         </div>
         <div class="graph-next">
           <span class="material-symbols-outlined d-none"
             >arrow_forward_ios</span
           >
-        </div> -->
+        </div>
       </div>
       <!--하단 그래프영역 끝-->
 

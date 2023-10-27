@@ -238,9 +238,10 @@ a:hover {
   -webkit-animation: typing 1s linear infinite alternate;
   -moz-animation: Typing 1s linear infinite alternate;
   animation: typing 1s linear infinite alternate;
-  margin: 46px auto; /* Not necessary- its only for layouting*/
-  position: relative;
-  left: -12px;
+  /* margin: 46px auto; Not necessary- its only for layouting */
+  position: absolute;
+  left: 50%;
+  top: 60%;
 }
 @-webkit-keyframes typing {
   0% {

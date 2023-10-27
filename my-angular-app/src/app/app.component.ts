@@ -118,6 +118,9 @@ export class AppComponent implements OnInit {
     // 노드가 추가될 때의 이벤트 핸들러
   }
 
+  // 챠트 로딩 보이기 객체
+  chartLoadingVisibility: string = 'visible';
+
   // 챠트 그래프
   chart() {
     const nodesData = this.viz.network.body.data.nodes.get(); // 모든 노드 데이터 가져오기
@@ -126,6 +129,7 @@ export class AppComponent implements OnInit {
     // `created` 속성이 있는 노드만 필터링
     const createdData = nodesData
       .filter((node: any) => /^[0-9]+$/.test(node.id)) // ID가 숫자로만 이루어진 노드만 필터링
+      .filter((node: any) => node.raw.properties && node.raw.properties.created) // properties.created가 있는 노드만 필터링
       .map((node: any) => {
         const yearMatch = node.raw.properties.created.match(/^\d{4}/);
         return yearMatch ? yearMatch[0] : null; // 일치하는 경우 연도 값을 반환하고, 그렇지 않은 경우 null을 반환
@@ -138,12 +142,57 @@ export class AppComponent implements OnInit {
       return acc;
     }, {});
 
-    console.log('챠트 결과', dataCount);
+    if (Object.keys(dataCount).length === 0) {
+      // dataCount가 빈 객체인 경우의 처리 로직
+      console.log('No data available for the chart.');
+      return; // 이후의 로직을 실행하지 않고 함수를 종료
+    }
 
+    this.chartLoadingVisibility = 'hidden';
+
+    const colors = {
+      primary: 'rgba(20, 60, 117, .25)',
+      secondary: '#7987a1',
+      success: '#05a34a',
+      info: '#66d1d1',
+      warning: '#fbbc06',
+      danger: '#ff3366',
+      light: '#e9ecef',
+      dark: '#060c17',
+      muted: '#7987a1',
+      gridBorder: '',
+      bodyColor: '#000',
+      cardBg: '',
+    };
     this.chartOptions = {
       chart: {
         type: 'bar',
         fontFamily: 'pretendard, sans-serif',
+        height: '110', // 높이 설정
+        stacked: true, // 스택 설정
+        toolbar: {
+          show: false, // 툴바 숨기기
+        },
+        background: colors.cardBg, // 배경색 설정
+        foreColor: colors.bodyColor, // 전경색 설정
+        // ... 기존의 chart 옵션들
+        events: {
+          dataPointSelection: (event: any, chartContext: any, config: any) => {
+            const clickedBarIndex = config.dataPointIndex;
+            const clickedYear =
+              this.chartOptions.xaxis.categories[clickedBarIndex];
+            console.log(clickedBarIndex);
+            console.log(clickedYear);
+            console.log('그래프 탐색', clickedYear);
+            this.showNodesByYear(clickedYear);
+          },
+        },
+      },
+      plotOptions: {
+        bar: {
+          borderRadius: 2,
+          columnWidth: '60%',
+        },
       },
       xaxis: {
         categories: Object.keys(dataCount),
@@ -153,16 +202,121 @@ export class AppComponent implements OnInit {
             fontSize: '12px',
           },
         },
+        axisBorder: {
+          // color: colors.gridBorder,
+        },
+        axisTicks: {
+          // color: colors.gridBorder,
+        },
+      },
+      grid: {
+        padding: {
+          bottom: -4,
+        },
+        borderColor: colors.gridBorder,
+        xaxis: {
+          lines: {
+            show: false,
+          },
+        },
+        yaxis: {
+          lines: {
+            show: false,
+          },
+        },
+      },
+      legend: {
+        show: true,
+
+        position: 'top',
+        horizontalAlign: 'center',
+        fontFamily: 'pretendard, sans-serif',
+        itemMargin: {
+          horizontal: 8,
+          vertical: 0,
+        },
+      },
+      stroke: {
+        width: 0,
+      },
+
+      theme: {
+        mode: 'light', // 테마 설정
+      },
+      tooltip: {
+        theme: 'light', // 툴팁 테마 설정
       },
     };
 
     this.chartSeries = [
       {
+        // color: '#143c7540',
+        color: colors.primary, // 기본 색상 설정
         name: 'Node Count',
         data: Object.values(dataCount),
-        color: '#143c7540', // 여기에 color 속성을 추가
       },
     ];
+  }
+
+  // onBarClick(event: any) {
+  //   console.log(event);
+  //   // 클릭된 막대의 인덱스와 `created` 값을 가져옵니다.
+  //   const clickedBarIndex = event.dataPointIndex;
+  //   const clickedYear = this.chartOptions.xaxis.categories[clickedBarIndex];
+  //   console.log(clickedBarIndex);
+  //   console.log(clickedYear);
+  //   console.log('그래프 탐색', clickedYear);
+  //   // 해당 `created` 값을 사용하여 노드를 필터링합니다.
+  //   this.showNodesByYear(clickedYear);
+  // }
+
+  compareCreated: string = '';
+  countCreatedClick: number = 0;
+  showNodesByYear(year: string) {
+    const nodes = this.viz.network.body.data.nodes;
+
+    if (this.compareCreated == year && this.countCreatedClick < 1) {
+      this.countCreatedClick++;
+      nodes.forEach((node: any) => {
+        if (
+          node.raw &&
+          node.raw.properties &&
+          node.raw.properties.created &&
+          node.raw.properties.created.startsWith(year)
+        ) {
+        } else {
+          nodes.update([{ id: node.id, hidden: false }]);
+        }
+      });
+      return;
+    }
+    this.countCreatedClick = 0;
+    this.compareCreated = year;
+    console.log(year, '를 받음');
+    // NeoVis를 사용하여 해당 년도의 `created` 값을 포함하는 노드만 표시합니다.
+    // 모든 노드 데이터를 가져옵니다.
+
+    // 먼저, 모든 노드를 숨깁니다.
+    nodes.forEach((node: any) => {
+      node.hidden = true;
+    });
+
+    // 연도를 포함하는 노드만 표시합니다.
+    nodes.forEach((node: any) => {
+      if (
+        node.raw &&
+        node.raw.properties &&
+        node.raw.properties.created &&
+        node.raw.properties.created.startsWith(year)
+      ) {
+        nodes.update([{ id: node.id, hidden: false }]);
+      } else {
+        nodes.update([{ id: node.id, hidden: true }]);
+      }
+    });
+
+    // 변경사항을 반영하기 위해 네트워크를 다시 그립니다.
+    this.viz.network.redraw();
   }
 
   draw() {
@@ -180,7 +334,7 @@ export class AppComponent implements OnInit {
       visConfig: {
         // backgroundColor: '#E6EFF4',
         nodes: {
-          // hidden: true,
+          hidden: false,
           size: 30,
           font: {
             color: '#343434',
@@ -366,21 +520,6 @@ export class AppComponent implements OnInit {
           }
         });
       });
-
-      // this.viz.network.on('addNode', (event: any) => {
-      //   console.error('노드가 추가되었습니다.');
-      //   // this.updateChart();
-      // });
-
-      // this.viz.network.on('updateNode', (event: any) => {
-      //   console.log('노드가 업데이트되었습니다.');
-      //   // this.updateChart();
-      // });
-
-      // this.viz.network.on('removeNode', (event: any) => {
-      //   console.log('노드가 제거되었습니다.');
-      //   // this.updateChart();
-      // });
 
       // 더블클릭 event
       this.viz.network.on('doubleClick', (properties: any) => {
