@@ -411,88 +411,88 @@ $(document).ready(function () {
   });
 
   // 우측 1뎁스메뉴
-  $(".right-m1-1").click(function () {
-    $(".right-m1-1").addClass("depth-choice");
-    $(".right-m1-1-under").removeClass("wrap-h-0");
+  // $(".right-m1-1").click(function () {
+  //   $(".right-m1-1").addClass("depth-choice");
+  //   $(".right-m1-1-under").removeClass("wrap-h-0");
 
-    $(".right-m1-2").removeClass("depth-choice");
-    $(".right-m1-3").removeClass("depth-choice");
-    $(".right-m1-4").removeClass("depth-choice");
-    $(".right-m1-5").removeClass("depth-choice");
-    $(".right-m1-2-under").addClass("wrap-h-0");
-    $(".right-m1-3-under").addClass("wrap-h-0");
-    $(".right-m1-4-under").addClass("wrap-h-0");
-    $(".right-m1-5-under").addClass("wrap-h-0");
-  });
-  $(".right-m1-2").click(function () {
-    $(".right-m1-2").addClass("depth-choice");
-    $(".right-m1-2-under").removeClass("wrap-h-0");
+  //   $(".right-m1-2").removeClass("depth-choice");
+  //   $(".right-m1-3").removeClass("depth-choice");
+  //   $(".right-m1-4").removeClass("depth-choice");
+  //   $(".right-m1-5").removeClass("depth-choice");
+  //   $(".right-m1-2-under").addClass("wrap-h-0");
+  //   $(".right-m1-3-under").addClass("wrap-h-0");
+  //   $(".right-m1-4-under").addClass("wrap-h-0");
+  //   $(".right-m1-5-under").addClass("wrap-h-0");
+  // });
+  // $(".right-m1-2").click(function () {
+  //   $(".right-m1-2").addClass("depth-choice");
+  //   $(".right-m1-2-under").removeClass("wrap-h-0");
 
-    $(".right-m1-1").removeClass("depth-choice");
-    $(".right-m1-3").removeClass("depth-choice");
-    $(".right-m1-4").removeClass("depth-choice");
-    $(".right-m1-5").removeClass("depth-choice");
-    $(".right-m1-1-under").addClass("wrap-h-0");
-    $(".right-m1-3-under").addClass("wrap-h-0");
-    $(".right-m1-4-under").addClass("wrap-h-0");
-    $(".right-m1-5-under").addClass("wrap-h-0");
-  });
-  $(".right-m1-3").click(function () {
-    $(".right-m1-3").addClass("depth-choice");
-    $(".right-m1-3-under").removeClass("wrap-h-0");
+  //   $(".right-m1-1").removeClass("depth-choice");
+  //   $(".right-m1-3").removeClass("depth-choice");
+  //   $(".right-m1-4").removeClass("depth-choice");
+  //   $(".right-m1-5").removeClass("depth-choice");
+  //   $(".right-m1-1-under").addClass("wrap-h-0");
+  //   $(".right-m1-3-under").addClass("wrap-h-0");
+  //   $(".right-m1-4-under").addClass("wrap-h-0");
+  //   $(".right-m1-5-under").addClass("wrap-h-0");
+  // });
+  // $(".right-m1-3").click(function () {
+  //   $(".right-m1-3").addClass("depth-choice");
+  //   $(".right-m1-3-under").removeClass("wrap-h-0");
 
-    $(".right-m1-2").removeClass("depth-choice");
-    $(".right-m1-1").removeClass("depth-choice");
-    $(".right-m1-4").removeClass("depth-choice");
-    $(".right-m1-5").removeClass("depth-choice");
-    $(".right-m1-2-under").addClass("wrap-h-0");
-    $(".right-m1-1-under").addClass("wrap-h-0");
-    $(".right-m1-4-under").addClass("wrap-h-0");
-    $(".right-m1-5-under").addClass("wrap-h-0");
-  });
-  $(".right-m1-4").click(function () {
-    $(".right-m1-4").addClass("depth-choice");
-    $(".right-m1-4-under").removeClass("wrap-h-0");
+  //   $(".right-m1-2").removeClass("depth-choice");
+  //   $(".right-m1-1").removeClass("depth-choice");
+  //   $(".right-m1-4").removeClass("depth-choice");
+  //   $(".right-m1-5").removeClass("depth-choice");
+  //   $(".right-m1-2-under").addClass("wrap-h-0");
+  //   $(".right-m1-1-under").addClass("wrap-h-0");
+  //   $(".right-m1-4-under").addClass("wrap-h-0");
+  //   $(".right-m1-5-under").addClass("wrap-h-0");
+  // });
+  // $(".right-m1-4").click(function () {
+  //   $(".right-m1-4").addClass("depth-choice");
+  //   $(".right-m1-4-under").removeClass("wrap-h-0");
 
-    $(".right-m1-2").removeClass("depth-choice");
-    $(".right-m1-3").removeClass("depth-choice");
-    $(".right-m1-1").removeClass("depth-choice");
-    $(".right-m1-5").removeClass("depth-choice");
-    $(".right-m1-2-under").addClass("wrap-h-0");
-    $(".right-m1-3-under").addClass("wrap-h-0");
-    $(".right-m1-1-under").addClass("wrap-h-0");
-    $(".right-m1-5-under").addClass("wrap-h-0");
-  });
+  //   $(".right-m1-2").removeClass("depth-choice");
+  //   $(".right-m1-3").removeClass("depth-choice");
+  //   $(".right-m1-1").removeClass("depth-choice");
+  //   $(".right-m1-5").removeClass("depth-choice");
+  //   $(".right-m1-2-under").addClass("wrap-h-0");
+  //   $(".right-m1-3-under").addClass("wrap-h-0");
+  //   $(".right-m1-1-under").addClass("wrap-h-0");
+  //   $(".right-m1-5-under").addClass("wrap-h-0");
+  // });
 
-  // 우측 2뎁스메뉴
-  $(".right-m2-1").click(function () {
-    $(".right-m2-1").addClass("depth-choice");
-    $(".right-m2-1-under").removeClass("wrap-h-0");
+  // // 우측 2뎁스메뉴
+  // $(".right-m2-1").click(function () {
+  //   $(".right-m2-1").addClass("depth-choice");
+  //   $(".right-m2-1-under").removeClass("wrap-h-0");
 
-    $(".right-m2-2").removeClass("depth-choice");
-    $(".right-m2-3").removeClass("depth-choice");
-    $(".right-m2-2-under").addClass("wrap-h-0");
-    $(".right-m2-3-under").addClass("wrap-h-0");
-  });
+  //   $(".right-m2-2").removeClass("depth-choice");
+  //   $(".right-m2-3").removeClass("depth-choice");
+  //   $(".right-m2-2-under").addClass("wrap-h-0");
+  //   $(".right-m2-3-under").addClass("wrap-h-0");
+  // });
 
-  $(".right-m2-2").click(function () {
-    $(".right-m2-2").addClass("depth-choice");
-    $(".right-m2-2-under").removeClass("wrap-h-0");
+  // $(".right-m2-2").click(function () {
+  //   $(".right-m2-2").addClass("depth-choice");
+  //   $(".right-m2-2-under").removeClass("wrap-h-0");
 
-    $(".right-m2-1").removeClass("depth-choice");
-    $(".right-m2-3").removeClass("depth-choice");
-    $(".right-m2-1-under").addClass("wrap-h-0");
-    $(".right-m2-3-under").addClass("wrap-h-0");
-  });
-  $(".right-m2-3").click(function () {
-    $(".right-m2-3").addClass("depth-choice");
-    $(".right-m2-3-under").removeClass("wrap-h-0");
+  //   $(".right-m2-1").removeClass("depth-choice");
+  //   $(".right-m2-3").removeClass("depth-choice");
+  //   $(".right-m2-1-under").addClass("wrap-h-0");
+  //   $(".right-m2-3-under").addClass("wrap-h-0");
+  // });
+  // $(".right-m2-3").click(function () {
+  //   $(".right-m2-3").addClass("depth-choice");
+  //   $(".right-m2-3-under").removeClass("wrap-h-0");
 
-    $(".right-m2-2").removeClass("depth-choice");
-    $(".right-m2-1").removeClass("depth-choice");
-    $(".right-m2-2-under").addClass("wrap-h-0");
-    $(".right-m2-1-under").addClass("wrap-h-0");
-  });
+  //   $(".right-m2-2").removeClass("depth-choice");
+  //   $(".right-m2-1").removeClass("depth-choice");
+  //   $(".right-m2-2-under").addClass("wrap-h-0");
+  //   $(".right-m2-1-under").addClass("wrap-h-0");
+  // });
 
   //좌측탭메뉴/
 

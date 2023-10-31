@@ -418,9 +418,14 @@
         <!--컨텐츠 상다 검색및 버튼 영역 끝-->
 
         <!--실제 컨텐츠 들어갈 자리-->
-        <div class="main-contents">
+        <div class="main-contents" style="border: none">
           <!-- <div class="" id="viz"></div> -->
-          <div class="" id="viz" [style.visibility]="visibility"></div>
+          <div
+            class=""
+            id="viz"
+            [style.visibility]="visibility"
+            style="border: none"
+          ></div>
           <!--로딩 애니메이션-->
           <div
             style="display: flex; position: absolute"
@@ -435,7 +440,8 @@
       <!--컨텐츠 영역 끝-->
 
       <!--하단 그래프영역- 가운데 영역 넓이 따라감-->
-      <div class="graph-box" style="display: flex">
+      <div></div>
+      <div class="graph-box" style="display: flex" *ngIf="chartOptions">
         <!-- <div *ngIf="chartOptions">
           apexcharts 컴포넌트
           <apx-chart
@@ -456,7 +462,7 @@
             class="typing_loader"
             [style.visibility]="chartLoadingVisibility"
           ></div>
-          <div *ngIf="chartOptions" style="padding-top: 10px">
+          <div style="margin-top: 10px">
             <!-- apexcharts 컴포넌트 -->
             <apx-chart
               [series]="chartSeries"
@@ -469,6 +475,7 @@
               [stroke]="chartOptions.stroke"
               [theme]="chartOptions.theme"
               [tooltip]="chartOptions.tooltip"
+              [dataLabels]="chartOptions.dataLabels"
             >
               ></apx-chart
             >
@@ -746,16 +753,93 @@
             <!--뎁스 리스트-->
             <div class="box-depth">
               <ul class="right-depth-list-one">
-                <!--1뎁스 리스트 한칸-->
-                <li class="right-m1-1">
+                <ul>
+                  <li
+                    *ngFor="let key of Object.keys(data)"
+                    (click)="toggleKeyContent(key)"
+                    [class.expanded]="selectedKeys.includes(key)"
+                  >
+                    <div class="right-m1-1">
+                      <div class="depth-icon">
+                        <div class="depth-plus">
+                          <img src="assets/images/depth-plus.png" alt="" />
+                        </div>
+                      </div>
+                      <div class="depth-title">{{ key }}</div>
+                      <div class="depth-search p-10">
+                        <div class="con-search w-150 h-25 border-1-b2">
+                          <div class="con-search-input">
+                            <input
+                              type="text"
+                              placeholder="SEARCH"
+                              (click)="$event.stopPropagation()"
+                            />
+                          </div>
+                          <div class="con-search-btn">
+                            <span class="material-symbols-outlined side-btn"
+                              >search</span
+                            >
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- 선택된 키와 현재 키가 동일할 경우에만 하위 항목들을 표시 -->
+                    <div>
+                      <li class="depth-under right-m1-1-under">
+                        <ul
+                          *ngIf="selectedKeys.includes(key)"
+                          class="right-depth-list-third"
+                        >
+                          <li
+                            *ngFor="let item of data[key]"
+                            class="depth-under right-m1-1-under"
+                          >
+                            <div class="depth-icon">
+                              <div class="depth-line"></div>
+                            </div>
+                            <div
+                              class="depth-title"
+                              (click)="
+                                $event.stopPropagation();
+                                test(key, item.id, item.name)
+                              "
+                            >
+                              {{ item.name }}
+                            </div>
+                          </li>
+                        </ul>
+                      </li>
+                    </div>
+                    <!-- <ul
+                      *ngIf="selectedKey === key"
+                      class="right-depth-list-third"
+                    >
+                      <li
+                        *ngFor="let item of data[key]"
+                        class="depth-under right-m1-1-under"
+                      >
+                        <div class="depth-icon">
+                          <div class="depth-line"></div>
+                        </div>
+                        <div class="depth-title">{{ item.name }}</div>
+                      </li>
+                    </ul> -->
+                  </li>
+                </ul>
+                <!-- 1뎁스 리스트 한칸
+                <li
+                  class="right-m1-1"
+                  *ngFor="let key of Object.keys(data)"
+                  (click)="toggleKeyContent(key)"
+                >
                   <div class="depth-icon">
                     <div class="depth-plus">
                       <img src="assets/images/depth-plus.png" alt="" />
                     </div>
                   </div>
-                  <div class="depth-title">Report</div>
+                  <div class="depth-title">{{ key }}</div>
                   <div class="depth-search p-10">
-                    <!--검색-->
+                    검색
                     <div class="con-search w-150 h-25 border-1-b2">
                       <div class="con-search-input">
                         <input type="text" placeholder="SEARCH" />
@@ -767,18 +851,23 @@
                       </div>
                     </div>
                   </div>
-                </li>
+                </li> -->
 
                 <!--2뎁스 들어갈 칸-->
-                <li class="depth-under right-m1-1-under wrap-h-0">
-                  <ul class="right-depth-list-third">
-                    <li>
+                <!-- <li
+                  class="depth-under right-m1-1-under wrap-h-0"
+                  *ngFor="let key of Object.keys(data)"
+                >
+                  <ul
+                    class="right-depth-list-third"
+                    *ngIf="selectedKey === key"
+                  >
+                    <li *ngFor="let item of data[key]">
                       <div class="depth-icon">
                         <div class="depth-line"></div>
                       </div>
                       <div class="depth-title">
-                        Third Step Menuhird Step Menuhird Step Menuhird Step
-                        Menuhird Step Menuhird Step Menu
+                        {{ item.name }}
                       </div>
                     </li>
                     <li>
@@ -795,9 +884,9 @@
                     </li>
                     <li class="more">more</li>
                   </ul>
-                </li>
+                </li> -->
 
-                <li class="right-m1-2">
+                <!-- <li class="right-m1-2">
                   <div class="depth-icon">
                     <div class="depth-plus">
                       <img src="assets/images/depth-plus.png" alt="" />
@@ -805,7 +894,7 @@
                   </div>
                   <div class="depth-title">Fisrst Step Menu</div>
                   <div class="depth-search p-10">
-                    <!--검색-->
+                    검색
                     <div class="con-search w-150 h-25 border-1-b2">
                       <div class="con-search-input">
                         <input type="text" placeholder="SEARCH" />
@@ -818,7 +907,7 @@
                     </div>
                   </div>
                 </li>
-                <!--2뎁스 들어갈 칸-->
+                2뎁스 들어갈 칸
                 <li class="depth-under right-m1-2-under wrap-h-0">
                   <ul class="right-depth-list-third">
                     <li>
@@ -843,10 +932,10 @@
                       <div class="depth-title">Third Step Menu</div>
                     </li>
                   </ul>
-                </li>
+                </li> -->
 
-                <li class="right-m1-3">
-                  <!--선택된 리스트에 붙는 클래스-->
+                <!-- <li class="right-m1-3">
+                  선택된 리스트에 붙는 클래스
                   <div class="depth-icon">
                     <div class="depth-plus">
                       <img src="assets/images/depth-plus.png" alt="" />
@@ -854,7 +943,7 @@
                   </div>
                   <div class="depth-title">Fisrst Step Menu</div>
                   <div class="depth-search p-10">
-                    <!--검색-->
+                    검색
                     <div class="con-search w-150 h-25 border-1-b2">
                       <div class="con-search-input">
                         <input type="text" placeholder="SEARCH" />
@@ -866,12 +955,12 @@
                       </div>
                     </div>
                   </div>
-                </li>
+                </li> -->
                 <!--2뎁스 들어갈 칸-->
-                <li class="depth-under right-m1-3-under wrap-h-0">
+                <!-- <li class="depth-under right-m1-3-under wrap-h-0">
                   세번째 메뉴 2뎁스
-                </li>
-                <li class="right-m1-4">
+                </li> -->
+                <!-- <li class="right-m1-4">
                   <div class="depth-icon">
                     <div class="depth-minus">
                       <img src="assets/images/depth-minus.png" alt="" />
@@ -879,7 +968,7 @@
                   </div>
                   <div class="depth-title">Fisrst Step Menu</div>
                   <div class="depth-search p-10">
-                    <!--검색-->
+                    검색
                     <div class="con-search w-150 h-25 border-1-b2">
                       <div class="con-search-input">
                         <input type="text" placeholder="SEARCH" />
@@ -891,17 +980,17 @@
                       </div>
                     </div>
                   </div>
-                </li>
+                </li> -->
               </ul>
             </div>
 
             <!--박스 탭-->
-            <div class="box-tab right-bb mt-20">
+            <!-- <div class="box-tab right-bb mt-20">
               <div class="tab-one right-bg chk-on">Basic Result</div>
-            </div>
+            </div> -->
 
             <!--기본 검색결과-->
-            <div class="box-basic-result">
+            <!-- <div class="box-basic-result">
               <div class="basic-result-con">
                 <ul class="basic-resul-list">
                   <li>Searching ofr hacking softwqar</li>
@@ -928,7 +1017,7 @@
                   <button class="color-2">MORE</button>
                 </div>
               </div>
-            </div>
+            </div> -->
           </div>
           <!--두번째 탭-->
           <div class="tab-pane pade" id="con-04">
@@ -1070,46 +1159,76 @@
           <!--세번째 탭-->
           <div class="tab-pane fade" id="con-05">
             <!--그래프 필터-->
-            <div class="graph-filter-box">
+            <div class="graph-filter-box" *ngIf="filterType | keyvalue">
               <div class="graph-filter-reset">
-                <div class="space-plus">
+                <div class="space-plus" (click)="showNodeType()">
                   <img src="assets/images/depth-plus.png" alt="" />
                 </div>
-                <div class="space-minus">
+                <div class="space-minus" (click)="hiddenNodeType()">
                   <img src="assets/images/depth-minus.png" alt="" />
                 </div>
-                <div class="title">Filter Type</div>
-                <div class="btn"><button>RESET</button></div>
+                <div class="title">Node Type</div>
+                <div class="btn" style="border: none" (click)="nodeTypeReset()">
+                  <button>RESET</button>
+                </div>
               </div>
-              <div class="filter-list-group">
-                <div class="graph-filter-list">
-                  <div class="name">Protocol(3)</div>
-                  <div class="choice">
-                    <div class="not"><button>not</button></div>
-                    <div class="and"><button class="choice">and</button></div>
-                    <div class="or"><button>or</button></div>
+              <div
+                class="filter-list-group"
+                [style.visibility]="visibleNodeType"
+              >
+                <div
+                  class="graph-filter-list"
+                  *ngFor="let item of filterType | keyvalue"
+                >
+                  <div class="name">
+                    {{ item.key + "(" + item.value + ")" }}
                   </div>
-                </div>
-                <div class="graph-filter-list">
-                  <div class="name">Localhost(3)</div>
                   <div class="choice">
-                    <div class="not"><button>not</button></div>
-                    <div class="and"><button>and</button></div>
-                    <div class="or"><button>or</button></div>
-                  </div>
-                </div>
-                <div class="graph-filter-list">
-                  <div class="name">Platform(3)</div>
-                  <div class="choice">
-                    <div class="not"><button>not</button></div>
-                    <div class="and"><button>and</button></div>
-                    <div class="or"><button>or</button></div>
+                    <div class="not">
+                      <button
+                        (click)="onButtonClick('not', getStringKey(item.key))"
+                        [class.button-active]="
+                          filterObj.nodeType[getStringKey(item.key)]['not']
+                        "
+                        [disabled]="
+                          filterObj.on !== '' && filterObj.on !== 'not'
+                        "
+                      >
+                        not
+                      </button>
+                    </div>
+                    <div class="and">
+                      <button
+                        (click)="onButtonClick('and', getStringKey(item.key))"
+                        [class.button-active]="
+                          filterObj.nodeType[getStringKey(item.key)]['and']
+                        "
+                        [disabled]="
+                          filterObj.on !== '' && filterObj.on !== 'and'
+                        "
+                      >
+                        and
+                      </button>
+                    </div>
+                    <div class="or">
+                      <button
+                        (click)="onButtonClick('or', getStringKey(item.key))"
+                        [class.button-active]="
+                          filterObj.nodeType[getStringKey(item.key)]['or']
+                        "
+                        [disabled]="
+                          filterObj.on !== '' && filterObj.on !== 'or'
+                        "
+                      >
+                        or
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
             <!--그래프 필터-->
-            <div class="graph-filter-box">
+            <!-- <div class="graph-filter-box" *ngIf="filterType?.file">
               <div class="graph-filter-reset">
                 <div class="space-plus">
                   <img src="assets/images/depth-plus.png" alt="" />
@@ -1117,7 +1236,7 @@
                 <div class="space-minus">
                   <img src="assets/images/depth-minus.png" alt="" />
                 </div>
-                <div class="title">Filter Type</div>
+                <div class="title">File Type</div>
                 <div class="btn"><button>RESET</button></div>
               </div>
               <div class="graph-filter-list">
@@ -1144,7 +1263,7 @@
                   <div class="or"><button class="choice">or</button></div>
                 </div>
               </div>
-            </div>
+            </div> -->
           </div>
         </div>
       </div>

@@ -3,13 +3,21 @@ import { AngularFaviconService } from 'angular-favicon';
 import { HttpClient } from '@angular/common/http';
 import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
-import { LabelConfig, Nodeimage } from './labelConfig';
+import { LabelConfig } from './labelConfig';
 import { Neo4jConfig } from './neo4jConfig';
 import { Neo4jService } from './neo4j.service';
 import { RealtionshipConfig } from './relationConfig';
 import { ActivatedRoute } from '@angular/router';
 
 import NeoVis from 'neovis.js';
+
+type FilterNodeType = {
+  [key: string]: {
+    or: boolean;
+    and: boolean;
+    not: boolean;
+  };
+};
 
 //인터페이스
 interface RelatedNodeType {
@@ -120,8 +128,6 @@ export class AppComponent implements OnInit {
   // 챠트 그래프
   chart() {
     const nodesData = this.viz.network.body.data.nodes.get(); // 모든 노드 데이터 가져오기
-
-    // console.log(nodesData);
     // `created` 속성이 있는 노드만 필터링
     const createdData = nodesData
       .filter((node: any) => /^[0-9]+$/.test(node.id)) // ID가 숫자로만 이루어진 노드만 필터링
@@ -188,6 +194,7 @@ export class AppComponent implements OnInit {
       plotOptions: {
         bar: {
           borderRadius: 2,
+          minHeight: 50,
           columnWidth: '60%',
         },
       },
@@ -242,6 +249,15 @@ export class AppComponent implements OnInit {
       },
       tooltip: {
         theme: 'light', // 툴팁 테마 설정
+      },
+      dataLabels: {
+        enabled: true, // 데이터 라벨 활성화
+        position: 'inside', // 바의 안쪽에 텍스트 표시
+        // offsetY: 0, // Y축 방향으로 텍스트 위치 조정 (필요에 따라 조절)
+        style: {
+          fontSize: '12px',
+          colors: ['#fff'], // 텍스트 색상 설정 (바의 색상과 대비되게 설정)
+        },
       },
     };
 
@@ -299,9 +315,6 @@ export class AppComponent implements OnInit {
         nodes.update([{ id: node.id, hidden: true }]);
       }
     });
-
-    // 변경사항을 반영하기 위해 네트워크를 다시 그립니다.
-    this.viz.network.redraw();
   }
 
   draw() {
@@ -322,9 +335,9 @@ export class AppComponent implements OnInit {
           size: 30,
           font: {
             color: '#343434',
-            size: 20, // px
+            size: 20,
             face: 'pretendard',
-            strokeWidth: 2, // px
+            strokeWidth: 2,
           },
         },
         edges: {
@@ -340,7 +353,6 @@ export class AppComponent implements OnInit {
             strokeWidth: 2,
           },
         },
-        // 여기에 배경색을 설정합니다
         interaction: {
           hover: true,
           // navigationButtons: true,
@@ -364,7 +376,10 @@ export class AppComponent implements OnInit {
     // 결과 배열 초기화
     const result: string[] = [];
 
-    this.viz.registerOnEvent('completed', () => {
+    this.viz.registerOnEvent('completed', (evt: any) => {
+      this.viz.network.on('addNode', (event: any) => {
+        console.log('노드가 추가되었습니다:', event);
+      });
       /**
        * 노드를 선택했을때 이벤트
        */
@@ -556,11 +571,6 @@ export class AppComponent implements OnInit {
                 this.viz.network.body.data.edges.get(connectedEdges)[0].from;
               console.log(parentLabel);
               if (parentLabel == 'keyword') {
-                // 엣지 갯수 가져오기 test
-                console.log(clickedNodeId);
-                // console.log(
-                //   this.viz.network.body.data.edges.get(clickedNodeId)
-                // );
                 const connEdgeCount =
                   this.viz.network.getConnectedEdges(clickedNodeId);
                 console.log(connEdgeCount);
@@ -574,7 +584,7 @@ export class AppComponent implements OnInit {
                   }
                 });
 
-                if (count == 0 || count >= 10) {
+                if (count >= 0 || count >= 10) {
                   // 보낼 객체 type과 target 보내기
                   const reqObj: any = {
                     type: clickedNodeId,
@@ -718,11 +728,13 @@ export class AppComponent implements OnInit {
     this.focusCount++;
     // 연속으로 추가 한 경우 그 전에 있던 노드 비활성화 처리
     if (this.focusCount >= 2) {
+      console.log('포커스 2중첩!!!');
       // 전의 노드 이미지 변경
       const nodeImageChange = this.viz.network.body.data.nodes.get(
         this.clickOff
       );
       if (nodeImageChange.image && nodeImageChange.image.endsWith('_3.png')) {
+        console.log('이미지 오류?', nodeImageChange);
         console.log('노드 이미지 찾음:', nodeImageChange.image);
         const updatedImage = nodeImageChange.image.replace('_3.png', '_4.png'); // 이미지 주소 변경
         nodeImageChange.image = updatedImage;
@@ -754,15 +766,6 @@ export class AppComponent implements OnInit {
     }
   }
 
-  // 더보기 버튼
-  // shouldShowMoreButton(relatedNode: any): boolean {
-  //   return (
-  //     relatedNode &&
-  //     relatedNode['value'] &&
-  //     relatedNode['value'].combined &&
-  //     relatedNode['value'].combined.length > 10
-  //   );
-  // }
   shouldShowMoreButton(relatedNode: any): boolean {
     const currentCount = this.displayedItemsCount[relatedNode.key] || 0; // 현재 표시된 항목 수
     const totalCount = relatedNode?.['value']?.combined?.length || 0; // 전체 항목 수
@@ -800,12 +803,20 @@ export class AppComponent implements OnInit {
           // 만약 기존에 이미 노드가 추가되어있을 경우 relation만 추가
           if (this.viz.network.body.data.nodes.get(rawId)) {
             //그룹노드와 원본노드 엣지 추가
-            this.viz.network.body.data.edges.add({
-              label: edgeLabel,
-              // id: rawId,
-              from: nodeId,
-              to: rawId,
-            });
+            const hasNumber = /\d/.test(nodeId);
+
+            if (hasNumber) {
+              console.log('nodeId에 숫자가 포함되어 있습니다.');
+              this.viz.network.body.data.edges.add({
+                label: edgeLabel,
+                // id: rawId,
+                from: nodeId,
+                to: rawId,
+              });
+            } else {
+              // 원본 그룹 노드
+              console.log('nodeId에 숫자가 포함되어 있지 않습니다.');
+            }
           } else {
             this.viz.network.body.data.nodes.add({
               id: rawId,
@@ -820,12 +831,10 @@ export class AppComponent implements OnInit {
                 nodes: {
                   size: 55,
                   font: {
-                    // background: 'black',
                     color: '#343434',
-                    size: this.nodeFontSize, // px
+                    size: this.nodeFontSize,
                     face: 'pretendard',
-                    strokeWidth: 2, // px
-                    // strokeColor: "blue",
+                    strokeWidth: 2,
                   },
                 },
 
@@ -852,6 +861,7 @@ export class AppComponent implements OnInit {
               to: rawId,
             });
             this.chart();
+            this.filtering();
           }
         });
       });
@@ -956,6 +966,7 @@ export class AppComponent implements OnInit {
               type: response.data,
               id: params.id,
             };
+
             this.rawNodeExtendNotMultiGroup(req);
           } else if (response.data.mTypes[0] != connEdgeLabel) {
             console.log('서로 다른 라벨 노드그룹 만들필요 로직');
@@ -987,7 +998,235 @@ export class AppComponent implements OnInit {
       )
       .subscribe((response: any) => {
         console.log(response);
+        // 이미 추가되어있는지 확인하기
+        response.forEach((element: any) => {
+          const id = element.m.identity.low;
+          const findNode = this.viz.network.body.data.nodes.get(id);
+          if (findNode) {
+            // 있을때
+            // this.focusNode(id);
+            // this.viz.network.body.data.edges.add({
+            //   // id: rawId,
+            //   // label: ,
+            //   // from: rawId,
+            //   // to: label + '_from_' + rawId,
+            // });
+          } else {
+            // 없을때
+            console.log('노드 추가 로직 구현중...');
+            this.filtering();
+          }
+        });
       });
+  }
+
+  selectedButtonType: string = ''; // 'and', 'or', 'not' 중 하나의 값을 가질 수 있습니다.
+  testObj: any;
+
+  // filterObj = {
+  //   nodeType: {
+  //     file:{or:false,and:false,not:false}
+  //   },
+  //   fileType: {},
+  //   on:"",
+  // }
+
+  filterObj: {
+    nodeType: FilterNodeType;
+    fileType: any;
+    on: string;
+  } = {
+    nodeType: {},
+    fileType: {},
+    on: '',
+  };
+
+  initFilterObj() {
+    // `filterType` 기반으로 `filterObj.nodeType` 초기화
+    Object.keys(this.filterType).forEach((key: any) => {
+      this.filterObj.nodeType[key] = { or: false, and: false, not: false };
+    });
+  }
+
+  onButtonClick(type: 'or' | 'and' | 'not', nodeKey: string) {
+    // 해당 노드 키와 버튼 타입에 따라 상태를 토글
+    this.filterObj.nodeType[nodeKey][type] =
+      !this.filterObj.nodeType[nodeKey][type];
+
+    // filterObj.nodeType 전체를 검사하여 true인 타입이 있는지 확인
+    let activeType: 'or' | 'and' | 'not' | '' = '';
+    for (const key in this.filterObj.nodeType) {
+      for (const subType of ['or', 'and', 'not'] as const) {
+        if (this.filterObj.nodeType[key][subType]) {
+          activeType = subType;
+          break;
+        }
+      }
+      if (activeType) break;
+    }
+    this.filterObj.on = activeType;
+    this.nodeFilterViewUpdate();
+  }
+
+  visibleNodeType = 'visible';
+  showNodeType() {
+    this.visibleNodeType = 'visible';
+  }
+
+  hiddenNodeType() {
+    this.visibleNodeType = 'hidden';
+  }
+
+  nodeTypeReset() {
+    // filterObj.nodeType의 모든 키에 대해 or, and, not 값을 false로 설정
+    for (const key in this.filterObj.nodeType) {
+      this.filterObj.nodeType[key].or = false;
+      this.filterObj.nodeType[key].and = false;
+      this.filterObj.nodeType[key].not = false;
+    }
+
+    // 필요한 경우, fileType과 on 값을 초기화
+    this.filterObj.fileType = {};
+    this.filterObj.on = '';
+    this.allNodesShow();
+  }
+
+  nodeFilterViewUpdate() {
+    // filterObj.nodeType에서 on 값이 설정된 모든 키와 타입 가져오기
+    const activeKeysAndTypes = Object.keys(this.filterObj.nodeType)
+      .filter(
+        (key) =>
+          this.filterObj.nodeType[key][
+            this.filterObj.on as 'or' | 'and' | 'not'
+          ]
+      )
+      .map((key) => {
+        return {
+          key: key,
+          type: ['or', 'and', 'not'].find(
+            (type) => this.filterObj.nodeType[key][type as 'or' | 'and' | 'not']
+          ),
+        };
+      });
+
+    // activeKeysAndTypes에는 on 값이 설정된 모든 키와 그에 해당하는 타입들이 저장됩니다.
+    const updateTargetNodes = this.viz.network.body.data.nodes;
+
+    // 전체 활성화
+    if (activeKeysAndTypes.length == 0) {
+      this.allNodesShow();
+      return;
+    }
+
+    // ... 함수의 나머지 부분
+    const orAndNotType = activeKeysAndTypes[0].type;
+
+    if (orAndNotType == 'and') {
+      this.nodeTypeAnd(activeKeysAndTypes);
+    } else if (orAndNotType == 'or') {
+      this.nodeTypeOr(activeKeysAndTypes);
+    } else if (orAndNotType == 'not') {
+      this.nodeTypeNot(activeKeysAndTypes);
+    }
+  }
+
+  allNodesShow() {
+    const updateTargetNodes = this.viz.network.body.data.nodes;
+    updateTargetNodes.forEach((element: any) => {
+      element.hidden = false;
+      updateTargetNodes.update(element);
+    });
+  }
+
+  // Node Type and
+  nodeTypeAnd(activeKeysAndTypes: any) {
+    const updateTargetNodes = this.viz.network.body.data.nodes;
+    // and 조건
+    if (activeKeysAndTypes.length >= 2) {
+      updateTargetNodes.forEach((element: any) => {
+        element.hidden = true;
+        updateTargetNodes.update(element);
+      });
+      return;
+    } else if (activeKeysAndTypes.length == 1) {
+      updateTargetNodes.forEach((element: any) => {
+        const activeKeys = activeKeysAndTypes.map((item: any) => item.key);
+        if (element.group == activeKeys) {
+          element.hidden = false;
+          updateTargetNodes.update(element);
+        } else {
+          element.hidden = true;
+          updateTargetNodes.update(element);
+        }
+        console.log(activeKeys);
+      });
+    }
+  }
+
+  // Node Type or
+  nodeTypeOr(activeKeysAndTypes: any) {
+    const updateTargetNodes = this.viz.network.body.data.nodes;
+    const activeKeys = activeKeysAndTypes.map((item: any) => item.key);
+    console.log(activeKeys);
+    updateTargetNodes.forEach((element: any) => {
+      for (let nodeType of activeKeys) {
+        if (element.group == nodeType) {
+          element.hidden = false;
+          updateTargetNodes.update(element);
+          break;
+        } else {
+          element.hidden = true;
+          updateTargetNodes.update(element);
+        }
+      }
+    });
+  }
+
+  // Node Type not
+  nodeTypeNot(activeKeysAndTypes: any) {
+    const updateTargetNodes = this.viz.network.body.data.nodes;
+    const activeKeys = activeKeysAndTypes.map((item: any) => item.key);
+    console.log(activeKeys);
+    updateTargetNodes.forEach((element: any) => {
+      for (let nodeType of activeKeys) {
+        if (element.group == nodeType) {
+          element.hidden = true;
+          updateTargetNodes.update(element);
+          break;
+        } else {
+          element.hidden = false;
+          updateTargetNodes.update(element);
+        }
+      }
+    });
+  }
+
+  // string 타입으로 변환
+  getStringKey(key: unknown): string {
+    return String(key);
+  }
+
+  //거쳐갈 필터 객체
+  filterType: any;
+
+  //필터
+  filtering() {
+    // 모든 노드를 가져옵니다.
+    const nodes = this.viz.network.body.data.nodes.get();
+
+    // 그룹 속성을 기준으로 노드를 그룹화하고 각 그룹의 개수를 카운트합니다.
+    const groupCounts = nodes.reduce((acc: any, node: any) => {
+      const group = node.group; // 노드의 그룹 속성
+      acc[group] = (acc[group] || 0) + 1; // 그룹의 개수를 카운트
+      return acc;
+    }, {});
+    this.filterType = groupCounts;
+    console.log(this.filterType); // 각 그룹의 개수를 출력
+
+    // filterType의 각 키에 대해 filterObj.nodeType를 업데이트합니다.
+    for (const key of Object.keys(this.filterType)) {
+      this.filterObj.nodeType[key] = { or: false, and: false, not: false };
+    }
   }
 
   //서로 다른 라벨 노드그룹 만들기
@@ -1188,6 +1427,8 @@ export class AppComponent implements OnInit {
           }
         }
       });
+    this.chart();
+    this.filtering();
   }
 
   // 상위 그룹노드가 있는 그룹노드 더블클릭 시 하위 노드 만들기
@@ -1252,7 +1493,6 @@ export class AppComponent implements OnInit {
               from: nodeId,
               to: rawId,
             });
-            this.chart();
           } else {
             console.log(`Node with ID ${rawId} already exists!`);
             //만약 이미 추가된 엣지인지 확인
@@ -1277,6 +1517,8 @@ export class AppComponent implements OnInit {
           }
         });
       });
+    this.chart();
+    this.filtering();
   }
 
   onNodeClick(nodeData: any) {
@@ -1317,6 +1559,127 @@ export class AppComponent implements OnInit {
         this.loadingVisibility = 'hidden';
         this.visibility = 'visible';
         // this.chart();
+        // 우측 그래프 검색결과 추가
+        this.graphResult(params);
+        this.filtering();
+      });
+  }
+
+  data: { [key: string]: any[] } = {
+    // ... 주어진 데이터
+  };
+  Object = Object;
+  selectedKey: string | null = null;
+  // toggleKeyContent(key: string) {
+  //   if (this.selectedKey === key) {
+  //     // 이미 선택된 키와 동일한 키를 클릭한 경우, selectedKey 값을 초기화하여 하위 항목을 접습니다.
+  //     this.selectedKey = null;
+  //   } else {
+  //     // 다른 키를 클릭한 경우, 해당 키의 하위 항목을 표시합니다.
+  //     this.selectedKey = key;
+  //   }
+  // }
+  // ...
+  selectedData: any[] = []; // 선택된 키의 데이터를 저장할 변수
+  selectedKeys: string[] = [];
+  toggleKeyContent(key: string) {
+    const index = this.selectedKeys.indexOf(key);
+    if (index > -1) {
+      this.selectedKeys.splice(index, 1); // 이미 선택된 키를 배열에서 제거
+    } else {
+      this.selectedKeys.push(key); // 선택되지 않은 키를 배열에 추가
+    }
+  }
+
+  test(key: string, id: any, name: string) {
+    console.log(key, id, name);
+    const target = this.viz.network.body.data.nodes.get(id);
+    console.log(target);
+    if (target) {
+      this.focusNode(id);
+    } else {
+      console.log('없음');
+      // 우측 검색결과 클릭 api
+      const reqContents = {
+        id: id,
+        name: name,
+      };
+      this.graphResultNodeAdd(reqContents);
+    }
+  }
+
+  graphResultNodeAdd(params: any) {
+    this.http
+      .post(
+        `http://${this.angularIp}:${this.backendNodeExpressPort}/api/graphResultNodeAdd`,
+        params
+      )
+      .subscribe((response: any) => {
+        console.log('노드 추가 결과:::', response);
+        const id = params.id;
+        const name = params.name;
+        const properties = response[0].n.properties;
+        const type = response[0].n.properties.type;
+        this.viz.network.body.data.nodes.add({
+          id: id,
+          label: name,
+          title: name,
+          shape: 'image',
+          group: type,
+          image: `../assets/images/${type}/${type}_4.png`,
+          raw: { properties: properties },
+          visConfig: {
+            nodes: {
+              size: 55,
+              font: {
+                // background: 'black',
+                color: '#343434',
+                size: this.nodeFontSize, // px
+                face: 'pretendard',
+                strokeWidth: 2, // px
+                // strokeColor: "blue",
+              },
+            },
+
+            edges: {
+              arrows: {
+                to: { enabled: true },
+              },
+              font: {
+                // background: 'black',
+                color: '#343434',
+                size: this.edgeFontSize, // px
+                face: 'pretendard',
+                strokeWidth: 2, // px
+                // strokeColor: "blue",
+              },
+            },
+          },
+        });
+
+        // rawType + '_from_' + targetHighNodeId
+        //그룹노드와 원본노드 엣지 추가
+        this.viz.network.body.data.edges.add({
+          // id: name + '_Group',
+          id: id + '_from_' + name,
+          from: type,
+          to: id,
+        });
+      });
+    this.chart();
+    this.filtering();
+  }
+
+  graphResult(params: any) {
+    this.http
+      .post(
+        `http://${this.angularIp}:${this.backendNodeExpressPort}/api/graphResult`,
+        params
+      )
+      .subscribe((response: any) => {
+        console.log('그래프 검색결과', response);
+        this.data = response;
+        console.log('data:::', this.data);
       });
   }
 
@@ -1360,55 +1723,63 @@ export class AppComponent implements OnInit {
       },
     });
     // 그룹노드 하위 원본 데이터 작성
-    let rawId = parseInt(response.data[0].n.elementId);
-    let rawLabel = response.data[0].n.labels[0];
-    let rawProperties = response.data[0].n.properties;
-    console.log(this.viz.network.body.data.nodes);
-    console.log('결과물:::', rawId, rawLabel);
-    console.log('rawProperties:', rawProperties);
-    this.viz.network.body.data.nodes.add({
-      id: rawId,
-      label: rawProperties.name,
-      title: rawProperties.name,
-      shape: 'image',
-      group: name,
-      image: `../assets/images/${rawLabel}/${rawLabel}_4.png`,
-      raw: { properties: rawProperties },
-      visConfig: {
-        nodes: {
-          size: 55,
-          font: {
-            // background: 'black',
-            color: '#343434',
-            size: this.nodeFontSize, // px
-            face: 'pretendard',
-            strokeWidth: 2, // px
-            // strokeColor: "blue",
+    console.log('하위노드 수정중...', response.data);
+    response.data.forEach((element: any) => {
+      let rawId = parseInt(element.n.elementId);
+      let rawLabel = element.n.labels[0];
+      let rawProperties = element.n.properties;
+      // console.log(this.viz.network.body.data.nodes);
+      // console.log('결과물:::', rawId, rawLabel);
+      // console.log('rawProperties:', rawProperties);
+      this.viz.network.body.data.nodes.add({
+        id: rawId,
+        label: rawProperties.name,
+        title: rawProperties.name,
+        shape: 'image',
+        group: name,
+        image: `../assets/images/${rawLabel}/${rawLabel}_4.png`,
+        raw: { properties: rawProperties },
+        visConfig: {
+          nodes: {
+            size: 55,
+            font: {
+              // background: 'black',
+              color: '#343434',
+              size: this.nodeFontSize, // px
+              face: 'pretendard',
+              strokeWidth: 2, // px
+              // strokeColor: "blue",
+            },
           },
-        },
 
-        edges: {
-          arrows: {
-            to: { enabled: true },
-          },
-          font: {
-            // background: 'black',
-            color: '#343434',
-            size: this.edgeFontSize, // px
-            face: 'pretendard',
-            strokeWidth: 2, // px
-            // strokeColor: "blue",
+          edges: {
+            arrows: {
+              to: { enabled: true },
+            },
+            font: {
+              // background: 'black',
+              color: '#343434',
+              size: this.edgeFontSize, // px
+              face: 'pretendard',
+              strokeWidth: 2, // px
+              // strokeColor: "blue",
+            },
           },
         },
-      },
+      });
+
+      // rawType + '_from_' + targetHighNodeId
+      //그룹노드와 원본노드 엣지 추가
+      this.viz.network.body.data.edges.add({
+        // id: name + '_Group',
+        id: rawId + '_from_' + name,
+        from: name,
+        to: rawId,
+      });
     });
-    //그룹노드와 원본노드 엣지 추가
-    this.viz.network.body.data.edges.add({
-      id: name + '_Group',
-      from: name,
-      to: rawId,
-    });
+
     this.chart();
+    this.filtering();
   }
 
   firstGraphKeyword(response: any) {
@@ -1453,8 +1824,9 @@ export class AppComponent implements OnInit {
 
     // 키워드노드 하위 그룹노드
     response.data.forEach((element: any) => {
-      console.log(element['n.type']);
-      let type = element['n.type'];
+      console.log(element['n.type'] || element['m.type']);
+      // let type = element['n.type'];
+      let type = element['n.type'] || element['m.type'];
       this.viz.network.body.data.nodes.add({
         id: type,
         label: type,
@@ -1536,7 +1908,7 @@ export class AppComponent implements OnInit {
               shape: 'image',
               title: groupLabel,
               group: groupLabel,
-              image: `../assets/images/${groupLabel}/${groupLabel}_1.png`,
+              image: `../assets/images/${groupLabel}/${groupLabel}_2.png`,
               // raw: { properties: rawProperties },
               visConfig: {
                 nodes: {
@@ -1637,6 +2009,7 @@ export class AppComponent implements OnInit {
           //   to: rawId,
           // });
           this.chart();
+          this.filtering();
         } else {
           console.log('포커스 이벤트 발동');
           this.focusNode(rawId);

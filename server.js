@@ -470,6 +470,179 @@ app.post("/api/lgnafgn", async (req, res) => {
   // });
 });
 
+// 우측 그래프 검색결과 노드 추가 api
+app.post("/api/graphResultNodeAdd", async (req, res) => {
+  console.log(req.body);
+  const id = req.body.id;
+  const name = req.body.name;
+  const session = driver.session();
+  try {
+    const result = await session.run(
+      // match (n) where Id(n)=1061772 and n.name = '65c6deded268392e0f5c0003479d1999' return n
+      "match (n) where Id(n)=$findId and n.name = $findName return n",
+      { findId: id, findName: name }
+    );
+    console.log(
+      "match (n) where Id(n)=$findId and n.name = $findName return n",
+      { findId: id, findName: name }
+    );
+    const records = result.records.map((record) => record.toObject());
+
+    if (records[0].n.properties.type == "windows-registry-key") {
+      records[0].n.properties.type = "registry";
+    }
+    console.log(records);
+    res.json(records);
+  } catch (error) {
+    console.error(error); // 에러 로그 출력
+    res.status(500).send(error.message);
+  } finally {
+    session.close();
+  }
+});
+
+app.post("/api/rnenmg", async (req, res) => {
+  console.log(req.body);
+  const type = req.body.type.mTypes[0];
+  const rType = req.body.type.rTypes;
+  const id = req.body.id;
+  const session = driver.session();
+  try {
+    const result = await session.run(
+      // match (n)-[r]-(m) where id(n)=1875231 and m.type="report" return m
+      "match (n)-[r]-(m) where id(n)=$findId and m.type=$findType return m",
+      { findId: id, findType: type }
+    );
+    console.log(
+      "match (n)-[r]-(m) where id(n)=$findId and m.type=$findType return m",
+      { findId: id, findType: type }
+    );
+    const records = result.records.map((record) => record.toObject());
+    console.log(records);
+    res.json(records);
+  } catch (error) {
+    console.error(error); // 에러 로그 출력
+    res.status(500).send(error.message);
+  } finally {
+    session.close();
+  }
+});
+
+//api/graphResult
+app.post("/api/graphResult", async (req, res) => {
+  const session = driver.session();
+  let targetQuery;
+  let mainName, metaName, user;
+  let keyword;
+
+  // 각 키에 대한 값을 추출
+  req.body.forEach((item) => {
+    if (item.key === "main_name") {
+      mainName = item.value;
+    } else if (item.key === "meta_name") {
+      metaName = item.value;
+    } else if (item.key === "user") {
+      user = item.value;
+    } else if (item.key === "keyword") {
+      keyword = item.value;
+    }
+  });
+
+  // mainName이나 metaName 값을 targetQuery에 할당 (원하는 로직에 따라 조정 가능)
+  if (mainName) {
+    targetQuery = mainName;
+    try {
+      const result = await session.run(
+        // MATCH (n)-[r]-(m) WHERE tolower(n.name) = tolower("65c6deded268392e0f5c0003479d1999") RETURN r,m
+        "MATCH (n)-[r]-(m) WHERE tolower(n.name) = tolower($name)  return  distinct n",
+        { name: targetQuery }
+      );
+      console.log(
+        "MATCH (n)-[r]-(m) WHERE tolower(n.name) = tolower($name)  return  distinct n",
+        {
+          name: targetQuery,
+        }
+      );
+      const records = result.records.map((record) => record.toObject());
+      const responsDataGraph = {};
+      records.forEach((element) => {
+        // console.log("노드::", element.m, " 관계::", element.r.type);
+        let type = element.n.properties.type;
+        const id = element.n.identity.low;
+        const name = element.n.properties.name;
+        // const relationship = element.r.type; // 이 부분은 가정한 내용입니다.
+
+        // 레지스트리 값으로 변경
+        if (type == "windows-registry-key") {
+          type = "registry";
+        }
+
+        // responsDataGraph에 해당 type 키가 없으면 초기화
+        if (!responsDataGraph[type]) {
+          responsDataGraph[type] = [];
+        }
+
+        // 해당 type의 배열에 정보 객체를 추가
+        responsDataGraph[type].push({
+          id: id,
+          name: name,
+          // relationship: relationship,
+        });
+      });
+      // console.log("그래프 결과값:", responsDataGraph);
+      res.json(responsDataGraph);
+    } catch (error) {
+      console.error(error); // 에러 로그 출력
+      res.status(500).send(error.message);
+    } finally {
+      session.close();
+    }
+  } else if (keyword) {
+    targetQuery = keyword;
+    try {
+      const result = await session.run(
+        //MATCH (n)-[r]-(m) WHERE n.name CONTAINS "north korea" RETURN DISTINCT r,m
+        "MATCH (n)-[r]-(m) WHERE n.name CONTAINS $keyword RETURN Distinct n",
+        { keyword: targetQuery }
+      );
+      const records = result.records.map((record) => record.toObject());
+      const responsDataGraph = {};
+      records.forEach((element) => {
+        // console.log("노드::", element.m, " 관계::", element.r.type);
+        let type = element.n.properties.type;
+        const id = element.n.identity.low;
+        const name = element.n.properties.name;
+        // const relationship = element.r.type; // 이 부분은 가정한 내용입니다.
+
+        // 레지스트리 값으로 변경
+        if (type == "windows-registry-key") {
+          type = "registry";
+        }
+
+        // responsDataGraph에 해당 type 키가 없으면 초기화
+        if (!responsDataGraph[type]) {
+          responsDataGraph[type] = [];
+        }
+
+        // 해당 type의 배열에 정보 객체를 추가
+        responsDataGraph[type].push({
+          id: id,
+          name: name,
+          // relationship: relationship,
+        });
+      });
+      // console.log("그래프 결과값:", responsDataGraph);
+      res.json(responsDataGraph);
+    } catch (error) {
+      console.error(error); // 에러 로그 출력
+      res.status(500).send(error.message);
+    } finally {
+      session.close();
+    }
+  }
+  console.log(targetQuery);
+});
+
 // 첫 그래프 진입 쿼리스트링 받아서 neo4j 접근
 app.post("/api/data", async (req, res) => {
   const session = driver.session();
@@ -496,6 +669,7 @@ app.post("/api/data", async (req, res) => {
   // mainName이나 metaName 값을 targetQuery에 할당 (원하는 로직에 따라 조정 가능)
   if (mainName) {
     targetQuery = mainName;
+    console.log("main_name으로 검색...");
     try {
       const result = await session.run(
         "MATCH (n) WHERE tolower(n.name) = tolower($name) RETURN n",
@@ -522,6 +696,7 @@ app.post("/api/data", async (req, res) => {
     }
   } else if (keyword) {
     targetQuery = keyword;
+    console.log("keyword로 검색...");
     try {
       const result = await session.run(
         "MATCH (n) WHERE n.name CONTAINS $keyword RETURN DISTINCT n.type",
