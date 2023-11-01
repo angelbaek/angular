@@ -21,9 +21,25 @@
             <a>물리엔진</a><br />
             <div class="sub-nav sub-1">
               <ul class="top-sub-menu">
-                <li>Menu list one</li>
-                <li>Menu list one</li>
-                <li>Menu list one</li>
+                <li (click)="checkRadio($event); pysicsOn()">
+                  <input
+                    type="radio"
+                    name="pysical"
+                    id="pysical_on"
+                    #radioInput
+                    checked
+                  />
+                  <p>ON</p>
+                </li>
+                <li (click)="checkRadio($event); pysicsOff()">
+                  <input
+                    type="radio"
+                    name="pysical"
+                    id="pysical_off"
+                    #radioInput
+                  />
+                  <p>OFF</p>
+                </li>
               </ul>
             </div>
           </div>
@@ -31,53 +47,55 @@
             <a>라벨</a><br />
             <div class="sub-nav sub-2">
               <ul class="top-sub-menu">
-                <li>Menu list one</li>
-                <li>Menu list one</li>
-                <li>Menu list one</li>
+                <li (click)="checkRadio($event); labelOn()">
+                  <input
+                    type="radio"
+                    name="label"
+                    id="label_on"
+                    #radioInput
+                    checked
+                  />
+                  <p>ON</p>
+                </li>
+                <li (click)="checkRadio($event); labelOff()">
+                  <input type="radio" name="label" id="label_off" #radioInput />
+                  <p>OFF</p>
+                </li>
               </ul>
             </div>
           </div>
-          <div class="item mm-3" data-head-menu="3">
-            <a>표기</a><br />
-            <div class="sub-nav sub-3">
+          <div class="item mm-6" data-head-menu="6">
+            <a>그래프</a><br />
+            <div class="sub-nav sub-6">
               <ul class="top-sub-menu">
-                <li>Menu list one</li>
-                <li>Menu list one</li>
-                <li>Menu list one</li>
+                <li (click)="graphInit()">초기화</li>
+                <li>저장</li>
+                <li>불러오기</li>
               </ul>
             </div>
           </div>
           <div class="item mm-4" data-head-menu="4">
-            <a>파일추출</a><br />
+            <a>파일</a><br />
             <div class="sub-nav sub-4">
               <ul class="top-sub-menu">
-                <li>Menu list one</li>
-                <li>Menu list one</li>
-                <li>Menu list one</li>
+                <li>추출</li>
+                <li>조회</li>
+                <li>업로드</li>
               </ul>
             </div>
           </div>
           <div class="item mm-5" data-head-menu="5">
             <a>노드삭제</a><br />
-            <div class="sub-nav sub-5">
+            <!-- <div class="sub-nav sub-5">
               <ul class="top-sub-menu">
                 <li>Menu list one</li>
                 <li>Menu list one</li>
                 <li>Menu list one</li>
               </ul>
-            </div>
+            </div> -->
           </div>
-          <div class="item mm-6" data-head-menu="6">
-            <a>그래프 초기화</a><br />
-            <div class="sub-nav sub-6">
-              <ul class="top-sub-menu">
-                <li>Menu list one</li>
-                <li>Menu list one</li>
-                <li>Menu list one</li>
-              </ul>
-            </div>
-          </div>
-          <div class="item mm-7" data-head-menu="7">
+
+          <!-- <div class="item mm-7" data-head-menu="7">
             <a>저장</a><br />
             <div class="sub-nav sub-7">
               <ul class="top-sub-menu">
@@ -96,8 +114,8 @@
                 <li>Menu list one</li>
               </ul>
             </div>
-          </div>
-          <div class="item mm-9" data-head-menu="9">
+          </div> -->
+          <!-- <div class="item mm-9" data-head-menu="9">
             <a>파일조회</a><br />
             <div class="sub-nav sub-9">
               <ul class="top-sub-menu">
@@ -116,7 +134,7 @@
                 <li>Menu list one</li>
               </ul>
             </div>
-          </div>
+          </div> -->
         </div>
       </div>
       <div class="head-nav-right">
@@ -762,7 +780,14 @@
                     <div class="right-m1-1">
                       <div class="depth-icon">
                         <div class="depth-plus">
-                          <img src="assets/images/depth-plus.png" alt="" />
+                          <!-- <img src="assets/images/depth-plus.png" alt="" /> -->
+                          <img
+                            [src]="
+                              selectedKeys.includes(key)
+                                ? 'assets/images/depth-minus.png'
+                                : 'assets/images/depth-plus.png'
+                            "
+                          />
                         </div>
                       </div>
                       <div class="depth-title">{{ key }}</div>
@@ -771,11 +796,15 @@
                           <div class="con-search-input">
                             <input
                               type="text"
+                              [(ngModel)]="searchQueries[key]"
                               placeholder="SEARCH"
                               (click)="$event.stopPropagation()"
                             />
                           </div>
-                          <div class="con-search-btn">
+                          <div
+                            class="con-search-btn"
+                            (click)="getFilteredData(key)"
+                          >
                             <span class="material-symbols-outlined side-btn"
                               >search</span
                             >
@@ -791,7 +820,10 @@
                           class="right-depth-list-third"
                         >
                           <li
-                            *ngFor="let item of data[key]"
+                            *ngFor="
+                              let item of getFilteredData(key)
+                                | slice : 0 : displayedCounts[key]
+                            "
                             class="depth-under right-m1-1-under"
                           >
                             <div class="depth-icon">
@@ -808,179 +840,20 @@
                             </div>
                           </li>
                         </ul>
+                        <div
+                          class="more"
+                          *ngIf="
+                            getFilteredData(key).length > 10 &&
+                            selectedKeys.includes(key)
+                          "
+                          (click)="loadMore(key, $event)"
+                        >
+                          더보기
+                        </div>
                       </li>
                     </div>
-                    <!-- <ul
-                      *ngIf="selectedKey === key"
-                      class="right-depth-list-third"
-                    >
-                      <li
-                        *ngFor="let item of data[key]"
-                        class="depth-under right-m1-1-under"
-                      >
-                        <div class="depth-icon">
-                          <div class="depth-line"></div>
-                        </div>
-                        <div class="depth-title">{{ item.name }}</div>
-                      </li>
-                    </ul> -->
                   </li>
                 </ul>
-                <!-- 1뎁스 리스트 한칸
-                <li
-                  class="right-m1-1"
-                  *ngFor="let key of Object.keys(data)"
-                  (click)="toggleKeyContent(key)"
-                >
-                  <div class="depth-icon">
-                    <div class="depth-plus">
-                      <img src="assets/images/depth-plus.png" alt="" />
-                    </div>
-                  </div>
-                  <div class="depth-title">{{ key }}</div>
-                  <div class="depth-search p-10">
-                    검색
-                    <div class="con-search w-150 h-25 border-1-b2">
-                      <div class="con-search-input">
-                        <input type="text" placeholder="SEARCH" />
-                      </div>
-                      <div class="con-search-btn">
-                        <span class="material-symbols-outlined side-btn"
-                          >search</span
-                        >
-                      </div>
-                    </div>
-                  </div>
-                </li> -->
-
-                <!--2뎁스 들어갈 칸-->
-                <!-- <li
-                  class="depth-under right-m1-1-under wrap-h-0"
-                  *ngFor="let key of Object.keys(data)"
-                >
-                  <ul
-                    class="right-depth-list-third"
-                    *ngIf="selectedKey === key"
-                  >
-                    <li *ngFor="let item of data[key]">
-                      <div class="depth-icon">
-                        <div class="depth-line"></div>
-                      </div>
-                      <div class="depth-title">
-                        {{ item.name }}
-                      </div>
-                    </li>
-                    <li>
-                      <div class="depth-icon">
-                        <div class="depth-line"></div>
-                      </div>
-                      <div class="depth-title">Third Step Menu</div>
-                    </li>
-                    <li>
-                      <div class="depth-icon">
-                        <div class="depth-line"></div>
-                      </div>
-                      <div class="depth-title">Third Step Menu</div>
-                    </li>
-                    <li class="more">more</li>
-                  </ul>
-                </li> -->
-
-                <!-- <li class="right-m1-2">
-                  <div class="depth-icon">
-                    <div class="depth-plus">
-                      <img src="assets/images/depth-plus.png" alt="" />
-                    </div>
-                  </div>
-                  <div class="depth-title">Fisrst Step Menu</div>
-                  <div class="depth-search p-10">
-                    검색
-                    <div class="con-search w-150 h-25 border-1-b2">
-                      <div class="con-search-input">
-                        <input type="text" placeholder="SEARCH" />
-                      </div>
-                      <div class="con-search-btn">
-                        <span class="material-symbols-outlined side-btn"
-                          >search</span
-                        >
-                      </div>
-                    </div>
-                  </div>
-                </li>
-                2뎁스 들어갈 칸
-                <li class="depth-under right-m1-2-under wrap-h-0">
-                  <ul class="right-depth-list-third">
-                    <li>
-                      <div class="depth-icon">
-                        <div class="depth-line"></div>
-                      </div>
-                      <div class="depth-title">
-                        Third Step Menuhird Step Menuhird Step Menuhird Step
-                        Menuhird Step Menuhird Step Menu
-                      </div>
-                    </li>
-                    <li>
-                      <div class="depth-icon">
-                        <div class="depth-line"></div>
-                      </div>
-                      <div class="depth-title">Third Step Menu</div>
-                    </li>
-                    <li>
-                      <div class="depth-icon">
-                        <div class="depth-line"></div>
-                      </div>
-                      <div class="depth-title">Third Step Menu</div>
-                    </li>
-                  </ul>
-                </li> -->
-
-                <!-- <li class="right-m1-3">
-                  선택된 리스트에 붙는 클래스
-                  <div class="depth-icon">
-                    <div class="depth-plus">
-                      <img src="assets/images/depth-plus.png" alt="" />
-                    </div>
-                  </div>
-                  <div class="depth-title">Fisrst Step Menu</div>
-                  <div class="depth-search p-10">
-                    검색
-                    <div class="con-search w-150 h-25 border-1-b2">
-                      <div class="con-search-input">
-                        <input type="text" placeholder="SEARCH" />
-                      </div>
-                      <div class="con-search-btn">
-                        <span class="material-symbols-outlined side-btn"
-                          >search</span
-                        >
-                      </div>
-                    </div>
-                  </div>
-                </li> -->
-                <!--2뎁스 들어갈 칸-->
-                <!-- <li class="depth-under right-m1-3-under wrap-h-0">
-                  세번째 메뉴 2뎁스
-                </li> -->
-                <!-- <li class="right-m1-4">
-                  <div class="depth-icon">
-                    <div class="depth-minus">
-                      <img src="assets/images/depth-minus.png" alt="" />
-                    </div>
-                  </div>
-                  <div class="depth-title">Fisrst Step Menu</div>
-                  <div class="depth-search p-10">
-                    검색
-                    <div class="con-search w-150 h-25 border-1-b2">
-                      <div class="con-search-input">
-                        <input type="text" placeholder="SEARCH" />
-                      </div>
-                      <div class="con-search-btn">
-                        <span class="material-symbols-outlined side-btn"
-                          >search</span
-                        >
-                      </div>
-                    </div>
-                  </div>
-                </li> -->
               </ul>
             </div>
 

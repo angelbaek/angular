@@ -193,9 +193,13 @@ export class AppComponent implements OnInit {
       },
       plotOptions: {
         bar: {
+          horizontal: false,
           borderRadius: 2,
-          minHeight: 50,
+          barHeight: '100%',
           columnWidth: '60%',
+        },
+        dataLabels: {
+          position: 'top', // top, center, bottom
         },
       },
       xaxis: {
@@ -224,22 +228,25 @@ export class AppComponent implements OnInit {
           },
         },
         yaxis: {
+          show: true,
+          floating: true,
+          min: 6,
+          max: 6,
           lines: {
             show: false,
           },
         },
       },
-      legend: {
-        show: true,
-
-        position: 'top',
-        horizontalAlign: 'center',
-        fontFamily: 'pretendard, sans-serif',
-        itemMargin: {
-          horizontal: 8,
-          vertical: 0,
-        },
-      },
+      // legend: {
+      //   show: true,
+      //   position: 'top',
+      //   horizontalAlign: 'center',
+      //   fontFamily: 'pretendard, sans-serif',
+      //   itemMargin: {
+      //     horizontal: 8,
+      //     vertical: 0,
+      //   },
+      // },
       stroke: {
         width: 0,
       },
@@ -330,6 +337,7 @@ export class AppComponent implements OnInit {
       },
 
       visConfig: {
+        physics: true, // 물리 엔진을 끄는 옵션
         nodes: {
           hidden: false,
           size: 30,
@@ -360,9 +368,15 @@ export class AppComponent implements OnInit {
         configure: {
           enabled: false,
         },
-        manipulation: {
-          enabled: false,
-        },
+        // manipulation: {
+        //   enabled: false,
+
+        //   addNode: function (nodeData: any, callback: any) {
+        //     console.log('노드 추가 감지');
+        //     nodeData.label = 'hello world';
+        //     callback(nodeData);
+        //   },
+        // },
       },
       relationships: {
         ...RealtionshipConfig,
@@ -723,28 +737,126 @@ export class AppComponent implements OnInit {
     }
   }
 
+  handleSelectNodeEvent(properties: any) {
+    // 여기에 this.viz.network.on('selectNode', (properties: any) => {...} 내부의 로직을 넣습니다.
+    /**
+     *  Related Node 메소드 구현....
+     */
+
+    // 클릭된 노드의 ID
+    const clickedNodeId = properties.nodes[0];
+
+    // 전의 노드 이미지 변경
+    let nodeImageChanges = this.viz.network.body.data.nodes;
+    nodeImageChanges.forEach((element: any) => {
+      if (element.image && element.image.endsWith('_3.png')) {
+        console.log('이미지 오류?', element);
+        console.log('활성화 4로 바꾸기:', element.image);
+        const updatedImage = element.image.replace('_3.png', '_4.png'); // 이미지 주소 변경
+        element.image = updatedImage;
+        this.viz.network.body.data.nodes.update(element);
+      }
+    });
+
+    // 2. 연관된 노드 찾기
+    const connectedNodes = this.viz.network.getConnectedNodes(clickedNodeId);
+
+    // 원본 노드 이미지 변경
+    const nodeImageChange = this.viz.network.body.data.nodes.get(clickedNodeId);
+    if (nodeImageChange.image && nodeImageChange.image.endsWith('_4.png')) {
+      console.log('노드 이미지 찾음:', nodeImageChange.image);
+      const updatedImage = nodeImageChange.image.replace('_4.png', '_3.png'); // 이미지 주소 변경
+      nodeImageChange.image = updatedImage;
+      this.viz.network.body.data.nodes.update(nodeImageChange);
+    }
+
+    // 3. 이미지 변경 (연관 노드)
+    connectedNodes.forEach((nodeId: any) => {
+      const node = this.viz.network.body.data.nodes.get(nodeId);
+      console.log(node.image);
+      // 이미지 주소가 '3.png'로 끝나는지 확인
+      if (node.image && node.image.endsWith('_4.png')) {
+        console.log('노드 이미지 찾음:', node.image);
+        const updatedImage = node.image.replace('_4.png', '_3.png'); // 이미지 주소 변경
+        node.image = updatedImage;
+        this.viz.network.body.data.nodes.update(node);
+      }
+    });
+
+    //초기화
+    this.groupedNodes.clear();
+    // 연관된 노드 작업
+    connectedNodes.forEach((nodeId: any) => {
+      const target = this.viz.network.body.data.nodes.get(nodeId);
+      console.log('노드 찾아보자', target);
+
+      const group = target.group;
+
+      // 몇개인지 count
+      let countNumber = 1;
+      if (!this.groupedNodes.has(group)) {
+        // 해당 그룹에 대한 배열이 없으면 새 배열을 생성
+        this.groupedNodes.set(group, []);
+      } else {
+        console.log('이미 있는 배열', this.groupedNodes.get(group));
+      }
+
+      // 해당 그룹의 배열에 rawid와 name 추가
+      this.groupedNodes.get(group)!.push({
+        rawid: target.id, // rawid와 name은 target에 있는 것으로 가정
+        name: target.label,
+      });
+      this.groupKeys = Array.from(this.groupedNodes.keys());
+      console.log('확인::::', this.groupKeys);
+    });
+
+    const selectedNodeId = properties.nodes[0]; // 선택된 노드의 ID
+    console.log('노드 ', properties);
+
+    //아이디 문자열 (그룹노드) 일때 예외처리
+    if (typeof selectedNodeId !== 'number') {
+      console.log('그룹노드:::', selectedNodeId);
+      return;
+    }
+
+    const selectedNode = this.viz.network.body.data.nodes.get(selectedNodeId);
+
+    console.log('선택된 노드::', selectedNode);
+
+    // 노드 정보 표출하기
+    this.onNodeClick(selectedNode);
+
+    // 인접노드 관계정보 가져오기
+    this.logAdjacentNodesAndRelationships(selectedNodeId);
+  }
+
   focusCount: number = 0;
   focusNode(nodeId: any) {
+    this.viz.network.selectNodes([nodeId], true);
     this.focusCount++;
-    // 연속으로 추가 한 경우 그 전에 있던 노드 비활성화 처리
-    if (this.focusCount >= 2) {
-      console.log('포커스 2중첩!!!');
-      // 전의 노드 이미지 변경
-      const nodeImageChange = this.viz.network.body.data.nodes.get(
-        this.clickOff
-      );
-      if (nodeImageChange.image && nodeImageChange.image.endsWith('_3.png')) {
-        console.log('이미지 오류?', nodeImageChange);
-        console.log('노드 이미지 찾음:', nodeImageChange.image);
-        const updatedImage = nodeImageChange.image.replace('_3.png', '_4.png'); // 이미지 주소 변경
-        nodeImageChange.image = updatedImage;
-        this.viz.network.body.data.nodes.update(nodeImageChange);
-        // 변경 후 비활성화 시 담을 노드 아이디
-        this.clickOff = nodeId;
-      }
-    } else {
-      this.clickOff = nodeId;
-    }
+    // 선택된 노드에 대한 selectNode 이벤트 로직 수행
+    const properties = { nodes: [nodeId] }; // properties 객체 형태를 일치시킵니다.
+    this.handleSelectNodeEvent(properties); // selectNode 이벤트 로직을 수행하는 함수 호출
+
+    //연속으로 추가 한 경우 그 전에 있던 노드 비활성화 처리
+    // if (this.focusCount >= 2) {
+    //   console.log('포커스 2중첩!!!');
+    //   // 전의 노드 이미지 변경
+    //   const nodeImageChange = this.viz.network.body.data.nodes.get(
+    //     this.clickOff
+    //   );
+    //   if (nodeImageChange.image && nodeImageChange.image.endsWith('_3.png')) {
+    //     console.log('이미지 오류?', nodeImageChange);
+    //     console.log('노드 이미지 찾음:', nodeImageChange.image);
+    //     const updatedImage = nodeImageChange.image.replace('_3.png', '_4.png'); // 이미지 주소 변경
+    //     nodeImageChange.image = updatedImage;
+    //     this.viz.network.body.data.nodes.update(nodeImageChange);
+    //     // 변경 후 비활성화 시 담을 노드 아이디
+    //     this.clickOff = nodeId;
+    //   }
+    // } else {
+    //   this.clickOff = nodeId;
+    // }
     this.viz.network.focus(nodeId, {
       scale: 1.0, // 원하는 스케일로 설정
       animation: {
@@ -752,9 +864,6 @@ export class AppComponent implements OnInit {
         easingFunction: 'easeInOutQuad',
       },
     });
-
-    // 해당 노드 선택하기
-    this.viz.network.selectNodes([nodeId]);
 
     // 원본 노드 이미지 변경
     const nodeImageChange = this.viz.network.body.data.nodes.get(nodeId);
@@ -1109,9 +1218,6 @@ export class AppComponent implements OnInit {
         };
       });
 
-    // activeKeysAndTypes에는 on 값이 설정된 모든 키와 그에 해당하는 타입들이 저장됩니다.
-    const updateTargetNodes = this.viz.network.body.data.nodes;
-
     // 전체 활성화
     if (activeKeysAndTypes.length == 0) {
       this.allNodesShow();
@@ -1139,66 +1245,99 @@ export class AppComponent implements OnInit {
   }
 
   // Node Type and
+  // nodeTypeAnd(activeKeysAndTypes: any) {
+  //   const updateTargetNodes = this.viz.network.body.data.nodes;
+  //   // and 조건
+  //   if (activeKeysAndTypes.length >= 2) {
+  //     updateTargetNodes.forEach((element: any) => {
+  //       element.hidden = true;
+  //       updateTargetNodes.update(element);
+  //     });
+  //     return;
+  //   } else if (activeKeysAndTypes.length == 1) {
+  //     updateTargetNodes.forEach((element: any) => {
+  //       const activeKeys = activeKeysAndTypes.map((item: any) => item.key);
+  //       if (element.group == activeKeys) {
+  //         element.hidden = false;
+  //         updateTargetNodes.update(element);
+  //       } else {
+  //         element.hidden = true;
+  //         updateTargetNodes.update(element);
+  //       }
+  //       console.log(activeKeys);
+  //     });
+  //   }
+  // }
   nodeTypeAnd(activeKeysAndTypes: any) {
     const updateTargetNodes = this.viz.network.body.data.nodes;
+    const nodesToUpdate: any = [];
+
     // and 조건
     if (activeKeysAndTypes.length >= 2) {
       updateTargetNodes.forEach((element: any) => {
         element.hidden = true;
-        updateTargetNodes.update(element);
+        nodesToUpdate.push(element);
       });
-      return;
     } else if (activeKeysAndTypes.length == 1) {
+      const activeKeys = activeKeysAndTypes.map((item: any) => item.key);
       updateTargetNodes.forEach((element: any) => {
-        const activeKeys = activeKeysAndTypes.map((item: any) => item.key);
         if (element.group == activeKeys) {
           element.hidden = false;
-          updateTargetNodes.update(element);
         } else {
           element.hidden = true;
-          updateTargetNodes.update(element);
         }
-        console.log(activeKeys);
+        nodesToUpdate.push(element);
       });
     }
+
+    // 한 번에 모든 변경사항을 적용
+    updateTargetNodes.update(nodesToUpdate);
   }
 
   // Node Type or
   nodeTypeOr(activeKeysAndTypes: any) {
     const updateTargetNodes = this.viz.network.body.data.nodes;
+    const nodesToUpdate: any = [];
     const activeKeys = activeKeysAndTypes.map((item: any) => item.key);
     console.log(activeKeys);
     updateTargetNodes.forEach((element: any) => {
       for (let nodeType of activeKeys) {
         if (element.group == nodeType) {
           element.hidden = false;
-          updateTargetNodes.update(element);
+          // updateTargetNodes.update(element);
+          nodesToUpdate.push(element);
           break;
         } else {
           element.hidden = true;
-          updateTargetNodes.update(element);
+          // updateTargetNodes.update(element);
+          nodesToUpdate.push(element);
         }
       }
     });
+    updateTargetNodes.update(nodesToUpdate);
   }
 
   // Node Type not
   nodeTypeNot(activeKeysAndTypes: any) {
     const updateTargetNodes = this.viz.network.body.data.nodes;
+    const nodesToUpdate: any = [];
     const activeKeys = activeKeysAndTypes.map((item: any) => item.key);
     console.log(activeKeys);
     updateTargetNodes.forEach((element: any) => {
       for (let nodeType of activeKeys) {
         if (element.group == nodeType) {
           element.hidden = true;
-          updateTargetNodes.update(element);
+          nodesToUpdate.push(element);
+          // updateTargetNodes.update(element);
           break;
         } else {
           element.hidden = false;
-          updateTargetNodes.update(element);
+          nodesToUpdate.push(element);
+          // updateTargetNodes.update(element);
         }
       }
     });
+    updateTargetNodes.update(nodesToUpdate);
   }
 
   // string 타입으로 변환
@@ -1570,16 +1709,7 @@ export class AppComponent implements OnInit {
   };
   Object = Object;
   selectedKey: string | null = null;
-  // toggleKeyContent(key: string) {
-  //   if (this.selectedKey === key) {
-  //     // 이미 선택된 키와 동일한 키를 클릭한 경우, selectedKey 값을 초기화하여 하위 항목을 접습니다.
-  //     this.selectedKey = null;
-  //   } else {
-  //     // 다른 키를 클릭한 경우, 해당 키의 하위 항목을 표시합니다.
-  //     this.selectedKey = key;
-  //   }
-  // }
-  // ...
+
   selectedData: any[] = []; // 선택된 키의 데이터를 저장할 변수
   selectedKeys: string[] = [];
   toggleKeyContent(key: string) {
@@ -1588,7 +1718,31 @@ export class AppComponent implements OnInit {
       this.selectedKeys.splice(index, 1); // 이미 선택된 키를 배열에서 제거
     } else {
       this.selectedKeys.push(key); // 선택되지 않은 키를 배열에 추가
+      if (!this.displayedCounts[key]) {
+        // 해당 키에 대한 displayedCounts 값이 없는 경우만 10으로 초기화
+        this.displayedCounts[key] = 10;
+      }
     }
+    // for (const key of Object.keys(this.data)) {
+    //   this.displayedCounts[key] = 10;
+    // }
+  }
+
+  searchQueries: { [key: string]: string } = {};
+
+  getFilteredData(key: string): any[] {
+    const query = this.searchQueries[key];
+    if (!query) {
+      return this.data[key];
+    }
+    return this.data[key].filter((item) => item.name.includes(query));
+  }
+
+  displayedCounts: { [key: string]: number } = {};
+
+  loadMore(key: string, event: MouseEvent) {
+    event.stopPropagation(); // 이벤트 버블링 중단
+    this.displayedCounts[key] += 10;
   }
 
   test(key: string, id: any, name: string) {
@@ -2015,6 +2169,70 @@ export class AppComponent implements OnInit {
           this.focusNode(rawId);
         }
       });
+  }
+
+  graphInit() {
+    console.log('초기화');
+    // 모든 노드와 엣지 삭제
+    this.viz.nodes.clear();
+    this.viz.edges.clear();
+  }
+
+  labelOn() {
+    this.viz.network.setOptions({
+      nodes: {
+        font: {
+          size: 20, // 노드 라벨의 폰트 크기를 0으로 설정하여 비활성화
+        },
+      },
+      edges: {
+        font: {
+          size: 15, // 엣지 라벨의 폰트 크기를 0으로 설정하여 비활성화
+        },
+      },
+    });
+  }
+
+  labelOff() {
+    this.viz.network.setOptions({
+      nodes: {
+        font: {
+          size: 0, // 노드 라벨의 폰트 크기를 0으로 설정하여 비활성화
+        },
+      },
+      edges: {
+        font: {
+          size: 0, // 엣지 라벨의 폰트 크기를 0으로 설정하여 비활성화
+        },
+      },
+    });
+  }
+
+  pysicsOn() {
+    console.log('물리엔진 on');
+    this.viz.network.setOptions({
+      physics: true,
+    });
+  }
+
+  pysicsOff() {
+    console.log('물리엔진 off');
+    this.viz.network.setOptions({
+      physics: false,
+    });
+  }
+
+  checkRadio(event: Event) {
+    const target = event.target as HTMLElement;
+    const liElement = event.currentTarget as HTMLElement;
+
+    // 클릭한 요소가 라디오 버튼이 아닌 경우에만 라디오 버튼을 체크
+    if (!(target instanceof HTMLInputElement && target.type === 'radio')) {
+      const radio = liElement.querySelector('input[type="radio"]');
+      if (radio) {
+        (radio as HTMLInputElement).checked = true;
+      }
+    }
   }
 
   menuData: { [key: string]: RelationshipType } = {};

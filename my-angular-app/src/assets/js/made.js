@@ -26,23 +26,23 @@ $(document).ready(function () {
   // /** 추가 작성 23.09.25 작성자 bsh
   //  * @param {number} data data-head-menu매핑 1~999
   //  */
-  // for (let i = 1; i <= 10; i++) {
-  //   $(`.mm-${i}`).mouseover(function () {
-  //     // data-target 속성을 읽어와서 해당 숫자를 얻습니다.
-  //     const targetNumber = $(this).data("head-menu");
+  for (let i = 1; i <= 10; i++) {
+    $(`.mm-${i}`).mouseover(function () {
+      // data-target 속성을 읽어와서 해당 숫자를 얻습니다.
+      const targetNumber = $(this).data("head-menu");
 
-  //     // 얻은 숫자를 사용하여 sub-1부터 sub-9까지의 클래스를 조작할 수 있습니다.
-  //     $(`.sub-${targetNumber}`).addClass("d-flex");
+      // 얻은 숫자를 사용하여 sub-1부터 sub-9까지의 클래스를 조작할 수 있습니다.
+      $(`.sub-${targetNumber}`).addClass("d-flex");
 
-  //     // 나머지 sub- 클래스
-  //     // (이 코드에서는 sub- 클래스를 모두 숨김 처리하도록 되어 있습니다.)
-  //     for (let j = 1; j <= 10; j++) {
-  //       if (j !== targetNumber) {
-  //         $(`.sub-${j}`).removeClass("d-flex");
-  //       }
-  //     }
-  //   });
-  // }
+      // 나머지 sub- 클래스
+      // (이 코드에서는 sub- 클래스를 모두 숨김 처리하도록 되어 있습니다.)
+      for (let j = 1; j <= 10; j++) {
+        if (j !== targetNumber) {
+          $(`.sub-${j}`).removeClass("d-flex");
+        }
+      }
+    });
+  }
   /**
    * 플레어 코드
    */
