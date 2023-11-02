@@ -19,6 +19,14 @@ type FilterNodeType = {
   };
 };
 
+type FilterFileType = {
+  [key: string]: {
+    or: boolean;
+    and: boolean;
+    not: boolean;
+  };
+};
+
 //인터페이스
 interface RelatedNodeType {
   //연관된 노드
@@ -282,6 +290,7 @@ export class AppComponent implements OnInit {
   countCreatedClick: number = 0;
   showNodesByYear(year: string) {
     const nodes = this.viz.network.body.data.nodes;
+    const nodeUpdateTarget: any = [];
 
     if (this.compareCreated == year && this.countCreatedClick < 1) {
       this.countCreatedClick++;
@@ -293,9 +302,12 @@ export class AppComponent implements OnInit {
           node.raw.properties.created.startsWith(year)
         ) {
         } else {
-          nodes.update([{ id: node.id, hidden: false }]);
+          // nodes.update([{ id: node.id, hidden: false }]);
+          node.hidden = false;
+          nodeUpdateTarget.push(node);
         }
       });
+      nodes.update(nodeUpdateTarget);
       return;
     }
     this.countCreatedClick = 0;
@@ -310,6 +322,18 @@ export class AppComponent implements OnInit {
     });
 
     // 연도를 포함하는 노드만 표시합니다.
+    // nodes.forEach((node: any) => {
+    //   if (
+    //     node.raw &&
+    //     node.raw.properties &&
+    //     node.raw.properties.created &&
+    //     node.raw.properties.created.startsWith(year)
+    //   ) {
+    //     nodes.update([{ id: node.id, hidden: false }]);
+    //   } else {
+    //     nodes.update([{ id: node.id, hidden: true }]);
+    //   }
+    // });
     nodes.forEach((node: any) => {
       if (
         node.raw &&
@@ -317,11 +341,14 @@ export class AppComponent implements OnInit {
         node.raw.properties.created &&
         node.raw.properties.created.startsWith(year)
       ) {
-        nodes.update([{ id: node.id, hidden: false }]);
+        node.hidden = false;
+        nodeUpdateTarget.push(node);
       } else {
-        nodes.update([{ id: node.id, hidden: true }]);
+        node.hidden = true;
+        nodeUpdateTarget.push(node);
       }
     });
+    nodes.update(nodeUpdateTarget);
   }
 
   draw() {
@@ -414,7 +441,7 @@ export class AppComponent implements OnInit {
         const nodeImageChange =
           this.viz.network.body.data.nodes.get(clickedNodeId);
         if (nodeImageChange.image && nodeImageChange.image.endsWith('_4.png')) {
-          console.log('노드 이미지 찾음:', nodeImageChange.image);
+          // console.log('노드 이미지 찾음:', nodeImageChange.image);
           const updatedImage = nodeImageChange.image.replace(
             '_4.png',
             '_3.png'
@@ -426,10 +453,10 @@ export class AppComponent implements OnInit {
         // 3. 이미지 변경 (연관 노드)
         connectedNodes.forEach((nodeId: any) => {
           const node = this.viz.network.body.data.nodes.get(nodeId);
-          console.log(node.image);
+          // console.log(node.image);
           // 이미지 주소가 '3.png'로 끝나는지 확인
           if (node.image && node.image.endsWith('_4.png')) {
-            console.log('노드 이미지 찾음:', node.image);
+            // console.log('노드 이미지 찾음:', node.image);
             const updatedImage = node.image.replace('_4.png', '_3.png'); // 이미지 주소 변경
             node.image = updatedImage;
             this.viz.network.body.data.nodes.update(node);
@@ -441,7 +468,7 @@ export class AppComponent implements OnInit {
         // 연관된 노드 작업
         connectedNodes.forEach((nodeId: any) => {
           const target = this.viz.network.body.data.nodes.get(nodeId);
-          console.log('노드 찾아보자', target);
+          // console.log('노드 찾아보자', target);
 
           const group = target.group;
 
@@ -451,7 +478,7 @@ export class AppComponent implements OnInit {
             // 해당 그룹에 대한 배열이 없으면 새 배열을 생성
             this.groupedNodes.set(group, []);
           } else {
-            console.log('이미 있는 배열', this.groupedNodes.get(group));
+            // console.log('이미 있는 배열', this.groupedNodes.get(group));
           }
 
           // 해당 그룹의 배열에 rawid와 name 추가
@@ -460,16 +487,16 @@ export class AppComponent implements OnInit {
             name: target.label,
           });
           this.groupKeys = Array.from(this.groupedNodes.keys());
-          console.log('확인::::', this.groupKeys);
+          // console.log('확인::::', this.groupKeys);
         });
 
         // 결과 확인
         this.groupedNodes.forEach((values, key) => {
-          console.log(`Group: ${key}, Values:`, values);
+          // console.log(`Group: ${key}, Values:`, values);
         });
 
         const edgeLength: number = properties.edges.length;
-        console.log('Edge 길이:::', edgeLength);
+        // console.log('Edge 길이:::', edgeLength);
         const edgeNumber: any = [];
         if (edgeLength == 1) {
           edgeNumber.push(properties.edges[0]);
@@ -478,14 +505,14 @@ export class AppComponent implements OnInit {
             edgeNumber.push(edge);
           });
         }
-        console.log('Edge 결과물:::', edgeNumber);
+        // console.log('Edge 결과물:::', edgeNumber);
 
         const selectedNodeId = properties.nodes[0]; // 선택된 노드의 ID
-        console.log('노드 ', properties);
+        // console.log('노드 ', properties);
 
         //아이디 문자열 (그룹노드) 일때 예외처리
         if (typeof selectedNodeId !== 'number') {
-          console.log('그룹노드:::', selectedNodeId);
+          // console.log('그룹노드:::', selectedNodeId);
           return;
         }
 
@@ -1086,6 +1113,8 @@ export class AppComponent implements OnInit {
             this.anotherLabelAddNodeGroup(req);
           }
         }
+        this.chart();
+        this.filtering();
       });
   }
 
@@ -1113,12 +1142,12 @@ export class AppComponent implements OnInit {
           const findNode = this.viz.network.body.data.nodes.get(id);
           if (findNode) {
             // 있을때
-            // this.focusNode(id);
+            this.focusNode(id);
             // this.viz.network.body.data.edges.add({
-            //   // id: rawId,
-            //   // label: ,
-            //   // from: rawId,
-            //   // to: label + '_from_' + rawId,
+            //   id: rawId,
+            //   label: ,
+            //   from: rawId,
+            //   to: label + '_from_' + rawId,
             // });
           } else {
             // 없을때
@@ -1129,8 +1158,8 @@ export class AppComponent implements OnInit {
       });
   }
 
-  selectedButtonType: string = ''; // 'and', 'or', 'not' 중 하나의 값을 가질 수 있습니다.
-  testObj: any;
+  // selectedButtonType: string = ''; // 'and', 'or', 'not' 중 하나의 값을 가질 수 있습니다.
+  // testObj: any;
 
   // filterObj = {
   //   nodeType: {
@@ -1142,19 +1171,41 @@ export class AppComponent implements OnInit {
 
   filterObj: {
     nodeType: FilterNodeType;
-    fileType: any;
+    fileType: FilterFileType;
     on: string;
+    fileOn: string;
   } = {
     nodeType: {},
     fileType: {},
     on: '',
+    fileOn: '',
   };
 
-  initFilterObj() {
-    // `filterType` 기반으로 `filterObj.nodeType` 초기화
-    Object.keys(this.filterType).forEach((key: any) => {
-      this.filterObj.nodeType[key] = { or: false, and: false, not: false };
-    });
+  // initFilterObj() {
+  //   // `filterType` 기반으로 `filterObj.nodeType` 초기화
+  //   Object.keys(this.filterType).forEach((key: any) => {
+  //     this.filterObj.nodeType[key] = { or: false, and: false, not: false };
+  //   });
+  // }
+
+  onButtonFileClick(type: 'or' | 'and' | 'not', nodeKey: string) {
+    // 해당 노드 키와 버튼 타입에 따라 상태를 토글
+    this.filterObj.fileType[nodeKey][type] =
+      !this.filterObj.fileType[nodeKey][type];
+
+    // filterObj.fileType 전체를 검사하여 true인 타입이 있는지 확인
+    let activeType: 'or' | 'and' | 'not' | '' = '';
+    for (const key in this.filterObj.fileType) {
+      for (const subType of ['or', 'and', 'not'] as const) {
+        if (this.filterObj.fileType[key][subType]) {
+          activeType = subType;
+          break;
+        }
+      }
+      if (activeType) break;
+    }
+    this.filterObj.fileOn = activeType;
+    this.fileFilterViewUpdate();
   }
 
   onButtonClick(type: 'or' | 'and' | 'not', nodeKey: string) {
@@ -1177,13 +1228,19 @@ export class AppComponent implements OnInit {
     this.nodeFilterViewUpdate();
   }
 
-  visibleNodeType = 'visible';
+  visibleNodeType = 'block';
+  visibleFileType = 'flex';
   showNodeType() {
-    this.visibleNodeType = 'visible';
+    this.visibleNodeType = 'block';
   }
-
+  showFileType() {
+    this.visibleFileType = 'flex';
+  }
   hiddenNodeType() {
-    this.visibleNodeType = 'hidden';
+    this.visibleNodeType = 'none';
+  }
+  hiddenFileType() {
+    this.visibleFileType = 'none';
   }
 
   nodeTypeReset() {
@@ -1195,9 +1252,61 @@ export class AppComponent implements OnInit {
     }
 
     // 필요한 경우, fileType과 on 값을 초기화
-    this.filterObj.fileType = {};
+    // this.filterObj.fileType = {};
     this.filterObj.on = '';
     this.allNodesShow();
+  }
+
+  fileTypeReset() {
+    // filterObj.nodeType의 모든 키에 대해 or, and, not 값을 false로 설정
+    for (const key in this.filterObj.fileType) {
+      this.filterObj.fileType[key].or = false;
+      this.filterObj.fileType[key].and = false;
+      this.filterObj.fileType[key].not = false;
+    }
+
+    // 필요한 경우, fileType과 on 값을 초기화
+    // this.filterObj.fileType = {};
+    this.filterObj.fileOn = '';
+    this.nodeFilterViewUpdate(); // 기존과 다르게 Node Type에 따라감
+  }
+
+  fileFilterViewUpdate() {
+    // filterObj.nodeType에서 on 값이 설정된 모든 키와 타입 가져오기
+    const activeKeysAndTypes = Object.keys(this.filterObj.fileType)
+      .filter(
+        (key) =>
+          this.filterObj.fileType[key][
+            this.filterObj.fileOn as 'or' | 'and' | 'not'
+          ]
+      )
+      .map((key) => {
+        return {
+          key: key,
+          type: ['or', 'and', 'not'].find(
+            (type) => this.filterObj.fileType[key][type as 'or' | 'and' | 'not']
+          ),
+        };
+      });
+
+    // 전체 활성화
+    if (activeKeysAndTypes.length == 0) {
+      this.nodeFilterViewUpdate();
+      return;
+    }
+
+    // ... 함수의 나머지 부분
+
+    console.log(activeKeysAndTypes);
+    const orAndNotType = activeKeysAndTypes[0].type;
+
+    if (orAndNotType == 'and') {
+      this.fileTypeAnd(activeKeysAndTypes);
+    } else if (orAndNotType == 'or') {
+      this.fileTypeOr(activeKeysAndTypes);
+    } else if (orAndNotType == 'not') {
+      this.fileTypeNot(activeKeysAndTypes);
+    }
   }
 
   nodeFilterViewUpdate() {
@@ -1238,10 +1347,12 @@ export class AppComponent implements OnInit {
 
   allNodesShow() {
     const updateTargetNodes = this.viz.network.body.data.nodes;
+    const nodesToUpdate: any = [];
     updateTargetNodes.forEach((element: any) => {
       element.hidden = false;
-      updateTargetNodes.update(element);
+      nodesToUpdate.push(element);
     });
+    updateTargetNodes.update(nodesToUpdate);
   }
 
   // Node Type and
@@ -1294,6 +1405,37 @@ export class AppComponent implements OnInit {
     updateTargetNodes.update(nodesToUpdate);
   }
 
+  fileTypeAnd(activeKeysAndTypes: any) {
+    const updateTargetNodes = this.viz.network.body.data.nodes;
+    const nodesToUpdate: any = [];
+
+    // and 조건
+    if (activeKeysAndTypes.length >= 2) {
+      updateTargetNodes.forEach((element: any) => {
+        element.hidden = true;
+        nodesToUpdate.push(element);
+      });
+    } else if (activeKeysAndTypes.length == 1) {
+      const activeKeys = activeKeysAndTypes.map((item: any) => item.key);
+      updateTargetNodes.forEach((element: any) => {
+        if (
+          element.raw &&
+          element.raw.properties &&
+          (element.raw.properties.file_type == activeKeys ||
+            element.raw.properties.hash_type == activeKeys)
+        ) {
+          element.hidden = false;
+        } else {
+          element.hidden = true;
+        }
+        nodesToUpdate.push(element);
+      });
+    }
+
+    // 한 번에 모든 변경사항을 적용
+    updateTargetNodes.update(nodesToUpdate);
+  }
+
   // Node Type or
   nodeTypeOr(activeKeysAndTypes: any) {
     const updateTargetNodes = this.viz.network.body.data.nodes;
@@ -1312,6 +1454,42 @@ export class AppComponent implements OnInit {
           // updateTargetNodes.update(element);
           nodesToUpdate.push(element);
         }
+      }
+    });
+    updateTargetNodes.update(nodesToUpdate);
+  }
+
+  // File Type or
+  fileTypeOr(activeKeysAndTypes: any) {
+    const updateTargetNodes = this.viz.network.body.data.nodes;
+    const nodesToUpdate: any = [];
+    const activeKeys = activeKeysAndTypes.map((item: any) => item.key);
+    console.log(activeKeys);
+    updateTargetNodes.forEach((element: any) => {
+      for (let nodeType of activeKeys) {
+        if (
+          element.raw &&
+          element.raw.properties &&
+          (element.raw.properties.file_type == nodeType ||
+            element.raw.properties.hash_type == nodeType)
+        ) {
+          element.hidden = false;
+          // updateTargetNodes.update(element);
+          nodesToUpdate.push(element);
+          break;
+        } else if (
+          element.group != 'file' ||
+          element.raw.properties.file_type != nodeType ||
+          element.raw.properties.hash_type != nodeType
+        ) {
+          element.hidden = true;
+          nodesToUpdate.push(element);
+        }
+        // else {
+        //   element.hidden = true;
+        //   // updateTargetNodes.update(element);
+        //   nodesToUpdate.push(element);
+        // }
       }
     });
     updateTargetNodes.update(nodesToUpdate);
@@ -1340,6 +1518,40 @@ export class AppComponent implements OnInit {
     updateTargetNodes.update(nodesToUpdate);
   }
 
+  // file Type not
+  fileTypeNot(activeKeysAndTypes: any) {
+    const updateTargetNodes = this.viz.network.body.data.nodes;
+    const nodesToUpdate: any = [];
+    const activeKeys = activeKeysAndTypes.map((item: any) => item.key);
+    console.log(activeKeys);
+    updateTargetNodes.forEach((element: any) => {
+      for (let nodeType of activeKeys) {
+        if (
+          element.raw &&
+          element.raw.properties &&
+          (element.raw.properties.file_type == nodeType ||
+            element.raw.properties.hash_type == nodeType)
+        ) {
+          console.log('비교대상:', nodeType);
+          console.log('파일타입 검색중', element);
+          element.hidden = true;
+          nodesToUpdate.push(element);
+          // updateTargetNodes.update(element);
+          break;
+        } else if (element.group == 'file') {
+          element.hidden = false;
+          nodesToUpdate.push(element);
+        }
+        // else {
+        //   element.hidden = false;
+        //   nodesToUpdate.push(element);
+        //   // updateTargetNodes.update(element);
+        // }
+      }
+    });
+    updateTargetNodes.update(nodesToUpdate);
+  }
+
   // string 타입으로 변환
   getStringKey(key: unknown): string {
     return String(key);
@@ -1347,6 +1559,7 @@ export class AppComponent implements OnInit {
 
   //거쳐갈 필터 객체
   filterType: any;
+  fileTypeCounts: any;
 
   //필터
   filtering() {
@@ -1355,6 +1568,7 @@ export class AppComponent implements OnInit {
 
     // 그룹 속성을 기준으로 노드를 그룹화하고 각 그룹의 개수를 카운트합니다.
     const groupCounts = nodes.reduce((acc: any, node: any) => {
+      console.log('acc:?', acc);
       const group = node.group; // 노드의 그룹 속성
       acc[group] = (acc[group] || 0) + 1; // 그룹의 개수를 카운트
       return acc;
@@ -1365,6 +1579,29 @@ export class AppComponent implements OnInit {
     // filterType의 각 키에 대해 filterObj.nodeType를 업데이트합니다.
     for (const key of Object.keys(this.filterType)) {
       this.filterObj.nodeType[key] = { or: false, and: false, not: false };
+    }
+
+    // 만약 filterObj.nodeType의 key값이 file이 존재한다면...
+    if (this.filterObj.nodeType['file']) {
+      const fileNodes = nodes.filter((node: any) => node.group === 'file');
+
+      // fileNodes의 file_type 속성을 기준으로 카운트를 집계합니다.
+      const fileTypeCounts = fileNodes.reduce((acc: any, node: any) => {
+        if (node.raw && node.raw.properties) {
+          const fileType =
+            node.raw.properties.file_type || node.raw.properties.hash_type;
+          acc[fileType] = (acc[fileType] || 0) + 1;
+        }
+        return acc;
+      }, {});
+      this.fileTypeCounts = fileTypeCounts;
+      console.log(this.fileTypeCounts);
+
+      // fileTypeCounts의 각 키에 대해 filterObj.fileType를 업데이트합니다.
+      for (const key of Object.keys(fileTypeCounts)) {
+        this.filterObj.fileType[key] = { or: false, and: false, not: false };
+      }
+      console.log('파일타입 결과물:', this.filterObj);
     }
   }
 
@@ -1428,6 +1665,8 @@ export class AppComponent implements OnInit {
             to: label + '_from_' + rawId,
           });
         }
+        this.chart();
+        this.filtering();
       });
   }
 
@@ -1634,6 +1873,7 @@ export class AppComponent implements OnInit {
             });
           } else {
             console.log(`Node with ID ${rawId} already exists!`);
+
             //만약 이미 추가된 엣지인지 확인
             const targetEdges = this.viz.network.body.data.edges.get({
               filter: function (edge: any) {
@@ -1655,9 +1895,9 @@ export class AppComponent implements OnInit {
             }
           }
         });
+        this.chart();
+        this.filtering();
       });
-    this.chart();
-    this.filtering();
   }
 
   onNodeClick(nodeData: any) {
@@ -2258,107 +2498,200 @@ export class AppComponent implements OnInit {
     }
   }
 
-  async logAdjacentNodesAndRelationships(nodeId: any) {
-    const query = `
-    MATCH (n)-[r]-(m)
-    WHERE ID(n) = ${nodeId}
-    RETURN n, r, m    
-  `;
-    console.log(nodeId, '로 관계정보 탐색중...');
-    try {
-      const result = await this.neo4jService.runQuery(query);
-
-      console.log('결과값::', result);
-
-      // 데이터를 정리하는 객체를 초기화합니다.
-      const typeInfo: {
-        [relType: string]: {
-          count: number;
-          relatedNodeTypes: {
-            [relatedNodeType: string]: {
-              count: number;
-              values: string[];
-              id: string[];
-              highNodeId: string[];
+  logAdjacentNodesAndRelationships(nodeId: any) {
+    const reqObj = {
+      id: nodeId,
+    };
+    this.http
+      .post(
+        `http://${this.angularIp}:${this.backendNodeExpressPort}/api/getAdjacentNodes`,
+        reqObj
+      )
+      .subscribe((response: any) => {
+        // 데이터를 정리하는 객체를 초기화합니다.
+        const typeInfo: {
+          [relType: string]: {
+            count: number;
+            relatedNodeTypes: {
+              [relatedNodeType: string]: {
+                count: number;
+                values: string[];
+                id: string[];
+                highNodeId: string[];
+              };
             };
           };
-        };
-      } = {};
+        } = {};
 
-      console.log('Query Result Length:', result.length);
-      // console.log('Query Result:', result);
-      // console.log(`Adjacent nodes and relationships for node ${nodeId}:`);
-      const highNodeId = nodeId;
-      result.forEach((record: any) => {
-        const [node, relationship, relatedNode] = record._fields;
-        const relType = relationship.type;
-        const relatedNodeType = relatedNode.properties.type;
-        const nodeName = relatedNode.properties.name;
-        const nodeId = relatedNode.identity.low;
-        const highNodeIdValue = highNodeId;
-        // console.log(nodeId);
+        const highNodeId = nodeId;
+        response.forEach((record: any) => {
+          const [node, relationship, relatedNode] = record._fields;
+          const relType = relationship.type;
+          const relatedNodeType = relatedNode.properties.type;
+          const nodeName = relatedNode.properties.name;
+          const nodeId = relatedNode.identity.low;
+          const highNodeIdValue = highNodeId;
 
-        // 관계 타입이 typeInfo에 없다면 초기화합니다.
-        if (!typeInfo[relType]) {
-          typeInfo[relType] = {
-            count: 0,
-            relatedNodeTypes: {},
-          };
-        }
-
-        // 관련 노드 타입이 해당 관계 타입 아래에 없다면 초기화합니다.
-        if (!typeInfo[relType].relatedNodeTypes[relatedNodeType]) {
-          typeInfo[relType].relatedNodeTypes[relatedNodeType] = {
-            count: 0,
-            values: [],
-            id: [],
-            highNodeId: [],
-          };
-        }
-
-        // 해당 관련 노드 타입의 count를 증가시킵니다.
-        typeInfo[relType].relatedNodeTypes[relatedNodeType].count += 1;
-
-        // 노드의 이름을 추가합니다.
-        typeInfo[relType].relatedNodeTypes[relatedNodeType].values.push(
-          nodeName
-        );
-
-        // 노드의 아이디 추가합니다.
-        typeInfo[relType].relatedNodeTypes[relatedNodeType].id.push(nodeId);
-
-        // 해당 관계 타입의 count를 증가시킵니다.
-        typeInfo[relType].count += 1;
-
-        // highNodeId 값을 추가합니다.
-        typeInfo[relType].relatedNodeTypes[relatedNodeType].highNodeId.push(
-          highNodeIdValue
-        );
-      });
-
-      this.menuData = typeInfo;
-      this.menuDataArray = Object.keys(this.menuData).map((key) => {
-        // return { type: key, data: this.menuData[key] };
-        const data = this.menuData[key];
-
-        // 각 relatedNodeTypes 항목에 대해 values와 id를 결합합니다.
-        for (let relatedNodeType in data.relatedNodeTypes) {
-          const item: any = data.relatedNodeTypes[relatedNodeType];
-          item.combined = item.values.map((value: any, index: any) => {
-            return {
-              value,
-              id: item.id[index],
-              highNodeId: item.highNodeId[index],
+          // 관계 타입이 typeInfo에 없다면 초기화합니다.
+          if (!typeInfo[relType]) {
+            typeInfo[relType] = {
+              count: 0,
+              relatedNodeTypes: {},
             };
-          });
-        }
+          }
 
-        return { type: key, data: data };
+          // 관련 노드 타입이 해당 관계 타입 아래에 없다면 초기화합니다.
+          if (!typeInfo[relType].relatedNodeTypes[relatedNodeType]) {
+            typeInfo[relType].relatedNodeTypes[relatedNodeType] = {
+              count: 0,
+              values: [],
+              id: [],
+              highNodeId: [],
+            };
+          }
+
+          // 해당 관련 노드 타입의 count를 증가시킵니다.
+          typeInfo[relType].relatedNodeTypes[relatedNodeType].count += 1;
+
+          // 노드의 이름을 추가합니다.
+          typeInfo[relType].relatedNodeTypes[relatedNodeType].values.push(
+            nodeName
+          );
+
+          // 노드의 아이디 추가합니다.
+          typeInfo[relType].relatedNodeTypes[relatedNodeType].id.push(nodeId);
+
+          // 해당 관계 타입의 count를 증가시킵니다.
+          typeInfo[relType].count += 1;
+
+          // highNodeId 값을 추가합니다.
+          typeInfo[relType].relatedNodeTypes[relatedNodeType].highNodeId.push(
+            highNodeIdValue
+          );
+        });
+
+        this.menuData = typeInfo;
+        this.menuDataArray = Object.keys(this.menuData).map((key) => {
+          const data = this.menuData[key];
+
+          // 각 relatedNodeTypes 항목에 대해 values와 id를 결합합니다.
+          for (let relatedNodeType in data.relatedNodeTypes) {
+            const item: any = data.relatedNodeTypes[relatedNodeType];
+            item.combined = item.values.map((value: any, index: any) => {
+              return {
+                value,
+                id: item.id[index],
+                highNodeId: item.highNodeId[index],
+              };
+            });
+          }
+
+          return { type: key, data: data };
+        });
       });
-      console.log('Type Info:', typeInfo);
-      console.log('구조 확인::', this.menuDataArray);
-    } catch (error) {
-      console.error('Error:', error);
-    }
   }
+
+  // async logAdjacentNodesAndRelationships(nodeId: any) {
+  //   const query = `
+  //   MATCH (n)-[r]-(m)
+  //   WHERE ID(n) = ${nodeId}
+  //   RETURN n, r, m
+  // `;
+  //   console.log(nodeId, '로 관계정보 탐색중...');
+  //   try {
+  //     const result = await this.neo4jService.runQuery(query);
+
+  //     console.log('결과값::', result);
+
+  //     // 데이터를 정리하는 객체를 초기화합니다.
+  //     const typeInfo: {
+  //       [relType: string]: {
+  //         count: number;
+  //         relatedNodeTypes: {
+  //           [relatedNodeType: string]: {
+  //             count: number;
+  //             values: string[];
+  //             id: string[];
+  //             highNodeId: string[];
+  //           };
+  //         };
+  //       };
+  //     } = {};
+
+  //     console.log('Query Result Length:', result.length);
+  //     // console.log('Query Result:', result);
+  //     // console.log(`Adjacent nodes and relationships for node ${nodeId}:`);
+  //     const highNodeId = nodeId;
+  //     result.forEach((record: any) => {
+  //       const [node, relationship, relatedNode] = record._fields;
+  //       const relType = relationship.type;
+  //       const relatedNodeType = relatedNode.properties.type;
+  //       const nodeName = relatedNode.properties.name;
+  //       const nodeId = relatedNode.identity.low;
+  //       const highNodeIdValue = highNodeId;
+  //       // console.log(nodeId);
+
+  //       // 관계 타입이 typeInfo에 없다면 초기화합니다.
+  //       if (!typeInfo[relType]) {
+  //         typeInfo[relType] = {
+  //           count: 0,
+  //           relatedNodeTypes: {},
+  //         };
+  //       }
+
+  //       // 관련 노드 타입이 해당 관계 타입 아래에 없다면 초기화합니다.
+  //       if (!typeInfo[relType].relatedNodeTypes[relatedNodeType]) {
+  //         typeInfo[relType].relatedNodeTypes[relatedNodeType] = {
+  //           count: 0,
+  //           values: [],
+  //           id: [],
+  //           highNodeId: [],
+  //         };
+  //       }
+
+  //       // 해당 관련 노드 타입의 count를 증가시킵니다.
+  //       typeInfo[relType].relatedNodeTypes[relatedNodeType].count += 1;
+
+  //       // 노드의 이름을 추가합니다.
+  //       typeInfo[relType].relatedNodeTypes[relatedNodeType].values.push(
+  //         nodeName
+  //       );
+
+  //       // 노드의 아이디 추가합니다.
+  //       typeInfo[relType].relatedNodeTypes[relatedNodeType].id.push(nodeId);
+
+  //       // 해당 관계 타입의 count를 증가시킵니다.
+  //       typeInfo[relType].count += 1;
+
+  //       // highNodeId 값을 추가합니다.
+  //       typeInfo[relType].relatedNodeTypes[relatedNodeType].highNodeId.push(
+  //         highNodeIdValue
+  //       );
+  //     });
+
+  //     this.menuData = typeInfo;
+  //     this.menuDataArray = Object.keys(this.menuData).map((key) => {
+  //       // return { type: key, data: this.menuData[key] };
+  //       const data = this.menuData[key];
+
+  //       // 각 relatedNodeTypes 항목에 대해 values와 id를 결합합니다.
+  //       for (let relatedNodeType in data.relatedNodeTypes) {
+  //         const item: any = data.relatedNodeTypes[relatedNodeType];
+  //         item.combined = item.values.map((value: any, index: any) => {
+  //           return {
+  //             value,
+  //             id: item.id[index],
+  //             highNodeId: item.highNodeId[index],
+  //           };
+  //         });
+  //       }
+
+  //       return { type: key, data: data };
+  //     });
+  //     console.log('Type Info:', typeInfo);
+  //     console.log('구조 확인::', this.menuDataArray);
+  //   } catch (error) {
+  //     console.error('Error:', error);
+  //   }
+  // }
 }

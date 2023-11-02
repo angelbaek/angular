@@ -1045,10 +1045,7 @@
                   <button>RESET</button>
                 </div>
               </div>
-              <div
-                class="filter-list-group"
-                [style.visibility]="visibleNodeType"
-              >
+              <div class="filter-list-group" [style.display]="visibleNodeType">
                 <div
                   class="graph-filter-list"
                   *ngFor="let item of filterType | keyvalue"
@@ -1101,26 +1098,68 @@
               </div>
             </div>
             <!--그래프 필터-->
-            <!-- <div class="graph-filter-box" *ngIf="filterType?.file">
+            <div class="graph-filter-box" *ngIf="filterObj.fileType">
               <div class="graph-filter-reset">
-                <div class="space-plus">
+                <div class="space-plus" (click)="showFileType()">
                   <img src="assets/images/depth-plus.png" alt="" />
                 </div>
-                <div class="space-minus">
+                <div class="space-minus" (click)="hiddenFileType()">
                   <img src="assets/images/depth-minus.png" alt="" />
                 </div>
                 <div class="title">File Type</div>
-                <div class="btn"><button>RESET</button></div>
-              </div>
-              <div class="graph-filter-list">
-                <div class="name">Software(3)</div>
-                <div class="choice">
-                  <div class="not"><button>not</button></div>
-                  <div class="and"><button>and</button></div>
-                  <div class="or"><button>or</button></div>
+                <div class="btn" style="border: none" (click)="fileTypeReset()">
+                  <button>RESET</button>
                 </div>
               </div>
-              <div class="graph-filter-list">
+              <div
+                class="graph-filter-list"
+                [style.display]="visibleFileType"
+                *ngFor="let item of fileTypeCounts | keyvalue"
+              >
+                <div class="name">{{ item.key + "(" + item.value + ")" }}</div>
+                <div class="choice">
+                  <div class="not">
+                    <button
+                      (click)="onButtonFileClick('not', getStringKey(item.key))"
+                      [class.button-active]="
+                        filterObj.fileType[getStringKey(item.key)]['not']
+                      "
+                      [disabled]="
+                        filterObj.fileOn !== '' && filterObj.fileOn !== 'not'
+                      "
+                    >
+                      not
+                    </button>
+                  </div>
+                  <div class="and">
+                    <button
+                      (click)="onButtonFileClick('and', getStringKey(item.key))"
+                      [class.button-active]="
+                        filterObj.fileType[getStringKey(item.key)]['and']
+                      "
+                      [disabled]="
+                        filterObj.fileOn !== '' && filterObj.fileOn !== 'and'
+                      "
+                    >
+                      and
+                    </button>
+                  </div>
+                  <div class="or">
+                    <button
+                      (click)="onButtonFileClick('or', getStringKey(item.key))"
+                      [class.button-active]="
+                        filterObj.fileType[getStringKey(item.key)]['or']
+                      "
+                      [disabled]="
+                        filterObj.fileOn !== '' && filterObj.fileOn !== 'or'
+                      "
+                    >
+                      or
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <!-- <div class="graph-filter-list">
                 <div class="name">Group(3)</div>
                 <div class="choice">
                   <div class="not"><button>not</button></div>
@@ -1135,8 +1174,8 @@
                   <div class="and"><button>and</button></div>
                   <div class="or"><button class="choice">or</button></div>
                 </div>
-              </div>
-            </div> -->
+              </div> -->
+            </div>
           </div>
         </div>
       </div>

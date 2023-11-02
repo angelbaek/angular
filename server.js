@@ -20,6 +20,27 @@ app.use(cors());
 // JSON 요청 본문 파싱
 app.use(bodyParser.json());
 
+// 좌측 Relation Info api
+app.post("/api/getAdjacentNodes", async (req, res) => {
+  console.log("Relation Info api requests!");
+  const nodeId = req.body.id;
+  const session = driver.session();
+  try {
+    const result = await session.run(`
+      MATCH (n)-[r]-(m)
+      WHERE ID(n) = ${nodeId}
+      RETURN n, r, m
+    `);
+    console.log("Relation Info api res success!");
+    res.json(result.records);
+  } catch (error) {
+    console.log("Relation Info api res failed!");
+    res
+      .status(500)
+      .send({ error: "An error occurred while fetching data from Neo4j." });
+  }
+});
+
 // 좌측 탭 클릭 노드 추가
 app.post("/api/lsna", async (req, res) => {
   console.log(req.body);
@@ -73,21 +94,23 @@ app.post("/api/hnkgd", async (req, res) => {
   try {
     const result = await session.run(
       // "match (n)-[r]-(m) where id(n) = $findId and m.type=$findType return m.type, r",
-      "MATCH (n)-[r]-(m) WHERE m.name CONTAINS $findWord AND m.type=$findType WITH m, COLLECT(DISTINCT type(r)) AS relationshipTypes RETURN m, relationshipTypes SKIP $findSkip LIMIT $findLimit",
+      // "MATCH (n)-[r]-(m) WHERE m.name CONTAINS $findWord AND m.type=$findType WITH m, COLLECT(DISTINCT type(r)) AS relationshipTypes RETURN m, relationshipTypes SKIP $findSkip LIMIT $findLimit",
+      "MATCH (n)-[r]-(m) WHERE m.name CONTAINS $findWord AND m.type=$findType WITH m, COLLECT(DISTINCT type(r)) AS relationshipTypes RETURN m, relationshipTypes SKIP $findSkip LIMIT 10",
       {
         findType: type,
         findWord: word,
         findSkip: neo4j.int(skip),
-        findLimit: neo4j.int(limit),
+        // findLimit: neo4j.int(limit),
       }
     );
     console.log(
-      "MATCH (n)-[r]-(m) WHERE m.name CONTAINS $findWord AND m.type=$findType WITH m, COLLECT(DISTINCT type(r)) AS relationshipTypes RETURN m, relationshipTypes SKIP $findSkip LIMIT $findLimit",
+      // "MATCH (n)-[r]-(m) WHERE m.name CONTAINS $findWord AND m.type=$findType WITH m, COLLECT(DISTINCT type(r)) AS relationshipTypes RETURN m, relationshipTypes SKIP $findSkip LIMIT $findLimit",
+      "MATCH (n)-[r]-(m) WHERE m.name CONTAINS $findWord AND m.type=$findType WITH m, COLLECT(DISTINCT type(r)) AS relationshipTypes RETURN m, relationshipTypes SKIP $findSkip LIMIT 10",
       {
         findType: type,
         findWord: word,
         findSkip: neo4j.int(skip),
-        findLimit: neo4j.int(limit),
+        // findLimit: neo4j.int(limit),
       }
     );
     const records = result.records.map((record) => record.toObject());

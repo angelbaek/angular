@@ -542,13 +542,13 @@ $(document).ready(function () {
   });
 
   //그래픽 필터 내용
-  $(".space-plus").click(function () {
-    $(".filter-list-group").removeClass("wrap-h-0");
-  });
+  // $(".space-plus").click(function () {
+  //   $(".filter-list-group").removeClass("wrap-h-0");
+  // });
 
-  $(".space-minus").click(function () {
-    $(".filter-list-group").addClass("wrap-h-0");
-  });
+  // $(".space-minus").click(function () {
+  //   $(".filter-list-group").addClass("wrap-h-0");
+  // });
 });
 
 // 우측 사이드 /

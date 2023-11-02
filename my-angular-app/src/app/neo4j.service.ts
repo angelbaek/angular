@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import * as neo4j from 'neo4j-driver';
-import { Neo4jConfig } from './neo4jConfig';
+import { Neo4jServiceConfig } from './neo4jConfig';
 
 @Injectable({
   providedIn: 'root',
@@ -12,9 +12,16 @@ export class Neo4jService {
     // Neo4j 드라이버 설정.
     // 'neo4j://your-neo4j-server-address' 를 실제 Neo4j 서버 주소로 교체하세요.
     // 'your-username' 과 'your-password' 를 실제 Neo4j 사용자 이름과 비밀번호로 교체하세요.
+    // this.driver = neo4j.driver(
+    //   `neo4j://192.168.32.22`,
+    //   neo4j.auth.basic('neo4j', 'root')
+    // );
     this.driver = neo4j.driver(
-      `neo4j://192.168.32.22`,
-      neo4j.auth.basic('neo4j', 'root')
+      Neo4jServiceConfig.serverUrl,
+      neo4j.auth.basic(
+        Neo4jServiceConfig.serverUser,
+        Neo4jServiceConfig.serverPassword
+      )
     );
   }
 
