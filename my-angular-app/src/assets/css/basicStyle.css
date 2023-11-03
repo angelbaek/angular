@@ -2087,6 +2087,8 @@ select option:hover {
 }
 .graph-filter-reset > .space-plus {
   background: var(--color-sub-3);
+  /* background: #fff; */
+  border: 1px solid var(--color-b2);
   width: 1.7rem;
   height: 1.7rem;
   display: flex;
@@ -2579,6 +2581,7 @@ canvas:focus {
   background-color: #ccc;
   color: #666;
 }
+
 div.more {
   margin-top: -1.1rem;
   margin-left: 2rem;
@@ -2590,9 +2593,32 @@ div.more {
   /* margin-bottom: -1rem; */
   height: 2.3rem;
 }
+
 div.more:hover {
   cursor: pointer;
   transition: 0.3s;
   background-color: var(--color-sub-3);
   color: #fff;
+}
+
+apx-chart {
+  padding: 0px 3rem;
+}
+
+.filter-list-group {
+  max-height: 300px;
+  overflow: scroll;
+}
+
+.graph-filter-box .space-plus:hover,
+.graph-filter-box .space-minus:hover,
+.graph-filter-box .space-plus.on:hover,
+.graph-filter-box .space-minus.on:hover {
+  background-color: var(--color-sub-1);
+}
+
+.graph-filter-box .space-plus.on,
+.graph-filter-box .space-minus.on {
+  /* background-color: var(--color-sub-3); */
+  background-color: var(--color-sub-1);
 }

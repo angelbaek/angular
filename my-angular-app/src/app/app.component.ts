@@ -11,6 +11,9 @@ import { ActivatedRoute } from '@angular/router';
 
 import NeoVis from 'neovis.js';
 
+/**
+ * 필터 타입 선언
+ */
 type FilterNodeType = {
   [key: string]: {
     or: boolean;
@@ -27,7 +30,9 @@ type FilterFileType = {
   };
 };
 
-//인터페이스
+/**
+ *  인터페이스 선언
+ */
 interface RelatedNodeType {
   //연관된 노드
   count: number;
@@ -54,11 +59,18 @@ interface MenuItem {
   isExpanded?: boolean; // isExpanded 속성 추가
 }
 
+/**
+ * 컴포넌트
+ */
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
 })
+
+/**
+ * 클래스
+ */
 export class AppComponent implements OnInit {
   angularIp: string = '192.168.32.22'; // 앵귤러 프로젝트 ip
   backendNodeExpressPort: string = '3000'; // 노드 익스프레스 ip
@@ -70,27 +82,28 @@ export class AppComponent implements OnInit {
   selectedNodeData: any; // 선택한 노드정보 객체
   cyperQueryRel: string = ''; // 쿼리 릴레이션 문자열
   initialCypher: string = ''; // 사이퍼쿼리 문자열
-  user: string = '';
-  nodeFontSize: number = 25;
-  edgeFontSize: number = 15;
-  /**
-   * URL 쿼리 문자열
-   */
-  apiData: any = [];
-  targetWord: string = '';
-  clickOff: any;
-
-  groupedNodes = new Map<string, { rawid: any; name: any }[]>();
+  user: string = ''; // user 정보객체
+  nodeFontSize: number = 25; // 노드 폰트사이즈
+  edgeFontSize: number = 15; // 엣지 폰트사이즈
+  apiData: any = []; // API 객체
+  targetWord: string = ''; // 문자열 해석
+  clickOff: any; // 클릭 비활성화 시 받을 객체
+  groupedNodes = new Map<string, { rawid: any; name: any }[]>(); // 그룹노드
   selectedGroup: string = ''; // 사용자가 선택한 그룹 이름
-  groupKeys: string[] = [];
+  groupKeys: string[] = []; // 그룹노드 key
+  isRelatedNodeClicked: boolean = false; // 연관된 노드 클릭객체
+  public chartOptions: any; // 차트옵션
+  public chartSeries: any[] = []; // 차트시리즈
 
-  isRelatedNodeClicked: boolean = false;
-
-  public chartOptions: any;
-  public chartSeries: any[] = [];
-
+  /**
+   * 생성자
+   * @param http http클라이언트
+   * @param router 라우터 이벤트 객체
+   * @param ngxFavicon 파비콘
+   * @param neo4jService 지금은 안쓰지만 클라이언트side에서 neo4j 접근하기 위한 객체
+   * @param route 라우터 이벤트 객체 안 라우트 쿼리해석에 사용될 객체
+   */
   constructor(
-    // 생성자
     private http: HttpClient,
     private router: Router,
     private ngxFavicon: AngularFaviconService,
@@ -121,19 +134,23 @@ export class AppComponent implements OnInit {
       });
   }
 
-  // 초기화
+  /**
+   * 초기화
+   */
   ngOnInit(): void {
     this.draw();
     this.ngxFavicon.setFavicon('../assets/images/favicon.ico');
   }
-  setupNodeEventListeners() {
-    // 노드가 추가될 때의 이벤트 핸들러
-  }
+  // setupNodeEventListeners() {
+  //   // 노드가 추가될 때의 이벤트 핸들러
+  // }
 
   // 챠트 로딩 보이기 객체
   chartLoadingVisibility: string = 'visible';
 
-  // 챠트 그래프
+  /**
+   * 챠트 그리기 메소드
+   */
   chart() {
     const nodesData = this.viz.network.body.data.nodes.get(); // 모든 노드 데이터 가져오기
     // `created` 속성이 있는 노드만 필터링
@@ -158,6 +175,16 @@ export class AppComponent implements OnInit {
       return; // 이후의 로직을 실행하지 않고 함수를 종료
     }
 
+    // 모든 시리즈 데이터에서 최대값을 찾습니다.
+    const maxDataValue = Math.max(
+      ...this.chartSeries.flatMap((series) => series.data)
+    );
+
+    // 최대값보다 10% 높은 값을 y축의 최대값으로 설정합니다.
+    const yAxisMax = maxDataValue + maxDataValue * 0.5;
+
+    console.log('맥스값::', yAxisMax);
+
     this.chartLoadingVisibility = 'hidden';
 
     const colors = {
@@ -180,7 +207,7 @@ export class AppComponent implements OnInit {
         type: 'bar',
         fontFamily: 'pretendard, sans-serif',
         height: '110', // 높이 설정
-        stacked: true, // 스택 설정
+        stacked: false, // 스택 설정
         toolbar: {
           show: false, // 툴바 숨기기
         },
@@ -196,6 +223,32 @@ export class AppComponent implements OnInit {
             console.log(clickedYear);
             console.log('그래프 탐색', clickedYear);
             this.showNodesByYear(clickedYear);
+
+            const clickedDataPointIndex = config.dataPointIndex;
+            const clickedSeriesIndex = config.seriesIndex;
+
+            // 클릭한 데이터 포인트의 x 값(카테고리)을 가져옵니다.
+            const clickedCategory =
+              this.chartOptions.xaxis.categories[clickedDataPointIndex];
+
+            // 클릭한 데이터 포인트에 세로 줄 주석을 추가합니다.
+            chartContext.updateOptions(
+              {
+                annotations: {
+                  xaxis: [
+                    {
+                      x: clickedCategory,
+                      borderColor: '#143c7f',
+                      // label: {
+                      //   text: '선택된 포인트',
+                      // },
+                    },
+                  ],
+                },
+              },
+              false,
+              false
+            ); // 두 번째 인자는 애니메이션 여부, 세 번째 인자는 업데이트 유형을 의미합니다.
           },
         },
       },
@@ -203,11 +256,11 @@ export class AppComponent implements OnInit {
         bar: {
           horizontal: false,
           borderRadius: 2,
-          barHeight: '100%',
           columnWidth: '60%',
-        },
-        dataLabels: {
-          position: 'top', // top, center, bottom
+          columnHeight: '70%',
+          dataLabels: {
+            position: 'top', // top, center, bottom
+          },
         },
       },
       xaxis: {
@@ -219,32 +272,64 @@ export class AppComponent implements OnInit {
           },
         },
         axisBorder: {
-          // color: colors.gridBorder,
+          show: false,
         },
         axisTicks: {
-          // color: colors.gridBorder,
+          show: false,
         },
-      },
-      grid: {
-        padding: {
-          bottom: -4,
-        },
-        borderColor: colors.gridBorder,
-        xaxis: {
-          lines: {
-            show: false,
+        crosshairs: {
+          fill: {
+            type: 'gradient',
+            gradient: {
+              colorFrom: '#D8E3F0',
+              colorTo: '#BED1E6',
+              stops: [0, 100],
+              opacityFrom: 0.4,
+              opacityTo: 0.5,
+            },
           },
-        },
-        yaxis: {
           show: true,
-          floating: true,
-          min: 6,
-          max: 6,
-          lines: {
-            show: false,
+          width: 1, // 선의 두께
+          position: 'back',
+          opacity: 0.9,
+          stroke: {
+            color: '#b6b6b6',
+            width: 1,
+            dashArray: 0,
           },
         },
+        tooltip: {
+          enabled: true,
+          offsetY: 5,
+          shared: true,
+          intersect: false, // 이 옵션을 false로 설정하면, 세로 줄이 데이터 포인트를 교차할 때만 표시되지 않습니다.
+          followCursor: true, // 마우스 커서를 따라다니도록 설정
+        },
       },
+      yaxis: {
+        // 나머지 y축 설정들...
+        max: yAxisMax,
+      },
+      // grid: {
+      //   padding: {
+      //     bottom: -4,
+      //   },
+      //   borderColor: colors.gridBorder,
+      //   xaxis: {
+      //     lines: {
+      //       show: false,
+      //     },
+      //   },
+      //   yaxis: {
+      //     show: false,
+      //     floating: false,
+      //     // min: 6,
+      //     // max: 6,
+      //     lines: {
+      //       show: false,
+      //     },
+      //   },
+      // },
       // legend: {
       //   show: true,
       //   position: 'top',
@@ -263,16 +348,46 @@ export class AppComponent implements OnInit {
         mode: 'light', // 테마 설정
       },
       tooltip: {
-        theme: 'light', // 툴팁 테마 설정
+        theme: 'light', // 툴팁 테마 설정,
+        fixed: {
+          enabled: true,
+          position: 'topRight',
+          offsetX: 130,
+          offsetY: 22,
+        },
+        y: [
+          {
+            formatter: function (y: any) {
+              if (typeof y !== 'undefined') {
+                return y.toFixed(0) + '노드';
+              }
+              return y;
+            },
+          },
+          {
+            formatter: function (y: any) {
+              if (typeof y !== 'undefined') {
+                return y.toFixed(2) + ' $';
+              }
+              return y;
+            },
+          },
+        ],
       },
       dataLabels: {
         enabled: true, // 데이터 라벨 활성화
-        position: 'inside', // 바의 안쪽에 텍스트 표시
-        // offsetY: 0, // Y축 방향으로 텍스트 위치 조정 (필요에 따라 조절)
+        textAnchor: 'end', // 바의 안쪽에 텍스트 표시
+        offsetY: -15, // Y축 방향으로 텍스트 위치 조정 (필요에 따라 조절)
         style: {
           fontSize: '12px',
-          colors: ['#fff'], // 텍스트 색상 설정 (바의 색상과 대비되게 설정)
+          colors: ['#333333'], // 텍스트 색상 설정 (바의 색상과 대비되게 설정)
         },
+        // dropShadow: {
+        //   enabled: true,
+        //   left: 2,
+        //   top: 2,
+        //   opacity: 0.5,
+        // },
       },
     };
 
@@ -288,6 +403,11 @@ export class AppComponent implements OnInit {
 
   compareCreated: string = '';
   countCreatedClick: number = 0;
+
+  /**
+   * 챠트 그리기에 사용되는 년도 처리 메소드
+   * @param year 년도
+   */
   showNodesByYear(year: string) {
     const nodes = this.viz.network.body.data.nodes;
     const nodeUpdateTarget: any = [];
@@ -351,6 +471,9 @@ export class AppComponent implements OnInit {
     nodes.update(nodeUpdateTarget);
   }
 
+  /**
+   * neovis를 이용하여 초기 viz 그래프를 setup후 렌더링 메소드
+   */
   draw() {
     const config: any = {
       containerId: 'viz',
@@ -417,23 +540,17 @@ export class AppComponent implements OnInit {
     // 결과 배열 초기화
     const result: string[] = [];
 
+    /**
+     * 렌더링 완료 후 각 노드들의 events를 처리할 메소드
+     */
     this.viz.registerOnEvent('completed', (evt: any) => {
-      this.viz.network.on('addNode', (event: any) => {
-        console.log('노드가 추가되었습니다:', event);
-      });
-      /**
-       * 노드를 선택했을때 이벤트
-       */
       this.viz.network.on('selectNode', (properties: any) => {
-        /**
-         *  Related Node 메소드 구현....
-         */
+        // 노드를 선택했을 때 이벤트
 
-        // 클릭된 노드의 ID
-        const clickedNodeId = properties.nodes[0];
+        const clickedNodeId = properties.nodes[0]; // 클릭된 노드의 ID
         this.clickOff = clickedNodeId;
 
-        // 2. 연관된 노드 찾기
+        // 연관된 노드 찾기
         const connectedNodes =
           this.viz.network.getConnectedNodes(clickedNodeId);
 
@@ -450,7 +567,7 @@ export class AppComponent implements OnInit {
           this.viz.network.body.data.nodes.update(nodeImageChange);
         }
 
-        // 3. 이미지 변경 (연관 노드)
+        // 이미지 변경 (연관 노드)
         connectedNodes.forEach((nodeId: any) => {
           const node = this.viz.network.body.data.nodes.get(nodeId);
           // console.log(node.image);
@@ -463,10 +580,9 @@ export class AppComponent implements OnInit {
           }
         });
 
-        //초기화
-        this.groupedNodes.clear();
-        // 연관된 노드 작업
+        this.groupedNodes.clear(); //초기화
         connectedNodes.forEach((nodeId: any) => {
+          // 연관된 노드 작업
           const target = this.viz.network.body.data.nodes.get(nodeId);
           // console.log('노드 찾아보자', target);
 
@@ -706,6 +822,9 @@ export class AppComponent implements OnInit {
 
   selectedGroups: string[] = []; // 선택된 그룹들을 저장하는 배열
 
+  /**
+   * canvas 풀스크린 메소드
+   */
   toggleFullScreen() {
     const vizElement = document.getElementById('viz');
 
@@ -740,6 +859,9 @@ export class AppComponent implements OnInit {
     }
   }
 
+  /**
+   * canva 줌인 메소드
+   */
   zoomIn() {
     const scale = this.viz.network.getScale();
     this.viz.network.moveTo({
@@ -747,6 +869,9 @@ export class AppComponent implements OnInit {
     });
   }
 
+  /**
+   * canva 줌아웃 메소드
+   */
   zoomOut() {
     const scale = this.viz.network.getScale();
     this.viz.network.moveTo({
@@ -858,6 +983,11 @@ export class AppComponent implements OnInit {
   }
 
   focusCount: number = 0;
+
+  /**
+   * 노드를 Focus 이벤트 처리 할 메소드
+   * @param nodeId focus할 노드의 raw id
+   */
   focusNode(nodeId: any) {
     this.viz.network.selectNodes([nodeId], true);
     this.focusCount++;
@@ -902,6 +1032,11 @@ export class AppComponent implements OnInit {
     }
   }
 
+  /**
+   * 더보기 버튼을 보여줄지 결정할 메소드
+   * @param relatedNode
+   * @returns
+   */
   shouldShowMoreButton(relatedNode: any): boolean {
     const currentCount = this.displayedItemsCount[relatedNode.key] || 0; // 현재 표시된 항목 수
     const totalCount = relatedNode?.['value']?.combined?.length || 0; // 전체 항목 수
@@ -909,7 +1044,11 @@ export class AppComponent implements OnInit {
   }
 
   displayedItemsCount: { [key: string]: number } = {};
-  //더 보기
+
+  /**
+   * 더보기 클릭 시 보여줄 갯수를 담당 할 메소드
+   * @param key 해당하는 Type값
+   */
   increaseDisplayedItems(key: string) {
     if (!this.displayedItemsCount[key]) {
       this.displayedItemsCount[key] = 10; // 처음에 10개 항목을 표시
@@ -918,6 +1057,10 @@ export class AppComponent implements OnInit {
     }
   }
 
+  /**
+   * 키워드 관련 그룹노드 API
+   * @param params API에 보낼 객체
+   */
   apiKeywordFromGroupNode(params: any) {
     this.http
       .post(
@@ -1116,6 +1259,15 @@ export class AppComponent implements OnInit {
         this.chart();
         this.filtering();
       });
+  }
+
+  timeLineGraphVisibility: string = 'flex';
+  timeGraphToggle() {
+    if (this.timeLineGraphVisibility == 'flex') {
+      this.timeLineGraphVisibility = 'none';
+    } else if ((this.timeLineGraphVisibility = 'none')) {
+      this.timeLineGraphVisibility = 'flex';
+    }
   }
 
   groupNodeOpenImage(nodeId: any) {
@@ -1474,6 +1626,11 @@ export class AppComponent implements OnInit {
             element.raw.properties.hash_type == nodeType)
         ) {
           element.hidden = false;
+          // updateTargetNodes.update(element);
+          nodesToUpdate.push(element);
+          break;
+        } else if (element.group == 'file' && element.raw == undefined) {
+          element.hidden = true;
           // updateTargetNodes.update(element);
           nodesToUpdate.push(element);
           break;

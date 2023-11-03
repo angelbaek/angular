@@ -459,7 +459,12 @@
 
       <!--하단 그래프영역- 가운데 영역 넓이 따라감-->
       <div></div>
-      <div class="graph-box" style="display: flex" *ngIf="chartOptions">
+      <div
+        class="graph-box"
+        style="display: flex"
+        *ngIf="chartOptions"
+        [style.display]="timeLineGraphVisibility"
+      >
         <!-- <div *ngIf="chartOptions">
           apexcharts 컴포넌트
           <apx-chart
@@ -494,6 +499,7 @@
               [theme]="chartOptions.theme"
               [tooltip]="chartOptions.tooltip"
               [dataLabels]="chartOptions.dataLabels"
+              style="display: block"
             >
               ></apx-chart
             >
@@ -1034,10 +1040,18 @@
             <!--그래프 필터-->
             <div class="graph-filter-box" *ngIf="filterType | keyvalue">
               <div class="graph-filter-reset">
-                <div class="space-plus" (click)="showNodeType()">
+                <div
+                  class="space-plus"
+                  (click)="showNodeType()"
+                  [ngClass]="{ on: visibleNodeType == 'block' }"
+                >
                   <img src="assets/images/depth-plus.png" alt="" />
                 </div>
-                <div class="space-minus" (click)="hiddenNodeType()">
+                <div
+                  class="space-minus"
+                  (click)="hiddenNodeType()"
+                  [ngClass]="{ on: visibleNodeType == 'none' }"
+                >
                   <img src="assets/images/depth-minus.png" alt="" />
                 </div>
                 <div class="title">Node Type</div>
@@ -1098,12 +1112,20 @@
               </div>
             </div>
             <!--그래프 필터-->
-            <div class="graph-filter-box" *ngIf="filterObj.fileType">
+            <div class="graph-filter-box" *ngIf="fileTypeCounts">
               <div class="graph-filter-reset">
-                <div class="space-plus" (click)="showFileType()">
+                <div
+                  class="space-plus"
+                  (click)="showFileType()"
+                  [ngClass]="{ on: visibleFileType == 'flex' }"
+                >
                   <img src="assets/images/depth-plus.png" alt="" />
                 </div>
-                <div class="space-minus" (click)="hiddenFileType()">
+                <div
+                  class="space-minus"
+                  (click)="hiddenFileType()"
+                  [ngClass]="{ on: visibleFileType == 'none' }"
+                >
                   <img src="assets/images/depth-minus.png" alt="" />
                 </div>
                 <div class="title">File Type</div>
@@ -1263,7 +1285,7 @@
           <button class="ai-search left-search-btn-wiki">WIKI</button>
         </div>
       </div>
-      <div class="center">
+      <div class="center" (click)="timeGraphToggle()">
         <button class="graph-btn">TIME GRAPH ON</button>
       </div>
       <div class="right">

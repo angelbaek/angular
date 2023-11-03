@@ -77,10 +77,12 @@ app.post("/api/lsna", async (req, res) => {
 
 //상위 노드가 keyword인 그룹노드 더블클릭 시 api
 app.post("/api/hnkgd", async (req, res) => {
-  console.log(req.body);
+  console.log("상위 노드가 keyword인 그룹노드 API req");
   let type = req.body.type;
   if (type == "registry") {
     type = "windows-registry-key";
+  } else if (type == "Email") {
+    type = "email";
   }
   const word = req.body.word;
   let limitValue = Number(req.body.limit);
@@ -114,6 +116,14 @@ app.post("/api/hnkgd", async (req, res) => {
       }
     );
     const records = result.records.map((record) => record.toObject());
+    records.forEach((element) => {
+      if (element.m.properties.type == "registry") {
+        element.m.properties.type = "windows-registry-key";
+      } else if (element.m.properties.type == "email") {
+        element.m.properties.type = "Email";
+      }
+    });
+    console.log("상위 노드가 keyword인 그룹노드 API response");
     // console.log(records);
     res.json(records);
   } catch (error) {
@@ -204,6 +214,8 @@ app.post("/api/all/node", async (req, res) => {
         mTypes[i] = "Software";
       } else if (mTypes[i] == "attack-pattern") {
         mTypes[i] = "Technique";
+      } else if (mTypes[i] == "intrusion-set") {
+        mTypes[i] = "Group";
       }
     }
     let uniqueMTyps = [...new Set(mTypes)];
@@ -355,12 +367,18 @@ app.post("/api/lgnafgn", async (req, res) => {
     try {
       const result = await session.run(
         // "MATCH (n)-[r]-(m) WHERE ID(n) = $findID and m.type=$findType RETURN r,m skip $findSkip limit $findLimit",
-        "MATCH (n)-[r]-(m) WHERE ID(n) = $findID and m.type=$findType WITH DISTINCT m, COLLECT(r) as rels RETURN rels,m skip $findSkip limit $findLimit",
+        // "MATCH (n)-[r]-(m) WHERE ID(n) = $findID and m.type=$findType WITH DISTINCT m, COLLECT(r) as rels RETURN rels,m skip $findSkip limit $findLimit",
+        // {
+        //   findType: typePart,
+        //   findID: idPart,
+        //   findSkip: neo4j.int(skip),
+        //   findLimit: neo4j.int(limit),
+        // }
+        "MATCH (n)-[r]-(m) WHERE ID(n) = $findID and m.type=$findType WITH DISTINCT m, COLLECT(r) as rels RETURN rels,m skip $findSkip limit 10",
         {
           findType: typePart,
           findID: idPart,
           findSkip: neo4j.int(skip),
-          findLimit: neo4j.int(limit),
         }
         // "MATCH (n)-[r]-(m) WHERE ID(n) = $findID and m.type=$findType RETURN r,m skip 0 limit 10",
         // { findType: typePart, findID: idPart }
@@ -369,8 +387,10 @@ app.post("/api/lgnafgn", async (req, res) => {
         // { findType: typePart, findID: idPart, content: word }
       );
       console.log(
-        "MATCH (n)-[r]-(m) WHERE ID(n) = $findID and m.type=$findType RETURN r,m skip $findSkip limit $findLimit",
-        { findType: typePart, findID: idPart, findSkip: skip, findLimit: limit }
+        // "MATCH (n)-[r]-(m) WHERE ID(n) = $findID and m.type=$findType RETURN r,m skip $findSkip limit $findLimit",
+        // { findType: typePart, findID: idPart, findSkip: skip, findLimit: limit }
+        "MATCH (n)-[r]-(m) WHERE ID(n) = $findID and m.type=$findType RETURN r,m skip $findSkip limit 10",
+        { findType: typePart, findID: idPart, findSkip: skip }
         // "MATCH (n)-[r]-(m) WHERE ID(n) = $findID and m.type=$findType RETURN r,m skip 0 limit 10",
         // { findType: typePart, findID: idPart }
         // "MATCH (n)-[r]-(m) WHERE ID(n) = $findID and m.type=$findType and tolower(n.name) contains tolower($content) RETURN m limit 10",
@@ -731,6 +751,8 @@ app.post("/api/data", async (req, res) => {
         console.log(element);
         if (element["n.type"] == "windows-registry-key") {
           element["n.type"] = "registry";
+        } else if (element["n.type"] == "email") {
+          element["n.type"] = "Email";
         }
       });
       const response = {

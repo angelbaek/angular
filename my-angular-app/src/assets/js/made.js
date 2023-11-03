@@ -608,36 +608,36 @@ $(function () {
 });
 
 //그래프 박스 /
-$(function () {
-  var duration = 300;
-  var $bnav = $(".find-body");
-  var $side = $(".graph-box");
-  var $sidebtn = $bnav.find(".graph-btn").on("click", function () {
-    $side.toggleClass("open");
+// $(function () {
+//   var duration = 300;
+//   var $bnav = $(".find-body");
+//   var $side = $(".graph-box");
+//   var $sidebtn = $bnav.find(".graph-btn").on("click", function () {
+//     $side.toggleClass("open");
 
-    if ($side.hasClass("open")) {
-      $(".graph-box").addClass("wrap-h-0");
-    } else {
-      $(".graph-box").removeClass("wrap-h-0");
-    }
-  });
-});
+//     if ($side.hasClass("open")) {
+//       $(".graph-box").addClass("wrap-h-0");
+//     } else {
+//       $(".graph-box").removeClass("wrap-h-0");
+//     }
+//   });
+// });
 
 //그래프 설정 박스 /
-$(function () {
-  var duration = 300;
-  var $bnav = $(".find-body");
-  var $side = $(".graph-search-setting");
-  var $sidebtn = $bnav.find(".graph-path-btn").on("click", function () {
-    $side.toggleClass("open");
+// $(function () {
+//   var duration = 300;
+//   var $bnav = $(".find-body");
+//   var $side = $(".graph-search-setting");
+//   var $sidebtn = $bnav.find(".graph-path-btn").on("click", function () {
+//     $side.toggleClass("open");
 
-    if ($side.hasClass("open")) {
-      $(".graph-search-setting").removeClass("wrap-h-0");
-    } else {
-      $(".graph-search-setting").addClass("wrap-h-0");
-    }
-  });
-});
+//     if ($side.hasClass("open")) {
+//       $(".graph-search-setting").removeClass("wrap-h-0");
+//     } else {
+//       $(".graph-search-setting").addClass("wrap-h-0");
+//     }
+//   });
+// });
 
 //ai채팅 박스 /
 $(function () {
