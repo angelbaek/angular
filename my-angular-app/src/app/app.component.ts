@@ -218,20 +218,6 @@ export class AppComponent implements OnInit {
         foreColor: colors.bodyColor, // 전경색 설정
         // ... 기존의 chart 옵션들
         events: {
-          // mouseMove: function (event: any, chartContext: any, config: any) {
-          //   var tooltip = chartContext.el.querySelector('.apexcharts-tooltip');
-          //   var pointsArray = config.globals.pointsArray;
-          //   var seriesIndex = config.seriesIndex;
-          //   var dataPointIndex =
-          //     config.dataPointIndex === -1 ? 0 : config.dataPointIndex;
-
-          //   if (seriesIndex !== -1) {
-          //     var position = pointsArray[seriesIndex][dataPointIndex];
-
-          //     tooltip.style.top = position[1] + 'px';
-          //     tooltip.style.left = position[0] + 'px';
-          //   }
-          // },
           dataPointSelection: (event: any, chartContext: any, config: any) => {
             const clickedBarIndex = config.dataPointIndex;
             const clickedYear =
@@ -259,7 +245,7 @@ export class AppComponent implements OnInit {
                         borderColor: 'gray',
                         strokeDashArray: 5,
                         // label: {
-                        //   text: '선택된 포인트',
+                        //   text: 'ON',
                         // },
                       },
                     ],
@@ -318,11 +304,15 @@ export class AppComponent implements OnInit {
           fill: {
             type: 'gradient',
             gradient: {
-              colorFrom: '#D8E3F0',
-              colorTo: '#BED1E6',
+              // colorFrom: '#D8E3F0',
+              // colorTo: '#BED1E6',
+              colorFrom: '#143c7f',
+              colorTo: '#597ead',
               stops: [0, 100],
-              opacityFrom: 0.4,
-              opacityTo: 0.5,
+              // opacityFrom: 0.4,
+              // opacityTo: 0.5,
+              opacityFrom: 0,
+              opacityTo: 0,
             },
           },
           show: true,
@@ -448,9 +438,9 @@ export class AppComponent implements OnInit {
 
       dataLabels: {
         enabled: true, // 데이터 라벨 활성화
-        textAnchor: 'end', // 바의 안쪽에 텍스트 표시
+        textAnchor: 'middle', // 바의 안쪽에 텍스트 표시
         offsetY: -15, // Y축 방향으로 텍스트 위치 조정 (필요에 따라 조절)
-        offsetX: 2,
+        // offsetX: 2,
         style: {
           fontSize: '12px',
           colors: ['#333333'], // 텍스트 색상 설정 (바의 색상과 대비되게 설정)
@@ -767,7 +757,7 @@ export class AppComponent implements OnInit {
         const typeEdgeToObj = typeof edgeToObj;
 
         if (clickedNodeIds.length > 0) {
-          const clickedNodeId = clickedNodeIds[0];
+          let clickedNodeId = clickedNodeIds[0];
           // 여기서 원하는 작업 수행
           console.log('노드가 더블클릭됨:', clickedNodeId);
           let typeCheck = typeof clickedNodeId;
@@ -848,6 +838,7 @@ export class AppComponent implements OnInit {
                 if (count == 0 || count >= 1) {
                   // 좌측 노드 클릭 후 더블클릭 시 안되 잠시 주석처리
                   // 보낼 객체 type과 target 보내기
+
                   const reqObj: any = {
                     type: clickedNodeId,
                     word: this.targetWord,
@@ -1136,12 +1127,9 @@ export class AppComponent implements OnInit {
           const rawId = element.m.identity.low;
           const rawName = element.m.properties.name;
           const rawProperties = element.m.properties;
-          let rawType = element.m.properties.type;
-          if (rawType == 'windows-registry-key') {
-            rawType = 'registry';
-          }
+          let rawType = this.typeConfirm(element.m.properties.type);
           const edgeLabel = element.relationshipTypes[0];
-          const nodeId = params.type;
+          const nodeId = this.typeConfirm(params.type);
           // 만약 기존에 이미 노드가 추가되어있을 경우 relation만 추가
           if (this.viz.network.body.data.nodes.get(rawId)) {
             //그룹노드와 원본노드 엣지 추가
@@ -1158,6 +1146,12 @@ export class AppComponent implements OnInit {
             } else {
               // 원본 그룹 노드
               console.log('nodeId에 숫자가 포함되어 있지 않습니다.');
+              this.viz.network.body.data.edges.add({
+                label: edgeLabel,
+                // id: rawId,
+                from: nodeId,
+                to: rawId,
+              });
             }
           } else {
             this.viz.network.body.data.nodes.add({
@@ -1209,6 +1203,21 @@ export class AppComponent implements OnInit {
       });
   }
 
+  typeConfirm(params: any) {
+    if (params == 'attack-pattern') {
+      return 'Technique';
+    } else if (params == 'tool') {
+      return 'Software';
+    } else if (params == 'intrusion-set') {
+      return 'Group';
+    } else if (params == 'ipv4_addr') {
+      return 'ipv4-addr';
+    } else if (params == 'windows-registry-key') {
+      return 'registry';
+    }
+    return params;
+  }
+
   apiAllNodeGet(params: any) {
     this.http
       .post(
@@ -1223,12 +1232,7 @@ export class AppComponent implements OnInit {
           console.log('다중노드 발견');
           console.log('더블클릭 한 노드 id:', params.id);
           for (var i = 0; i < response.data.mTypes.length; i++) {
-            let groupLabel = response.data.mTypes[i];
-            if (groupLabel == 'email') {
-              groupLabel = 'Email';
-            } else if (groupLabel == 'windows-registry-key') {
-              groupLabel = 'registry';
-            }
+            let groupLabel = this.typeConfirm(response.data.mTypes[i]);
             let rawId = params.id;
             // 만약 그룹 노드가 이미 있을 경우
             let findGroupNodeId = groupLabel + '_from_' + rawId;
@@ -1366,7 +1370,56 @@ export class AppComponent implements OnInit {
             // });
           } else {
             // 없을때
-            console.log('노드 추가 로직 구현중...');
+            const parentId = params.id;
+            const rawId = element.m.identity.low;
+            const rawName = element.m.properties.name;
+            const rawType = element.m.properties.type;
+            const rawProperties = element.m.properties;
+            const edgeLabel = params.type.rTypes[0];
+            console.log('노드 추가 로직 구현중...', element, params);
+            this.viz.network.body.data.nodes.add({
+              id: rawId,
+              label: rawName,
+              title: rawName,
+              shape: 'image',
+              group: rawType,
+              image: `../assets/images/${rawType}/${rawType}_4.png`,
+              raw: { properties: rawProperties },
+              visConfig: {
+                nodes: {
+                  size: 55,
+                  font: {
+                    // background: 'black',
+                    color: '#343434',
+                    size: this.nodeFontSize, // px
+                    face: 'pretendard',
+                    strokeWidth: 2, // px
+                    // strokeColor: "blue",
+                  },
+                },
+
+                edges: {
+                  arrows: {
+                    to: { enabled: true },
+                  },
+                  font: {
+                    // background: 'black',
+                    color: '#343434',
+                    size: this.edgeFontSize, // px
+                    face: 'pretendard',
+                    strokeWidth: 2, // px
+                    // strokeColor: "blue",
+                  },
+                },
+              },
+            });
+            //그룹노드와 원본노드 엣지 추가
+            this.viz.network.body.data.edges.add({
+              label: edgeLabel,
+              // id: rawId,
+              from: parentId,
+              to: rawId,
+            });
             this.filtering();
           }
         });
@@ -1835,7 +1888,7 @@ export class AppComponent implements OnInit {
       )
       .subscribe((response: any) => {
         console.log(response);
-        const label = response.groupLabel;
+        const label = this.typeConfirm(response.groupLabel);
         const relationLabel = response.relationLabel;
         // 이미 있는 그룹노드인지 확인
         const findGroupNodeId = label + '_from_' + rawId;
@@ -1927,7 +1980,7 @@ export class AppComponent implements OnInit {
           console.log('다중 그룹 생성');
           response.data.forEach((element: any) => {
             console.log(element);
-            let groupLabel = element['m.type'];
+            let groupLabel = this.typeConfirm(element['m.type']);
             // if (groupLabel == 'domain-name') {
             //   groupLabel = 'domain_name';
             // }
@@ -1976,7 +2029,7 @@ export class AppComponent implements OnInit {
         } else if (!response.multi) {
           console.log('다중 그룹이 아니지만 상위 노드와 같은지 확인해야함');
           console.log(response);
-          const lowType = response.data[0]['m.type'];
+          const lowType = this.typeConfirm(response.data[0]['m.type']);
           const highGroupNode =
             this.viz.network.body.data.edges.get(nodeId).from;
           if (lowType != highGroupNode) {
@@ -2042,7 +2095,7 @@ export class AppComponent implements OnInit {
           console.log('1068 찾아보자', element);
           const rawId = element.m.identity.low;
           const rawName = element.m.properties.name;
-          const rawType = element.m.properties.type;
+          const rawType = this.typeConfirm(element.m.properties.type);
           const rawProperties = element.m.properties;
           const edgeLabel = element.rels[0].type;
 
@@ -2233,7 +2286,7 @@ export class AppComponent implements OnInit {
         const id = params.id;
         const name = params.name;
         const properties = response[0].n.properties;
-        const type = response[0].n.properties.type;
+        const type = this.typeConfirm(response[0].n.properties.type);
         this.viz.network.body.data.nodes.add({
           id: id,
           label: name,
@@ -2292,6 +2345,10 @@ export class AppComponent implements OnInit {
       )
       .subscribe((response: any) => {
         console.log('그래프 검색결과', response);
+        if (response['windows-registry-key']) {
+          response['registry'] = response['windows-registry-key'];
+          delete response['windows-registry-key'];
+        }
         this.data = response;
         console.log('data:::', this.data);
       });
@@ -2300,7 +2357,7 @@ export class AppComponent implements OnInit {
   firstGraphName(response: any) {
     this.viz.network.setData({ nodes: [], edges: [] });
     console.log('네임 노드 상위그룹노드 생성', response);
-    let name = response.data[0].n.labels[0];
+    let name = this.typeConfirm(response.data[0].n.labels[0]);
     this.viz.network.body.data.nodes.add({
       id: name,
       label: name,
@@ -2340,7 +2397,7 @@ export class AppComponent implements OnInit {
     console.log('하위노드 수정중...', response.data);
     response.data.forEach((element: any) => {
       let rawId = parseInt(element.n.elementId);
-      let rawLabel = element.n.labels[0];
+      let rawLabel = this.typeConfirm(element.n.labels[0]);
       let rawProperties = element.n.properties;
       // console.log(this.viz.network.body.data.nodes);
       // console.log('결과물:::', rawId, rawLabel);
@@ -2440,7 +2497,9 @@ export class AppComponent implements OnInit {
     response.data.forEach((element: any) => {
       console.log(element['n.type'] || element['m.type']);
       // let type = element['n.type'];
-      let type = element['n.type'] || element['m.type'];
+      let type =
+        this.typeConfirm(element['n.type']) ||
+        this.typeConfirm(element['m.type']);
       this.viz.network.body.data.nodes.add({
         id: type,
         label: type,
@@ -2500,7 +2559,7 @@ export class AppComponent implements OnInit {
       .subscribe((response: any) => {
         console.log(response);
         const rawId = response[0].n.identity.low;
-        const rawType = response[0].n.properties.type;
+        const rawType = this.typeConfirm(response[0].n.properties.type);
         const rawName = response[0].n.properties.name;
         const rawProperties = response[0].n.properties;
         const edgeLabel = response[0].r.type;
@@ -2511,7 +2570,7 @@ export class AppComponent implements OnInit {
           let word = rawType + '_from_' + targetHighNodeId;
           console.log('이러한 상위노드가 있나?', word);
           console.log('상위 노드 id', highNodeId);
-          const groupLabel = rawType;
+          const groupLabel = this.typeConfirm(rawType);
           if (!this.viz.network.body.data.nodes.get(word)) {
             console.log(this.viz.network.body.data.nodes.get(word));
             console.log('그룹노드 없음');

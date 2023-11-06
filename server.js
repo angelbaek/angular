@@ -59,11 +59,7 @@ app.post("/api/lsna", async (req, res) => {
     });
     const records = result.records.map((record) => record.toObject());
     console.log(records);
-    records.forEach((element) => {
-      if (element.n.properties.type == "windows-registry-key") {
-        element.n.properties.type = "registry";
-      }
-    });
+
     res.json(records);
   } catch (error) {
     console.error(error); // 에러 로그 출력
@@ -79,11 +75,11 @@ app.post("/api/lsna", async (req, res) => {
 app.post("/api/hnkgd", async (req, res) => {
   console.log("상위 노드가 keyword인 그룹노드 API req");
   let type = req.body.type;
+
   if (type == "registry") {
     type = "windows-registry-key";
-  } else if (type == "Email") {
-    type = "email";
   }
+
   const word = req.body.word;
   let limitValue = Number(req.body.limit);
   if (isNaN(limitValue)) {
@@ -116,13 +112,7 @@ app.post("/api/hnkgd", async (req, res) => {
       }
     );
     const records = result.records.map((record) => record.toObject());
-    records.forEach((element) => {
-      if (element.m.properties.type == "registry") {
-        element.m.properties.type = "windows-registry-key";
-      } else if (element.m.properties.type == "email") {
-        element.m.properties.type = "Email";
-      }
-    });
+
     console.log("상위 노드가 keyword인 그룹노드 API response");
     // console.log(records);
     res.json(records);
@@ -205,19 +195,7 @@ app.post("/api/all/node", async (req, res) => {
     //     element = "ipv4-addr";
     //   }
     // });
-    for (let i = 0; i < mTypes.length; i++) {
-      if (mTypes[i] == "ipv4_addr") {
-        mTypes[i] = "ipv4-addr";
-      } else if (mTypes[i] == "windows-registry-key") {
-        mTypes[i] = "registry";
-      } else if (mTypes[i] == "tool") {
-        mTypes[i] = "Software";
-      } else if (mTypes[i] == "attack-pattern") {
-        mTypes[i] = "Technique";
-      } else if (mTypes[i] == "intrusion-set") {
-        mTypes[i] = "Group";
-      }
-    }
+
     let uniqueMTyps = [...new Set(mTypes)];
     let uniqueRTyps = uniqueMTyps.map((mType) => rTypes[mTypes.indexOf(mType)]);
     const uniqueTypeLength = uniqueMTyps.length;
@@ -351,11 +329,11 @@ app.post("/api/lgnafgn", async (req, res) => {
     let parts = type.split("_from_");
 
     let typePart = parts[0]; // "Software"
-    let idPart = parseInt(parts[1]); // "410699"
     if (typePart == "registry") {
-      console.log("레지스트리 확인");
       typePart = "windows-registry-key";
     }
+    let idPart = parseInt(parts[1]); // "410699"
+
     // else if (typePart == "domain_name") {
     //   typePart = "domain-name";
     // }
@@ -398,13 +376,6 @@ app.post("/api/lgnafgn", async (req, res) => {
       );
       const records = result.records.map((record) => record.toObject());
       console.log(records);
-      records.forEach((element) => {
-        // console.log("탐색중", element);
-        if (element.m.properties.type == "windows-registry-key") {
-          element.m.properties.type = "registry";
-          console.log("바뀜");
-        }
-      });
 
       res.json(records);
       // let typeLength=[];
@@ -448,10 +419,6 @@ app.post("/api/lgnafgn", async (req, res) => {
     return;
   }
 
-  if (type == "registry") {
-    console.log("레지스트리 확인");
-    type = "windows-registry-key";
-  }
   // else if (typePart == "domain_name") {
   //   typePart = "domain-name";
   // }
@@ -475,9 +442,7 @@ app.post("/api/lgnafgn", async (req, res) => {
     records.forEach((element) => {
       console.log(element);
       console.log(element.n.properties);
-      if (element.n.properties.type == "windows-registry-key") {
-        element.n.properties.type = "registry";
-      }
+
       // console.log(element.n);
       if (element.n.labels) {
         element.n.labels.forEach((label) => {
@@ -531,9 +496,6 @@ app.post("/api/graphResultNodeAdd", async (req, res) => {
     );
     const records = result.records.map((record) => record.toObject());
 
-    if (records[0].n.properties.type == "windows-registry-key") {
-      records[0].n.properties.type = "registry";
-    }
     console.log(records);
     res.json(records);
   } catch (error) {
@@ -616,9 +578,6 @@ app.post("/api/graphResult", async (req, res) => {
         // const relationship = element.r.type; // 이 부분은 가정한 내용입니다.
 
         // 레지스트리 값으로 변경
-        if (type == "windows-registry-key") {
-          type = "registry";
-        }
 
         // responsDataGraph에 해당 type 키가 없으면 초기화
         if (!responsDataGraph[type]) {
@@ -656,11 +615,6 @@ app.post("/api/graphResult", async (req, res) => {
         const id = element.n.identity.low;
         const name = element.n.properties.name;
         // const relationship = element.r.type; // 이 부분은 가정한 내용입니다.
-
-        // 레지스트리 값으로 변경
-        if (type == "windows-registry-key") {
-          type = "registry";
-        }
 
         // responsDataGraph에 해당 type 키가 없으면 초기화
         if (!responsDataGraph[type]) {
@@ -747,14 +701,7 @@ app.post("/api/data", async (req, res) => {
       );
       const records = result.records.map((record) => record.toObject());
       // console.log(records);
-      records.forEach((element) => {
-        console.log(element);
-        if (element["n.type"] == "windows-registry-key") {
-          element["n.type"] = "registry";
-        } else if (element["n.type"] == "email") {
-          element["n.type"] = "Email";
-        }
-      });
+
       const response = {
         label: "keyword",
         data: records,
