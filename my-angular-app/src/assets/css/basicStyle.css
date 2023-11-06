@@ -2622,3 +2622,10 @@ apx-chart {
   /* background-color: var(--color-sub-3); */
   background-color: var(--color-sub-1);
 }
+
+.apexcharts-tooltip {
+  transform: translate(
+    0,
+    -65%
+  ) !important; /* 툴팁을 완전히 막대 위로 올립니다. */
+}

@@ -176,14 +176,17 @@ export class AppComponent implements OnInit {
     }
 
     // 모든 시리즈 데이터에서 최대값을 찾습니다.
-    const maxDataValue = Math.max(
-      ...this.chartSeries.flatMap((series) => series.data)
-    );
+    // const maxDataValue = Math.max(
+    //   ...this.chartSeries.flatMap((series) => series.data)
+    // );
+    const maxDataValue = Math.max(...(Object.values(dataCount) as number[]));
 
     // 최대값보다 10% 높은 값을 y축의 최대값으로 설정합니다.
-    const yAxisMax = maxDataValue + maxDataValue * 0.5;
+    // const yAxisMax = maxDataValue + maxDataValue * 0.2;
+    console.log('반올림 전 값: ', maxDataValue);
+    const yAxisMax = Math.ceil(maxDataValue + maxDataValue * 0.1);
 
-    console.log('맥스값::', yAxisMax);
+    console.log('맥스값::', yAxisMax, '객체::', dataCount);
 
     this.chartLoadingVisibility = 'hidden';
 
@@ -215,6 +218,20 @@ export class AppComponent implements OnInit {
         foreColor: colors.bodyColor, // 전경색 설정
         // ... 기존의 chart 옵션들
         events: {
+          // mouseMove: function (event: any, chartContext: any, config: any) {
+          //   var tooltip = chartContext.el.querySelector('.apexcharts-tooltip');
+          //   var pointsArray = config.globals.pointsArray;
+          //   var seriesIndex = config.seriesIndex;
+          //   var dataPointIndex =
+          //     config.dataPointIndex === -1 ? 0 : config.dataPointIndex;
+
+          //   if (seriesIndex !== -1) {
+          //     var position = pointsArray[seriesIndex][dataPointIndex];
+
+          //     tooltip.style.top = position[1] + 'px';
+          //     tooltip.style.left = position[0] + 'px';
+          //   }
+          // },
           dataPointSelection: (event: any, chartContext: any, config: any) => {
             const clickedBarIndex = config.dataPointIndex;
             const clickedYear =
@@ -232,23 +249,44 @@ export class AppComponent implements OnInit {
               this.chartOptions.xaxis.categories[clickedDataPointIndex];
 
             // 클릭한 데이터 포인트에 세로 줄 주석을 추가합니다.
-            chartContext.updateOptions(
-              {
-                annotations: {
-                  xaxis: [
-                    {
-                      x: clickedCategory,
-                      borderColor: '#143c7f',
-                      // label: {
-                      //   text: '선택된 포인트',
-                      // },
-                    },
-                  ],
+            if (this.timeLineGraphverticalLine) {
+              chartContext.updateOptions(
+                {
+                  annotations: {
+                    xaxis: [
+                      {
+                        x: clickedCategory,
+                        borderColor: 'gray',
+                        strokeDashArray: 5,
+                        // label: {
+                        //   text: '선택된 포인트',
+                        // },
+                      },
+                    ],
+                  },
                 },
-              },
-              false,
-              false
-            ); // 두 번째 인자는 애니메이션 여부, 세 번째 인자는 업데이트 유형을 의미합니다.
+                false,
+                false
+              ); // 두 번째 인자는 애니메이션 여부, 세 번째 인자는 업데이트 유형을 의미합니다.
+            } else if (!this.timeLineGraphverticalLine) {
+              chartContext.updateOptions(
+                {
+                  annotations: {
+                    xaxis: [
+                      {
+                        x: clickedCategory,
+                        borderColor: 'none',
+                        // label: {
+                        //   text: '선택된 포인트',
+                        // },
+                      },
+                    ],
+                  },
+                },
+                false,
+                false
+              ); // 두 번째 인자는 애니메이션 여부, 세 번째 인자는 업데이트 유형을 의미합니다.
+            }
           },
         },
       },
@@ -257,7 +295,6 @@ export class AppComponent implements OnInit {
           horizontal: false,
           borderRadius: 2,
           columnWidth: '60%',
-          columnHeight: '70%',
           dataLabels: {
             position: 'top', // top, center, bottom
           },
@@ -295,20 +332,30 @@ export class AppComponent implements OnInit {
           stroke: {
             color: '#b6b6b6',
             width: 1,
-            dashArray: 0,
+            dashArray: 5,
           },
         },
         tooltip: {
           enabled: true,
-          offsetY: 5,
+          offsetY: 7,
           shared: true,
           intersect: false, // 이 옵션을 false로 설정하면, 세로 줄이 데이터 포인트를 교차할 때만 표시되지 않습니다.
           followCursor: true, // 마우스 커서를 따라다니도록 설정
         },
       },
       yaxis: {
-        // 나머지 y축 설정들...
-        max: yAxisMax,
+        max: yAxisMax, // 최대값을 데이터 포인트 최대값보다 크게 설정
+        tickAmount: 3, // y축에 표시할 눈금의 총 개수를 정의 (예시)
+        labels: {
+          formatter: function (val: any) {
+            if (val === yAxisMax) {
+              return val.toFixed(0); // 최대값일 경우 정수로 포맷하여 반환
+            }
+            // 다른 값들에 대한 포맷은 기본 로직을 사용
+            return val.toFixed(0); // 값을 정수로 포맷
+          },
+        },
+        // 기타 y축 설정
       },
       // grid: {
       //   padding: {
@@ -349,12 +396,12 @@ export class AppComponent implements OnInit {
       },
       tooltip: {
         theme: 'light', // 툴팁 테마 설정,
-        fixed: {
-          enabled: true,
-          position: 'topRight',
-          offsetX: 130,
-          offsetY: 22,
-        },
+        // fixed: {
+        //   enabled: false,
+        //   position: 'topRight',
+        //   offsetX: 130,
+        //   offsetY: 22,
+        // },
         y: [
           {
             formatter: function (y: any) {
@@ -374,10 +421,36 @@ export class AppComponent implements OnInit {
           },
         ],
       },
+      // tooltip: {
+      //   theme: 'light',
+      //   custom: function ({
+      //     series,
+      //     seriesIndex,
+      //     dataPointIndex,
+      //     w,
+      //   }: {
+      //     series: any[]; // 여기서 `any` 대신 더 구체적인 타입을 사용하는 것이 좋습니다.
+      //     seriesIndex: number;
+      //     dataPointIndex: number;
+      //     w: any; // `w`의 구체적인 타입을 알고 있다면 `any` 대신 그 타입을 사용하세요.
+      //   }) {
+      //     // 함수 구현...
+      //     return (
+      //       '<div class="arrow_box">' +
+      //       '<span>' +
+      //       series[seriesIndex][dataPointIndex] +
+      //       ' 노드</span>' +
+      //       '</div>'
+      //     );
+      //   },
+      //   followCursor: false,
+      // },
+
       dataLabels: {
         enabled: true, // 데이터 라벨 활성화
         textAnchor: 'end', // 바의 안쪽에 텍스트 표시
         offsetY: -15, // Y축 방향으로 텍스트 위치 조정 (필요에 따라 조절)
+        offsetX: 2,
         style: {
           fontSize: '12px',
           colors: ['#333333'], // 텍스트 색상 설정 (바의 색상과 대비되게 설정)
@@ -395,7 +468,7 @@ export class AppComponent implements OnInit {
       {
         // color: '#143c7540',
         color: colors.primary, // 기본 색상 설정
-        name: 'Node Count',
+        name: 'Total',
         data: Object.values(dataCount),
       },
     ];
@@ -403,6 +476,7 @@ export class AppComponent implements OnInit {
 
   compareCreated: string = '';
   countCreatedClick: number = 0;
+  timeLineGraphverticalLine: boolean = true;
 
   /**
    * 챠트 그리기에 사용되는 년도 처리 메소드
@@ -428,10 +502,12 @@ export class AppComponent implements OnInit {
         }
       });
       nodes.update(nodeUpdateTarget);
+      this.timeLineGraphverticalLine = false;
       return;
     }
     this.countCreatedClick = 0;
     this.compareCreated = year;
+    this.timeLineGraphverticalLine = true;
     console.log(year, '를 받음');
     // NeoVis를 사용하여 해당 년도의 `created` 값을 포함하는 노드만 표시합니다.
     // 모든 노드 데이터를 가져옵니다.
@@ -441,19 +517,6 @@ export class AppComponent implements OnInit {
       node.hidden = true;
     });
 
-    // 연도를 포함하는 노드만 표시합니다.
-    // nodes.forEach((node: any) => {
-    //   if (
-    //     node.raw &&
-    //     node.raw.properties &&
-    //     node.raw.properties.created &&
-    //     node.raw.properties.created.startsWith(year)
-    //   ) {
-    //     nodes.update([{ id: node.id, hidden: false }]);
-    //   } else {
-    //     nodes.update([{ id: node.id, hidden: true }]);
-    //   }
-    // });
     nodes.forEach((node: any) => {
       if (
         node.raw &&
@@ -1725,7 +1788,7 @@ export class AppComponent implements OnInit {
 
     // 그룹 속성을 기준으로 노드를 그룹화하고 각 그룹의 개수를 카운트합니다.
     const groupCounts = nodes.reduce((acc: any, node: any) => {
-      console.log('acc:?', acc);
+      // console.log('acc:?', acc);
       const group = node.group; // 노드의 그룹 속성
       acc[group] = (acc[group] || 0) + 1; // 그룹의 개수를 카운트
       return acc;
