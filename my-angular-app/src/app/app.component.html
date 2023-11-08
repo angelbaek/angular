@@ -1,4 +1,4 @@
-<body class="h-full find-body">
+<body class="h-full find-body app-container" (click)="closeModal()">
   <!--상단-->
   <!--헤드-->
   <section class="head-wrap">
@@ -29,7 +29,7 @@
                     #radioInput
                     checked
                   />
-                  <p>ON</p>
+                  <p>켜기</p>
                 </li>
                 <li (click)="checkRadio($event); pysicsOff()">
                   <input
@@ -38,7 +38,7 @@
                     id="pysical_off"
                     #radioInput
                   />
-                  <p>OFF</p>
+                  <p>끄기</p>
                 </li>
               </ul>
             </div>
@@ -55,11 +55,11 @@
                     #radioInput
                     checked
                   />
-                  <p>ON</p>
+                  <p>켜기</p>
                 </li>
                 <li (click)="checkRadio($event); labelOff()">
                   <input type="radio" name="label" id="label_off" #radioInput />
-                  <p>OFF</p>
+                  <p>끄기</p>
                 </li>
               </ul>
             </div>
@@ -68,9 +68,9 @@
             <a>그래프</a><br />
             <div class="sub-nav sub-6">
               <ul class="top-sub-menu">
-                <li (click)="graphInit()">초기화</li>
-                <li>저장</li>
-                <li>불러오기</li>
+                <li (click)="graphInitializing()">초기화</li>
+                <li (click)="graphSave()">저장</li>
+                <li (click)="graphListLoad()">불러오기</li>
               </ul>
             </div>
           </div>
@@ -78,22 +78,25 @@
             <a>파일</a><br />
             <div class="sub-nav sub-4">
               <ul class="top-sub-menu">
-                <li>추출</li>
-                <li>조회</li>
-                <li>업로드</li>
+                <li (click)="fileDown()">내보내기</li>
+                <li (click)="triggerFileInput()">불러오기</li>
+                <input
+                  type="file"
+                  #fileInput
+                  style="display: none"
+                  (change)="onFileSelected($event)"
+                />
               </ul>
             </div>
           </div>
-          <div class="item mm-5" data-head-menu="5">
-            <a>노드삭제</a><br />
-            <!-- <div class="sub-nav sub-5">
+
+          <!-- <div class="sub-nav sub-5">
               <ul class="top-sub-menu">
                 <li>Menu list one</li>
                 <li>Menu list one</li>
                 <li>Menu list one</li>
               </ul>
             </div> -->
-          </div>
 
           <!-- <div class="item mm-7" data-head-menu="7">
             <a>저장</a><br />
@@ -158,7 +161,7 @@
     <div class="left-box">
       <!--박스 전체 상단 제목-->
       <div class="box-title left-bg">
-        <div class="box-title-text">GRAPH INFO</div>
+        <div class="box-title-text">그래프 정보</div>
         <div class="box-title-btn">
           <span class="material-symbols-outlined left-btn">arrow_back</span>
         </div>
@@ -174,7 +177,7 @@
             href="#con-01"
             (click)="isRelatedNodeClicked = !isRelatedNodeClicked"
           >
-            Node Info
+            노드 정보
           </div>
           <div
             class="nav-item tab-one tab-basic-bg left-tab-2"
@@ -182,7 +185,7 @@
             href="#con-02"
             (click)="isRelatedNodeClicked = !isRelatedNodeClicked"
           >
-            Related Node
+            연관 노드
           </div>
         </div>
 
@@ -260,7 +263,7 @@
 
         <!--박스 탭-->
         <div class="box-tab left-bb">
-          <div class="tab-one left-bg chk-on">Relation Info</div>
+          <div class="tab-one left-bg chk-on">관계 정보</div>
         </div>
         <!--뎁스 리스트-->
         <div class="box-depth">
@@ -425,10 +428,20 @@
               <span class="material-symbols-outlined"> remove </span>
             </div>
             <div class="btn-no-bg pl-10">
-              <button
+              <!-- <button
                 class="right-btn color-1 ai-search left-search-btn-ai pr-30 ptb-8"
               >
                 Graph serach
+              </button> -->
+              <button
+                class="right-btn color-1 ai-search left-search-btn-ai ptb-8"
+                id="graph-search"
+              >
+                그래프 검색
+                <i
+                  class="fa-solid fa-arrow-right"
+                  style="padding-left: 10px"
+                ></i>
               </button>
             </div>
           </div>
@@ -519,7 +532,7 @@
         <!--  -->
         <!--박스 전체 상단 제목-->
         <div class="box-title side-bg">
-          <div class="box-title-text">Display Title</div>
+          <div class="box-title-text">웹 기반 검색</div>
           <div class="box-title-btn">
             <span class="material-symbols-outlined side-btn">arrow_back</span>
           </div>
@@ -528,21 +541,21 @@
         <div class="box-contents-scroll">
           <!--체크박스 검색결과-->
           <div class="box-check-result">
-            <div class="result-sort">
+            <!-- <div class="result-sort">
               <select name="" id="">
                 <option value="">Result Sort</option>
                 <option value="">Result Sort</option>
               </select>
-            </div>
-            <div class="check-result-con">
+            </div> -->
+            <!-- <div class="check-result-con">
               <div class="check-result-con-text">
                 Take the CyberTrap challenge
               </div>
               <div class="check-result-con-check checkbox-wrapper-2">
                 <input type="checkbox" class="ikxBAC p-0" />
               </div>
-            </div>
-            <div class="check-result-con check-on">
+            </div> -->
+            <!-- <div class="check-result-con check-on">
               <div class="check-result-con-text">
                 Take the CyberTrap challenge
               </div>
@@ -557,7 +570,7 @@
               <div class="check-result-con-check checkbox-wrapper-2">
                 <input type="checkbox" class="ikxBAC p-0" />
               </div>
-            </div>
+            </div> -->
           </div>
           <!--체크박스 검색결과-->
 
@@ -591,133 +604,9 @@
                 <li>Searching ofr hacking softwqar</li>
               </ul>
               <div class="result-btn">
-                <button class="color-1">MORE</button>
+                <button class="color-1">더보기</button>
               </div>
             </div>
-          </div>
-
-          <!--박스 탭-->
-          <div class="box-tab side-bb">
-            <div class="tab-one side-bg chk-on">Relation Info</div>
-          </div>
-          <!--뎁스 리스트-->
-          <div class="box-depth">
-            <ul class="side-depth-list-one">
-              <!--1뎁스 리스트 한칸-->
-              <li class="side-m1-1">
-                <div class="depth-icon">
-                  <div class="depth-plus">
-                    <img src="assets/images/depth-plus.png" alt="" />
-                  </div>
-                </div>
-                <div class="depth-title">Fisrst Step Menu</div>
-                <div class="depth-num">3</div>
-              </li>
-
-              <!--2뎁스 들어갈 칸-->
-              <li class="depth-under side-m1-1-under wrap-h-0">
-                <ul class="side-depth-list-two">
-                  <!--두번째 뎁스 리스트-->
-                  <!--2뎁스 리스트-->
-                  <li class="side-m2-1">
-                    <div class="depth-icon">
-                      <div class="depth-plus">
-                        <img src="assets/images/depth-plus.png" alt="" />
-                      </div>
-                    </div>
-                    <div class="depth-title">Second Step Menu</div>
-                    <div class="depth-num">3</div>
-                  </li>
-                  <!--2뎁스 리스트 끝-->
-                  <!--3뎁스 들어갈 칸-->
-                  <li class="depth-under side-m2-1-under wrap-h-0">
-                    <ul class="side-depth-list-third">
-                      <li>
-                        <div class="depth-icon">
-                          <div class="depth-line"></div>
-                        </div>
-                        <div class="depth-title">Third Step Menu</div>
-                      </li>
-                      <li>
-                        <div class="depth-icon">
-                          <div class="depth-line"></div>
-                        </div>
-                        <div class="depth-title">Third Step Menu</div>
-                      </li>
-                      <li>
-                        <div class="depth-icon">
-                          <div class="depth-line"></div>
-                        </div>
-                        <div class="depth-title">Third Step Menu</div>
-                      </li>
-                    </ul>
-                  </li>
-                  <li class="side-m2-2">
-                    <div class="depth-icon">
-                      <div class="depth-minus">
-                        <img src="assets/images/depth-minus.png" alt="" />
-                      </div>
-                    </div>
-                    <div class="depth-title">Second Step Menu</div>
-                    <div class="depth-num">0</div>
-                  </li>
-
-                  <li class="side-m2-3">
-                    <!--선택된 리스트에 붙는 클래스-->
-                    <div class="depth-icon">
-                      <div class="depth-plus">
-                        <img src="assets/images/depth-plus.png" alt="" />
-                      </div>
-                    </div>
-                    <div class="depth-title">Second Step Menu</div>
-                    <div class="depth-num">3</div>
-                  </li>
-                  <!--3뎁스 들어갈 칸-->
-                  <li class="depth-under side-m2-3-under wrap-h-0">
-                    3뎁스 들어갈 칸
-                  </li>
-                </ul>
-              </li>
-
-              <li class="side-m1-2">
-                <div class="depth-icon">
-                  <div class="depth-plus">
-                    <img src="assets/images/depth-plus.png" alt="" />
-                  </div>
-                </div>
-                <div class="depth-title">Fisrst Step Menu</div>
-                <div class="depth-num">3</div>
-              </li>
-              <!--2뎁스 들어갈 칸-->
-              <li class="depth-under side-m1-2-under wrap-h-0">
-                두번째 메뉴 2뎁스
-              </li>
-
-              <li class="side-m1-3">
-                <!--선택된 리스트에 붙는 클래스-->
-                <div class="depth-icon">
-                  <div class="depth-plus">
-                    <img src="assets/images/depth-plus.png" alt="" />
-                  </div>
-                </div>
-                <div class="depth-title">Fisrst Step Menu</div>
-                <div class="depth-num">3</div>
-              </li>
-              <!--2뎁스 들어갈 칸-->
-              <li class="depth-under side-m1-3-under wrap-h-0">
-                세번째 메뉴 2뎁스
-              </li>
-              <li class="side-m1-4">
-                <div class="depth-icon">
-                  <div class="depth-minus">
-                    <img src="assets/images/depth-minus.png" alt="" />
-                  </div>
-                </div>
-                <div class="depth-title">Fisrst Step Menu</div>
-                sdf
-                <div class="depth-num">0</div>
-              </li>
-            </ul>
           </div>
         </div>
       </div>
@@ -740,21 +629,21 @@
               data-bs-toggle="pill"
               href="#con-03"
             >
-              Graph Serch
+              그래프 검색
             </div>
             <div
               class="nav-item tab-one right-tab-2"
               data-bs-toggle="pill"
               href="#con-04"
             >
-              Graph multiple
+              그래프 다중검색
             </div>
             <div
               class="nav-item tab-one right-tab-3"
               data-bs-toggle="pill"
               href="#con-05"
             >
-              Filter
+              조건 검색
             </div>
           </div>
         </div>
@@ -771,7 +660,7 @@
           <div class="tab-pane active" id="con-03">
             <!--그래프 검색결과-->
             <div class="box-tab right-bb">
-              <div class="tab-one right-bg chk-on">Graph Result</div>
+              <div class="tab-one right-bg chk-on">그래프 검색결과</div>
             </div>
 
             <!--뎁스 리스트-->
@@ -803,7 +692,7 @@
                             <input
                               type="text"
                               [(ngModel)]="searchQueries[key]"
-                              placeholder="SEARCH"
+                              placeholder="검색"
                               (click)="$event.stopPropagation()"
                             />
                           </div>
@@ -903,10 +792,10 @@
             <!--그래프 검색 설정-->
             <div class="graph-search">
               <div class="graph-search-btn">
-                <div><button>Add</button></div>
-                <div><button>Delete</button></div>
-                <div><button>Clear</button></div>
-                <div><button class="search">Search</button></div>
+                <div><button>추가</button></div>
+                <div><button>삭제</button></div>
+                <div><button>초기화</button></div>
+                <div><button class="search">검색</button></div>
               </div>
               <div class="graph-search-setting">
                 <div class="graph-sort">
@@ -1054,9 +943,9 @@
                 >
                   <img src="assets/images/depth-minus.png" alt="" />
                 </div>
-                <div class="title">Node Type</div>
+                <div class="title">노드 조건</div>
                 <div class="btn" style="border: none" (click)="nodeTypeReset()">
-                  <button>RESET</button>
+                  <button>초기화</button>
                 </div>
               </div>
               <div class="filter-list-group" [style.display]="visibleNodeType">
@@ -1128,9 +1017,9 @@
                 >
                   <img src="assets/images/depth-minus.png" alt="" />
                 </div>
-                <div class="title">File Type</div>
+                <div class="title">파일 조건</div>
                 <div class="btn" style="border: none" (click)="fileTypeReset()">
-                  <button>RESET</button>
+                  <button>초기화</button>
                 </div>
               </div>
               <div
@@ -1286,7 +1175,7 @@
         </div>
       </div>
       <div class="center" (click)="timeGraphToggle()">
-        <button class="graph-btn">TIME GRAPH ON</button>
+        <button class="graph-btn">시계열 그래프</button>
       </div>
       <div class="right">
         <button class="color-1 right-search-btn-ai">AI CHAT</button>
@@ -1347,6 +1236,98 @@
           </div>
         </div>
       </div>
+    </div>
+  </div>
+  <!-- 알람창 -->
+  <div class="right-mouse-wrap" [style.display]="alarmVisible">
+    <!--이클래스의 우측을 따라감-->
+    <div class="right-mouse-box">
+      <div class="title">알림</div>
+      <div class="con">{{ alarmText }}</div>
+      <div class="alarm-div">
+        <button class="alarm-button" (click)="alarmConfirm()">확인</button>
+      </div>
+    </div>
+  </div>
+  <div class="backgroundColor" [style.display]="backgroundVisible"></div>
+  <!-- 불러오기 모달창 -->
+  <div
+    class="modal fade show"
+    id="exampleModal"
+    tabindex="-1"
+    aria-labelledby="exampleModalLabel"
+    style="display: block"
+    aria-modal="true"
+    role="dialog"
+    [style.display]="modalVisible"
+  >
+    <div class="modal-dialog modal-dialog-centered" style="z-index: 0">
+      <div class="modal-content">
+        <div class="mo-title">
+          <div class="text">그래프 불러오기</div>
+          <div class="colse">
+            <span
+              class="material-symbols-outlined"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            >
+              close
+            </span>
+          </div>
+        </div>
+        <div class="mo-content">
+          <!-- <div class="mo-con-oneline">
+            <div class="con-title">제목</div>
+            <div class="con-from"><input type="text" /></div>
+          </div> -->
+          <div class="mo-con-oneline" *ngIf="modalGraphLoadList">
+            <div class="con-title">그래프 파일명</div>
+            <div class="con-from">
+              <select name="" id="" [(ngModel)]="selectedGraphFile">
+                <option *ngFor="let item of modalGraphLoadList" [value]="item">
+                  {{ item }}
+                </option>
+              </select>
+            </div>
+          </div>
+          <!-- <div class="mo-con-oneline">
+            <div class="con-title">제목</div>
+            <div class="con-from"><input type="text" /></div>
+            <div class="con-btn"><button class="color-1">확인</button></div>
+          </div> -->
+          <!-- <div class="mo-con-oneline">
+            <div class="con-title">제목</div>
+            <div class="con-from"><input type="text" /></div>
+          </div> -->
+          <div class="mo-con-oneline b-0">
+            <div class="con-btn-foot">
+              <button class="color-2" (click)="modalConfirm()">취소</button>
+              <button class="color-1" (click)="graphLoad()">불러오기</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    class="right-mouse-wrap"
+    *ngIf="contextMenuVisible"
+    [ngStyle]="{
+      top: mouseY + 'px',
+      left: mouseX + 'px',
+      position: 'fixed',
+      transform: 'translateX(0) translateY(0)'
+    }"
+    (click)="$event.stopPropagation()"
+  >
+    <div class="right-mouse-box">
+      <ul class="over-list">
+        <li (click)="extention(tasdsadqwewqeasds)">확장</li>
+        <li>삭제</li>
+        <li>뒤로가기</li>
+        <li>앞으로가기</li>
+        <li (click)="fileDown()">추출</li>
+      </ul>
     </div>
   </div>
 </body>

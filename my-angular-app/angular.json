@@ -26,7 +26,8 @@
               "src/assets/js/jquery-latest.min.js",
               "src/assets/js/bootstrap.bundle.min.js",
               "src/assets/js/color-change.js",
-              "src/assets/js/made.js"
+              "src/assets/js/made.js",
+              "src/assets/js/fontawesome.js"
             ],
             "allowedCommonJsDependencies": ["neovis.js", "apexcharts"]
           },
@@ -90,7 +91,8 @@
               "src/assets/js/jquery-latest.min.js",
               "src/assets/js/bootstrap.bundle.min.js",
               "src/assets/js/color-change.js",
-              "src/assets/js/made.js"
+              "src/assets/js/made.js",
+              "src/assets/js/fontawesome.js"
             ]
           }
         }

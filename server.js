@@ -3,6 +3,8 @@ const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const neo4j = require("neo4j-driver");
+const fs = require("fs");
+const path = require("path");
 const app = express();
 
 const specificIp = "192.168.32.22";
@@ -19,6 +21,120 @@ const driver = neo4j.driver(
 app.use(cors());
 // JSON 요청 본문 파싱
 app.use(bodyParser.json());
+
+// 저장된 그래프파일 가져오기
+app.post("/api/graph/load", async (req, res) => {
+  const userId = req.body.user;
+  const title = req.body.title;
+  console.log(userId, title);
+
+  // 경로 구성
+  const filePath = path.join(__dirname, "save", userId, `${title}.json`);
+
+  // 파일 존재 여부 확인
+  if (fs.existsSync(filePath)) {
+    // 파일 읽기
+    fs.readFile(filePath, "utf8", (err, data) => {
+      if (err) {
+        console.error("Error reading the file.", err);
+        return res.status(500).send("Error reading the file.");
+      }
+      // 파일 내용을 JSON 형태로 파싱하여 전송
+      try {
+        const jsonData = JSON.parse(data);
+        res.send(jsonData);
+      } catch (parseErr) {
+        console.error("Error parsing the file.", parseErr);
+        res.status(500).send("Error parsing the file.");
+      }
+    });
+  } else {
+    // 파일이 존재하지 않는 경우
+    res.status(404).send("File not found.");
+  }
+});
+
+// 그래프 리스트 불러오기
+app.post("/api/graph/list/load", async (req, res) => {
+  const userId = req.body.user;
+  console.log(userId);
+
+  const userDirectoryPath = path.join(__dirname, "save", userId);
+
+  // 존재하는지
+  if (!fs.existsSync(userDirectoryPath)) {
+    return res.status(404).send("User directory not found");
+  }
+
+  fs.readdir(userDirectoryPath, (err, files) => {
+    if (err) {
+      console.error("An error occurred while reading the directory.", err);
+      res.status(500).send("Unable to read directory");
+      return;
+    }
+
+    // .json 확장자 제거
+    const filenamesWithoutExtension = files.map((file) =>
+      file.replace(".json", "")
+    );
+    // files는 해당 디렉토리의 모든 파일 이름의 배열입니다.
+    console.log(filenamesWithoutExtension);
+
+    // 파일 내용 대신 파일 이름을 클라이언트로 전송합니다.
+    // 파일 내용을 읽으려면 각 파일에 대해 fs.readFile을 사용해야 합니다.
+    res.send(filenamesWithoutExtension);
+  });
+});
+
+// 그래프 저장
+app.post("/api/graph/save", async (req, res) => {
+  // console.log(req.body.data);
+  const userId = req.body.data.user;
+  const targetKey = Object.keys(req.body.data.key);
+  const targetValue = req.body.data.key[targetKey];
+  const data = { data: req.body.data.data, key: { [targetKey]: targetValue } };
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = (now.getMonth() + 1).toString().padStart(2, "0");
+  const day = now.getDate().toString().padStart(2, "0");
+  const hours = now.getHours().toString().padStart(2, "0");
+  const minutes = now.getMinutes().toString().padStart(2, "0");
+  const seconds = now.getSeconds().toString().padStart(2, "0");
+  // 추출한 부분을 원하는 형식의 문자열로 조합합니다.
+  const formattedDate = `${year}년 ${month}월 ${day}일 ${hours}시 ${minutes}분 ${seconds}초`;
+  // console.log("파일 저장 객체", userId, targetKey, targetValue);
+
+  // 객체 저장
+  // JSON으로 변환
+  const jsonContent = JSON.stringify(data, null, 2);
+
+  // 상대 경로를 사용하여 특정 폴더(예: 'data' 폴더)에 저장 - 최상위 루트 폴더
+  const rootDirectoryPath = path.join(__dirname, "save");
+
+  // 'data' 디렉토리가 없으면 생성
+  if (!fs.existsSync(rootDirectoryPath)) {
+    fs.mkdirSync(rootDirectoryPath, { recursive: true });
+  }
+
+  // 유저별 경로 설정
+  const userDirectoryPath = path.join(rootDirectoryPath, userId);
+  if (!fs.existsSync(userDirectoryPath)) {
+    fs.mkdirSync(userDirectoryPath, { recursive: true });
+  }
+
+  const filePath = path.join(userDirectoryPath, `${formattedDate}.json`);
+
+  // 파일에 쓰기
+  fs.writeFile(filePath, jsonContent, "utf8", (err) => {
+    if (err) {
+      console.log("An error occured while writing JSON Object to File.");
+      res.send("Failed");
+      return console.log(err);
+    }
+    console.log("JSON file has been saved.");
+  });
+  res.send("Success");
+});
 
 // 좌측 Relation Info api
 app.post("/api/getAdjacentNodes", async (req, res) => {
@@ -91,7 +207,6 @@ app.post("/api/hnkgd", async (req, res) => {
   const session = driver.session();
   try {
     const result = await session.run(
-      // "match (n)-[r]-(m) where id(n) = $findId and m.type=$findType return m.type, r",
       // "MATCH (n)-[r]-(m) WHERE m.name CONTAINS $findWord AND m.type=$findType WITH m, COLLECT(DISTINCT type(r)) AS relationshipTypes RETURN m, relationshipTypes SKIP $findSkip LIMIT $findLimit",
       "MATCH (n)-[r]-(m) WHERE m.name CONTAINS $findWord AND m.type=$findType WITH m, COLLECT(DISTINCT type(r)) AS relationshipTypes RETURN m, relationshipTypes SKIP $findSkip LIMIT 10",
       {

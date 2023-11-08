@@ -564,9 +564,11 @@ $(function () {
     if ($side.hasClass("open")) {
       $(".right-box-space").addClass("wrap-w-0");
       $side2.stop(true).animate({ right: "-400px" }, duration);
+      $(this).find("i").removeClass("fa-arrow-right").addClass("fa-arrow-left");
     } else {
       $(".right-box-space").removeClass("wrap-w-0");
       $side2.stop(true).animate({ right: "0%" }, duration);
+      $(this).find("i").removeClass("fa-arrow-left").addClass("fa-arrow-right");
     }
   });
 });

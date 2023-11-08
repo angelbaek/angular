@@ -1,0 +1,1940 @@
+{
+  "data": {
+    "nodes": [
+      {
+        "id": "keyword",
+        "label": "keyword",
+        "shape": "image",
+        "title": "keyword",
+        "group": "keyword",
+        "image": "../assets/images/keyword/keyword_1.png",
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        }
+      },
+      {
+        "id": "file",
+        "label": "file",
+        "shape": "image",
+        "group": "file",
+        "image": "../assets/images/file/file_2.png",
+        "title": "file",
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        }
+      },
+      {
+        "id": "malware",
+        "label": "malware",
+        "shape": "image",
+        "group": "malware",
+        "image": "../assets/images/malware/malware_2.png",
+        "title": "malware",
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        }
+      },
+      {
+        "id": "malware-analysis",
+        "label": "malware-analysis",
+        "shape": "image",
+        "group": "malware-analysis",
+        "image": "../assets/images/malware-analysis/malware-analysis_2.png",
+        "title": "malware-analysis",
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        }
+      },
+      {
+        "id": "registry",
+        "label": "registry",
+        "shape": "image",
+        "group": "registry",
+        "image": "../assets/images/registry/registry_2.png",
+        "title": "registry",
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        }
+      },
+      {
+        "id": "process",
+        "label": "process",
+        "shape": "image",
+        "group": "process",
+        "image": "../assets/images/process/process_2.png",
+        "title": "process",
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        }
+      },
+      {
+        "id": 1061792,
+        "label": "C:\\WINDOWS\\Temp\\sample\\65c6deded268392e0f5c0003479d1999_8d9ddc8b900ea901e723c19f2b48be065b88f8f767dfbca0d2caeb0f593e1ddb.exe",
+        "title": "C:\\WINDOWS\\Temp\\sample\\65c6deded268392e0f5c0003479d1999_8d9ddc8b900ea901e723c19f2b48be065b88f8f767dfbca0d2caeb0f593e1ddb.exe",
+        "group": "process",
+        "shape": "image",
+        "image": "../assets/images/process/process_4.png",
+        "raw": {
+          "properties": {
+            "name": "C:\\WINDOWS\\Temp\\sample\\65c6deded268392e0f5c0003479d1999_8d9ddc8b900ea901e723c19f2b48be065b88f8f767dfbca0d2caeb0f593e1ddb.exe",
+            "id": "process--40449daa-bd5c-48b4-9790-653e1aa9d188",
+            "type": "process"
+          }
+        },
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        }
+      },
+      {
+        "id": "malware-analysis_from_1061792",
+        "label": "malware-analysis",
+        "title": "malware-analysis",
+        "shape": "image",
+        "group": "malware-analysis",
+        "image": "../assets/images/malware-analysis/malware-analysis_1.png",
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        }
+      },
+      {
+        "id": 1061772,
+        "label": "65c6deded268392e0f5c0003479d1999",
+        "title": "65c6deded268392e0f5c0003479d1999",
+        "group": "file",
+        "shape": "image",
+        "image": "../assets/images/file/file_4.png",
+        "raw": {
+          "properties": {
+            "name": "65c6deded268392e0f5c0003479d1999",
+            "type": "file",
+            "hash_type": "MD5"
+          }
+        },
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        }
+      },
+      {
+        "id": 1061773,
+        "label": "65c6deded268392e0f5c0003479d1999",
+        "title": "65c6deded268392e0f5c0003479d1999",
+        "group": "malware",
+        "shape": "image",
+        "image": "../assets/images/malware/malware_4.png",
+        "raw": {
+          "properties": {
+            "first_submition": "2018-06-11",
+            "malware_types": [
+              "trojan"
+            ],
+            "name": "65c6deded268392e0f5c0003479d1999",
+            "last_submition": "2018-06-11",
+            "id": "malware--14477b58-cf46-4cbf-ba9f-17f4b04b62cd",
+            "type": "malware",
+            "uuid": "malware--9d2e2e52-154a-11ee-98eb-901b0eb4beb1",
+            "malware_aliases": [
+              "zusy"
+            ],
+            "hash_type": "MD5"
+          }
+        },
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        }
+      },
+      {
+        "id": 1061788,
+        "label": "65c6deded268392e0f5c0003479d1999_C2AE",
+        "title": "65c6deded268392e0f5c0003479d1999_C2AE",
+        "group": "malware-analysis",
+        "shape": "image",
+        "image": "../assets/images/malware-analysis/malware-analysis_4.png",
+        "raw": {
+          "properties": {
+            "name": "65c6deded268392e0f5c0003479d1999_C2AE",
+            "product": "C2AE",
+            "id": "malware-analysis--fca3a96d-a10e-4c98-b33e-44545d6f082e",
+            "type": "malware-analysis",
+            "analysis_started": "2021-04-16"
+          }
+        },
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        }
+      },
+      {
+        "id": 1061794,
+        "label": "65c6deded268392e0f5c0003479d1999_NSFOCUS POMA",
+        "title": "65c6deded268392e0f5c0003479d1999_NSFOCUS POMA",
+        "group": "malware-analysis",
+        "shape": "image",
+        "image": "../assets/images/malware-analysis/malware-analysis_4.png",
+        "raw": {
+          "properties": {
+            "name": "65c6deded268392e0f5c0003479d1999_NSFOCUS POMA",
+            "product": "NSFOCUS POMA",
+            "id": "malware-analysis--87adf1b2-7ee3-4ede-aa7d-30379c76ce5f",
+            "type": "malware-analysis",
+            "analysis_started": "2019-05-15"
+          }
+        },
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        }
+      },
+      {
+        "id": 1061795,
+        "label": "65c6deded268392e0f5c0003479d1999_Tencent HABO",
+        "title": "65c6deded268392e0f5c0003479d1999_Tencent HABO",
+        "group": "malware-analysis",
+        "shape": "image",
+        "image": "../assets/images/malware-analysis/malware-analysis_4.png",
+        "raw": {
+          "properties": {
+            "name": "65c6deded268392e0f5c0003479d1999_Tencent HABO",
+            "product": "Tencent HABO",
+            "id": "malware-analysis--bc08f3f1-f951-4bc1-985a-cf8746f62d08",
+            "type": "malware-analysis",
+            "analysis_started": "2018-06-12"
+          }
+        },
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        }
+      },
+      {
+        "id": 1061797,
+        "label": "65c6deded268392e0f5c0003479d1999_VirusTotal Cuckoofork",
+        "title": "65c6deded268392e0f5c0003479d1999_VirusTotal Cuckoofork",
+        "group": "malware-analysis",
+        "shape": "image",
+        "image": "../assets/images/malware-analysis/malware-analysis_4.png",
+        "raw": {
+          "properties": {
+            "name": "65c6deded268392e0f5c0003479d1999_VirusTotal Cuckoofork",
+            "product": "VirusTotal Cuckoofork",
+            "id": "malware-analysis--a4775a6f-97b1-4697-9039-961fdb42b4f7",
+            "type": "malware-analysis",
+            "analysis_started": "2018-06-12"
+          }
+        },
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        }
+      },
+      {
+        "id": 1061791,
+        "label": "HKCU\\SOFTWARE\\MICROSOFT\\WINDOWS\\SHELLNOROAM\\MUICACHE/C:\\Windows\\Temp\\sample\\65c6deded268392e0f5c0003479d1999_8d9ddc8b900ea901e723c19f2b48be065b88f8f767dfbca0d2caeb0f593e1ddb.exe",
+        "title": "HKCU\\SOFTWARE\\MICROSOFT\\WINDOWS\\SHELLNOROAM\\MUICACHE/C:\\Windows\\Temp\\sample\\65c6deded268392e0f5c0003479d1999_8d9ddc8b900ea901e723c19f2b48be065b88f8f767dfbca0d2caeb0f593e1ddb.exe",
+        "group": "registry",
+        "shape": "image",
+        "image": "../assets/images/registry/registry_4.png",
+        "raw": {
+          "properties": {
+            "name": "HKCU\\SOFTWARE\\MICROSOFT\\WINDOWS\\SHELLNOROAM\\MUICACHE/C:\\Windows\\Temp\\sample\\65c6deded268392e0f5c0003479d1999_8d9ddc8b900ea901e723c19f2b48be065b88f8f767dfbca0d2caeb0f593e1ddb.exe",
+            "id": "windows-registry-key--206fc437-5db9-521b-9857-868fe325f058",
+            "type": "windows-registry-key",
+            "values": [
+              "65c6deded268392e0f5c0003479d1999_8d9ddc8b900ea901e723c19f2b48be065b88f8f767dfbca0d2caeb0f593e1ddb"
+            ]
+          }
+        },
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        }
+      },
+      {
+        "id": "malware-analysis_from_1061791",
+        "label": "malware-analysis",
+        "title": "malware-analysis",
+        "shape": "image",
+        "group": "malware-analysis",
+        "image": "../assets/images/malware-analysis/malware-analysis_2.png",
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        }
+      },
+      {
+        "id": "malware_from_1061794",
+        "label": "malware",
+        "title": "malware",
+        "group": "malware",
+        "shape": "image",
+        "image": "../assets/images/malware/malware_2.png",
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        }
+      },
+      {
+        "id": "process_from_1061794",
+        "label": "process",
+        "title": "process",
+        "group": "process",
+        "shape": "image",
+        "image": "../assets/images/process/process_2.png",
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        }
+      },
+      {
+        "id": "registry_from_1061794",
+        "label": "registry",
+        "title": "registry",
+        "group": "registry",
+        "shape": "image",
+        "image": "../assets/images/registry/registry_2.png",
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        }
+      },
+      {
+        "id": 699517,
+        "label": "HKCU\\SESSIONINFORMATION/ProgramCount",
+        "title": "HKCU\\SESSIONINFORMATION/ProgramCount",
+        "shape": "image",
+        "group": "registry",
+        "image": "../assets/images/registry/registry_4.png",
+        "raw": {
+          "properties": {
+            "name": "HKCU\\SESSIONINFORMATION/ProgramCount",
+            "id": "windows-registry-key--12b5869b-9425-5876-b6b7-a1833c2b34d1",
+            "type": "windows-registry-key",
+            "values": [
+              "0x00000002(2)"
+            ]
+          }
+        },
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        }
+      },
+      {
+        "id": 699512,
+        "label": "HKCU\\SOFTWARE\\MICROSOFT\\WINDOWS\\CURRENTVERSION\\EXPLORER\\USERASSIST\\{75048700-EF1F-11D0-9888-006097DEACF9}\\COUNT/HRZR_EHACNGU",
+        "title": "HKCU\\SOFTWARE\\MICROSOFT\\WINDOWS\\CURRENTVERSION\\EXPLORER\\USERASSIST\\{75048700-EF1F-11D0-9888-006097DEACF9}\\COUNT/HRZR_EHACNGU",
+        "shape": "image",
+        "group": "registry",
+        "image": "../assets/images/registry/registry_4.png",
+        "raw": {
+          "properties": {
+            "name": "HKCU\\SOFTWARE\\MICROSOFT\\WINDOWS\\CURRENTVERSION\\EXPLORER\\USERASSIST\\{75048700-EF1F-11D0-9888-006097DEACF9}\\COUNT/HRZR_EHACNGU",
+            "id": "windows-registry-key--a8089c60-5432-5e87-ab2f-48dff6943cd4",
+            "type": "windows-registry-key",
+            "values": [
+              "12 00 00 00 3E 00 00 00 90 87 2F C0 2A 0B D5 01 "
+            ]
+          }
+        },
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        }
+      },
+      {
+        "id": 699514,
+        "label": "HKCU\\SOFTWARE\\MICROSOFT\\WINDOWS\\CURRENTVERSION\\EXPLORER\\RUNMRU/c",
+        "title": "HKCU\\SOFTWARE\\MICROSOFT\\WINDOWS\\CURRENTVERSION\\EXPLORER\\RUNMRU/c",
+        "shape": "image",
+        "group": "registry",
+        "image": "../assets/images/registry/registry_4.png",
+        "raw": {
+          "properties": {
+            "name": "HKCU\\SOFTWARE\\MICROSOFT\\WINDOWS\\CURRENTVERSION\\EXPLORER\\RUNMRU/c",
+            "id": "windows-registry-key--e075af15-ba5f-5363-9f37-3536279c8338",
+            "type": "windows-registry-key",
+            "values": [
+              "C:\\Windows\\Temp\\sample\\65c6deded268392e0f5c0003479d1999_8d9ddc8b900ea901e723c19f2b48be065b88f8f767dfbca0d2caeb0f593e1ddb.exe\\1"
+            ]
+          }
+        },
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        }
+      },
+      {
+        "id": 699519,
+        "label": "HKCU\\SOFTWARE\\MICROSOFT\\WINDOWS\\CURRENTVERSION\\EXPLORER\\STREAMS\\0/ViewView2",
+        "title": "HKCU\\SOFTWARE\\MICROSOFT\\WINDOWS\\CURRENTVERSION\\EXPLORER\\STREAMS\\0/ViewView2",
+        "shape": "image",
+        "group": "registry",
+        "image": "../assets/images/registry/registry_4.png",
+        "raw": {
+          "properties": {
+            "name": "HKCU\\SOFTWARE\\MICROSOFT\\WINDOWS\\CURRENTVERSION\\EXPLORER\\STREAMS\\0/ViewView2",
+            "id": "windows-registry-key--bb2b79b0-6043-5397-bfb4-b1016ed3013c",
+            "type": "windows-registry-key",
+            "values": [
+              "1C 00 00 00 01 00 00 00 00 00 00 00 00 00 7C 00 ...(124)"
+            ]
+          }
+        },
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        }
+      },
+      {
+        "id": 762676,
+        "label": "HKCU\\SOFTWARE\\MICROSOFT\\WINDOWS\\CURRENTVERSION\\EXPLORER\\SHELL FOLDERS/AppData",
+        "title": "HKCU\\SOFTWARE\\MICROSOFT\\WINDOWS\\CURRENTVERSION\\EXPLORER\\SHELL FOLDERS/AppData",
+        "shape": "image",
+        "group": "registry",
+        "image": "../assets/images/registry/registry_4.png",
+        "raw": {
+          "properties": {
+            "name": "HKCU\\SOFTWARE\\MICROSOFT\\WINDOWS\\CURRENTVERSION\\EXPLORER\\SHELL FOLDERS/AppData",
+            "id": "windows-registry-key--868c71c7-9d56-5b5e-b1fd-268ac987e7fd",
+            "type": "windows-registry-key",
+            "values": [
+              "C:\\Documents and Settings\\sys\\Application Data"
+            ]
+          }
+        },
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        }
+      },
+      {
+        "id": 1061790,
+        "label": "HKCU\\SOFTWARE\\MICROSOFT\\WINDOWS\\CURRENTVERSION\\EXPLORER\\USERASSIST\\{75048700-EF1F-11D0-9888-006097DEACF9}\\COUNT/HRZR_EHACNGU:P:\\Jvaqbjf\\Grzc\\fnzcyr\\65p6qrqrq268392r0s5p0003479q1999_8q9qqp8o900rn901r723p19s2o48or065o88s8s767qsopn0q2pnro0s593r1qqo.rkr",
+        "title": "HKCU\\SOFTWARE\\MICROSOFT\\WINDOWS\\CURRENTVERSION\\EXPLORER\\USERASSIST\\{75048700-EF1F-11D0-9888-006097DEACF9}\\COUNT/HRZR_EHACNGU:P:\\Jvaqbjf\\Grzc\\fnzcyr\\65p6qrqrq268392r0s5p0003479q1999_8q9qqp8o900rn901r723p19s2o48or065o88s8s767qsopn0q2pnro0s593r1qqo.rkr",
+        "shape": "image",
+        "group": "registry",
+        "image": "../assets/images/registry/registry_4.png",
+        "raw": {
+          "properties": {
+            "name": "HKCU\\SOFTWARE\\MICROSOFT\\WINDOWS\\CURRENTVERSION\\EXPLORER\\USERASSIST\\{75048700-EF1F-11D0-9888-006097DEACF9}\\COUNT/HRZR_EHACNGU:P:\\Jvaqbjf\\Grzc\\fnzcyr\\65p6qrqrq268392r0s5p0003479q1999_8q9qqp8o900rn901r723p19s2o48or065o88s8s767qsopn0q2pnro0s593r1qqo.rkr",
+            "id": "windows-registry-key--69892731-6547-55ab-afe2-9d4fae191755",
+            "type": "windows-registry-key",
+            "values": [
+              "12 00 00 00 06 00 00 00 90 F8 31 C0 2A 0B D5 01 "
+            ]
+          }
+        },
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        }
+      },
+      {
+        "id": 699515,
+        "label": "HKCU\\SOFTWARE\\MICROSOFT\\WINDOWS\\CURRENTVERSION\\EXPLORER\\RUNMRU/MRUList",
+        "title": "HKCU\\SOFTWARE\\MICROSOFT\\WINDOWS\\CURRENTVERSION\\EXPLORER\\RUNMRU/MRUList",
+        "shape": "image",
+        "group": "registry",
+        "image": "../assets/images/registry/registry_4.png",
+        "raw": {
+          "properties": {
+            "name": "HKCU\\SOFTWARE\\MICROSOFT\\WINDOWS\\CURRENTVERSION\\EXPLORER\\RUNMRU/MRUList",
+            "id": "windows-registry-key--3b2b01f2-497c-5139-a0f2-fe20a43f928b",
+            "type": "windows-registry-key",
+            "values": [
+              "cab"
+            ]
+          }
+        },
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        }
+      },
+      {
+        "id": 699518,
+        "label": "HKCU\\SOFTWARE\\MICROSOFT\\WINDOWS\\CURRENTVERSION\\EXPLORER\\USERASSIST\\{5E6AB780-7743-11CF-A12B-00AA004AE837}\\COUNT/HRZR_PGYFRFFVBA",
+        "title": "HKCU\\SOFTWARE\\MICROSOFT\\WINDOWS\\CURRENTVERSION\\EXPLORER\\USERASSIST\\{5E6AB780-7743-11CF-A12B-00AA004AE837}\\COUNT/HRZR_PGYFRFFVBA",
+        "shape": "image",
+        "group": "registry",
+        "image": "../assets/images/registry/registry_4.png",
+        "raw": {
+          "properties": {
+            "name": "HKCU\\SOFTWARE\\MICROSOFT\\WINDOWS\\CURRENTVERSION\\EXPLORER\\USERASSIST\\{5E6AB780-7743-11CF-A12B-00AA004AE837}\\COUNT/HRZR_PGYFRFFVBA",
+            "id": "windows-registry-key--af364f01-5483-5228-9e91-fdf8064b1d71",
+            "type": "windows-registry-key",
+            "values": [
+              "57 59 A8 0E 0D 00 00 00 "
+            ]
+          }
+        },
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        }
+      },
+      {
+        "id": 1061789,
+        "label": "HKLM\\SOFTWARE\\POLICIES\\MICROSOFT\\WINDOWS DEFENDER\\EXCLUSIONS\\PATHS/C:\\Documents and Settings\\sys\\Application Data\\freenet\\",
+        "title": "HKLM\\SOFTWARE\\POLICIES\\MICROSOFT\\WINDOWS DEFENDER\\EXCLUSIONS\\PATHS/C:\\Documents and Settings\\sys\\Application Data\\freenet\\",
+        "shape": "image",
+        "group": "registry",
+        "image": "../assets/images/registry/registry_4.png",
+        "raw": {
+          "properties": {
+            "name": "HKLM\\SOFTWARE\\POLICIES\\MICROSOFT\\WINDOWS DEFENDER\\EXCLUSIONS\\PATHS/C:\\Documents and Settings\\sys\\Application Data\\freenet\\",
+            "id": "windows-registry-key--742c20c7-2e9f-591a-a9e4-fe0ca1c5dc1b",
+            "type": "windows-registry-key",
+            "values": [
+              "0x00000000(0)"
+            ]
+          }
+        },
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        }
+      },
+      {
+        "id": 1061793,
+        "label": "C:\\Documents and Settings\\sys\\Application Data\\freenet\\76c7deded279392e0f6c0003489d1999_9d9ddc9b900ea901e823c19f2b49be076b99f9f878dfbca0d2caeb0f693e1ddb.exe",
+        "title": "C:\\Documents and Settings\\sys\\Application Data\\freenet\\76c7deded279392e0f6c0003489d1999_9d9ddc9b900ea901e823c19f2b49be076b99f9f878dfbca0d2caeb0f693e1ddb.exe",
+        "shape": "image",
+        "group": "process",
+        "image": "../assets/images/process/process_4.png",
+        "raw": {
+          "properties": {
+            "name": "C:\\Documents and Settings\\sys\\Application Data\\freenet\\76c7deded279392e0f6c0003489d1999_9d9ddc9b900ea901e823c19f2b49be076b99f9f878dfbca0d2caeb0f693e1ddb.exe",
+            "id": "process--bcc06ef2-8850-4ec6-8278-0d5ac070a955",
+            "type": "process"
+          }
+        },
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        }
+      },
+      {
+        "id": "malware-analysis_from_1061793",
+        "label": "malware-analysis",
+        "title": "malware-analysis",
+        "shape": "image",
+        "group": "malware-analysis",
+        "image": "../assets/images/malware-analysis/malware-analysis_2.png",
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        }
+      },
+      {
+        "id": "malware-analysis_from_699518",
+        "label": "malware-analysis",
+        "title": "malware-analysis",
+        "shape": "image",
+        "group": "malware-analysis",
+        "image": "../assets/images/malware-analysis/malware-analysis_2.png",
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        }
+      },
+      {
+        "id": 1054258,
+        "label": "0380cd17655f8faf7671e42faa90819f_NSFOCUS POMA",
+        "title": "0380cd17655f8faf7671e42faa90819f_NSFOCUS POMA",
+        "shape": "image",
+        "group": "malware-analysis",
+        "image": "../assets/images/malware-analysis/malware-analysis_4.png",
+        "raw": {
+          "properties": {
+            "name": "0380cd17655f8faf7671e42faa90819f_NSFOCUS POMA",
+            "product": "NSFOCUS POMA",
+            "id": "malware-analysis--7c7ba09d-9630-48e8-b901-f595d268d522",
+            "type": "malware-analysis",
+            "analysis_started": "2020-10-28"
+          }
+        },
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        }
+      },
+      {
+        "id": 1031546,
+        "label": "3600607ab080736dd31859c02eaff188_NSFOCUS POMA",
+        "title": "3600607ab080736dd31859c02eaff188_NSFOCUS POMA",
+        "shape": "image",
+        "group": "malware-analysis",
+        "image": "../assets/images/malware-analysis/malware-analysis_4.png",
+        "raw": {
+          "properties": {
+            "name": "3600607ab080736dd31859c02eaff188_NSFOCUS POMA",
+            "product": "NSFOCUS POMA",
+            "id": "malware-analysis--0ab1e076-5d23-4cf5-82f5-99d6b5125564",
+            "type": "malware-analysis",
+            "analysis_started": "2020-06-13"
+          }
+        },
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        }
+      },
+      {
+        "id": 985007,
+        "label": "7020bcb347404654e17f6303848b7ec4_NSFOCUS POMA",
+        "title": "7020bcb347404654e17f6303848b7ec4_NSFOCUS POMA",
+        "shape": "image",
+        "group": "malware-analysis",
+        "image": "../assets/images/malware-analysis/malware-analysis_4.png",
+        "raw": {
+          "properties": {
+            "name": "7020bcb347404654e17f6303848b7ec4_NSFOCUS POMA",
+            "product": "NSFOCUS POMA",
+            "id": "malware-analysis--310db4ff-e178-4af3-8f99-412a5fe8287d",
+            "type": "malware-analysis",
+            "analysis_started": "2021-05-13"
+          }
+        },
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        }
+      },
+      {
+        "id": 972359,
+        "label": "F28c8cd466e8a0f1ccb123bfe50bd33b_NSFOCUS POMA",
+        "title": "F28c8cd466e8a0f1ccb123bfe50bd33b_NSFOCUS POMA",
+        "shape": "image",
+        "group": "malware-analysis",
+        "image": "../assets/images/malware-analysis/malware-analysis_4.png",
+        "raw": {
+          "properties": {
+            "name": "F28c8cd466e8a0f1ccb123bfe50bd33b_NSFOCUS POMA",
+            "product": "NSFOCUS POMA",
+            "id": "malware-analysis--bed66015-7494-43ef-84e0-bbcf96508bf9",
+            "type": "malware-analysis",
+            "analysis_started": "2019-08-22"
+          }
+        },
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        }
+      },
+      {
+        "id": 968080,
+        "label": "446d226cedf08866dbe528868cba2007_NSFOCUS POMA",
+        "title": "446d226cedf08866dbe528868cba2007_NSFOCUS POMA",
+        "shape": "image",
+        "group": "malware-analysis",
+        "image": "../assets/images/malware-analysis/malware-analysis_4.png",
+        "raw": {
+          "properties": {
+            "name": "446d226cedf08866dbe528868cba2007_NSFOCUS POMA",
+            "product": "NSFOCUS POMA",
+            "id": "malware-analysis--807d60e1-b9a4-40ca-b6f6-577d69aa9f69",
+            "type": "malware-analysis",
+            "analysis_started": "2019-05-05"
+          }
+        },
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        }
+      },
+      {
+        "id": 949860,
+        "label": "ad71f65a32f9b089eb76c9f9e8a6f4b0_NSFOCUS POMA",
+        "title": "ad71f65a32f9b089eb76c9f9e8a6f4b0_NSFOCUS POMA",
+        "shape": "image",
+        "group": "malware-analysis",
+        "image": "../assets/images/malware-analysis/malware-analysis_4.png",
+        "raw": {
+          "properties": {
+            "name": "ad71f65a32f9b089eb76c9f9e8a6f4b0_NSFOCUS POMA",
+            "product": "NSFOCUS POMA",
+            "id": "malware-analysis--98ee4e8d-7916-4a29-96f3-719bf1a368d9",
+            "type": "malware-analysis",
+            "analysis_started": "2019-04-21"
+          }
+        },
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        }
+      },
+      {
+        "id": 896695,
+        "label": "833b1affc6b53e170e5ea6fa92d67011_NSFOCUS POMA",
+        "title": "833b1affc6b53e170e5ea6fa92d67011_NSFOCUS POMA",
+        "shape": "image",
+        "group": "malware-analysis",
+        "image": "../assets/images/malware-analysis/malware-analysis_4.png",
+        "raw": {
+          "properties": {
+            "name": "833b1affc6b53e170e5ea6fa92d67011_NSFOCUS POMA",
+            "product": "NSFOCUS POMA",
+            "id": "malware-analysis--4edcde71-8dd3-4168-b2e2-5de627294f90",
+            "type": "malware-analysis",
+            "analysis_started": "2019-05-15"
+          }
+        },
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        }
+      },
+      {
+        "id": 883193,
+        "label": "166694d13ac463ea1c2bed64fbbb7207_NSFOCUS POMA",
+        "title": "166694d13ac463ea1c2bed64fbbb7207_NSFOCUS POMA",
+        "shape": "image",
+        "group": "malware-analysis",
+        "image": "../assets/images/malware-analysis/malware-analysis_4.png",
+        "raw": {
+          "properties": {
+            "name": "166694d13ac463ea1c2bed64fbbb7207_NSFOCUS POMA",
+            "product": "NSFOCUS POMA",
+            "id": "malware-analysis--e84b6e1c-739d-4378-9f57-bb9cdf71a240",
+            "type": "malware-analysis",
+            "analysis_started": "2021-09-16"
+          }
+        },
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        }
+      },
+      {
+        "id": 875793,
+        "label": "8bcb8b6d6c492e51dda7dc9f2d05ae4a_NSFOCUS POMA",
+        "title": "8bcb8b6d6c492e51dda7dc9f2d05ae4a_NSFOCUS POMA",
+        "shape": "image",
+        "group": "malware-analysis",
+        "image": "../assets/images/malware-analysis/malware-analysis_4.png",
+        "raw": {
+          "properties": {
+            "name": "8bcb8b6d6c492e51dda7dc9f2d05ae4a_NSFOCUS POMA",
+            "product": "NSFOCUS POMA",
+            "id": "malware-analysis--f44eb446-52ec-4efc-92f7-8c54365c9578",
+            "type": "malware-analysis",
+            "analysis_started": "2019-09-17"
+          }
+        },
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        }
+      },
+      {
+        "id": "registry_from_972359",
+        "label": "registry",
+        "shape": "image",
+        "title": "registry",
+        "group": "registry",
+        "image": "../assets/images/registry/registry_2.png",
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        }
+      },
+      {
+        "id": 972304,
+        "label": "HKCU\\SOFTWARE\\MICROSOFT\\OFFICE\\12.0\\WORD\\RESILIENCY\\STARTUPITEMS/91*",
+        "title": "HKCU\\SOFTWARE\\MICROSOFT\\OFFICE\\12.0\\WORD\\RESILIENCY\\STARTUPITEMS/91*",
+        "group": "registry",
+        "shape": "image",
+        "image": "../assets/images/registry/registry_4.png",
+        "raw": {
+          "properties": {
+            "name": "HKCU\\SOFTWARE\\MICROSOFT\\OFFICE\\12.0\\WORD\\RESILIENCY\\STARTUPITEMS/91*",
+            "id": "windows-registry-key--275d6788-5a72-519b-8dfe-5d4a15ccc5fa",
+            "type": "windows-registry-key",
+            "values": [
+              "39 31 2A 00 44 02 00 00 02 00 00 00 00 00 00 00 ...(158)"
+            ]
+          }
+        },
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        }
+      },
+      {
+        "id": "malware-analysis_from_972304",
+        "label": "malware-analysis",
+        "title": "malware-analysis",
+        "shape": "image",
+        "group": "malware-analysis",
+        "image": "../assets/images/malware-analysis/malware-analysis_2.png",
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "file_Group",
+        "from": "keyword",
+        "to": "file"
+      },
+      {
+        "id": "malware_Group",
+        "from": "keyword",
+        "to": "malware"
+      },
+      {
+        "id": "malware-analysis_Group",
+        "from": "keyword",
+        "to": "malware-analysis"
+      },
+      {
+        "id": "registry_Group",
+        "from": "keyword",
+        "to": "registry"
+      },
+      {
+        "id": "process_Group",
+        "from": "keyword",
+        "to": "process"
+      },
+      {
+        "label": "analysis_sco_refs",
+        "from": "process",
+        "to": 1061792,
+        "id": "2222c025-1cf4-4a05-93d5-e93c223adc84"
+      },
+      {
+        "label": "analysis_sco_refs",
+        "from": 1061792,
+        "to": "malware-analysis_from_1061792",
+        "id": "ead6362d-6f8f-4213-8a67-f11cc10b22ed"
+      },
+      {
+        "label": "relate",
+        "from": "file",
+        "to": 1061772,
+        "id": "b2aa597b-9c58-4cd6-9070-211a53c84791"
+      },
+      {
+        "label": "refers_to",
+        "from": "malware",
+        "to": 1061773,
+        "id": "26ba4aa0-de58-4edf-a7eb-6a058a19eb30"
+      },
+      {
+        "label": "analysis_sco_refs",
+        "from": "malware-analysis",
+        "to": 1061788,
+        "id": "cffb61a9-87c0-421a-9433-917bcaeaeba7"
+      },
+      {
+        "label": "dynamic-analysis-of",
+        "from": "malware-analysis",
+        "to": 1061794,
+        "id": "a37394b2-e0f3-4453-9cd7-948e2ba48766"
+      },
+      {
+        "label": "dynamic-analysis-of",
+        "from": "malware-analysis",
+        "to": 1061795,
+        "id": "45b05cb8-0a9b-4bac-bb90-fc6e711c5a5e"
+      },
+      {
+        "label": "dynamic-analysis-of",
+        "from": "malware-analysis",
+        "to": 1061797,
+        "id": "4ad57931-1144-4404-82f0-546f9f9e745f"
+      },
+      {
+        "label": "analysis_sco_refs",
+        "from": "registry",
+        "to": 1061791,
+        "id": "78655986-6a22-4bff-98eb-675b634f25f4"
+      },
+      {
+        "label": "analysis_sco_refs",
+        "from": 1061791,
+        "to": "malware-analysis_from_1061791",
+        "id": "6da89057-ebd5-4800-aa70-bb128dc47373"
+      },
+      {
+        "label": "analysis_sco_refs",
+        "from": "malware-analysis_from_1061791",
+        "to": 1061794,
+        "id": "2fa50851-63f1-4a9b-9968-f6b77a901045"
+      },
+      {
+        "label": "dynamic-analysis-of",
+        "from": 1061794,
+        "to": "malware_from_1061794",
+        "id": "ccb0a272-32a1-48f3-ad01-8d76d2e359d9"
+      },
+      {
+        "label": "analysis_sco_refs",
+        "from": 1061794,
+        "to": "process_from_1061794",
+        "id": "73e92a18-3d21-483b-b481-136c576519df"
+      },
+      {
+        "label": "analysis_sco_refs",
+        "from": 1061794,
+        "to": "registry_from_1061794",
+        "id": "cb9910cd-9fb2-46a6-be82-99a92ed92a27"
+      },
+      {
+        "label": "analysis_sco_refs",
+        "from": "registry_from_1061794",
+        "to": 699517,
+        "id": "17a011c5-9f55-4475-8a7a-a3309fba3881"
+      },
+      {
+        "label": "analysis_sco_refs",
+        "from": "registry_from_1061794",
+        "to": 699512,
+        "id": "4a231448-69aa-48d3-a367-508412fd29bd"
+      },
+      {
+        "label": "analysis_sco_refs",
+        "from": "registry_from_1061794",
+        "to": 699514,
+        "id": "e89472f7-f2ed-47e4-8084-e91194bd9850"
+      },
+      {
+        "label": "analysis_sco_refs",
+        "from": "registry_from_1061794",
+        "to": 1061791,
+        "id": "1631339f-02e3-4187-a69f-9425ab1cdf16"
+      },
+      {
+        "label": "analysis_sco_refs",
+        "from": "registry_from_1061794",
+        "to": 699519,
+        "id": "e1f95c30-6097-42c8-8a85-bfd74c544b10"
+      },
+      {
+        "label": "analysis_sco_refs",
+        "from": "registry_from_1061794",
+        "to": 762676,
+        "id": "12e4f1dd-63ca-40ca-98c5-adcf2be89e1e"
+      },
+      {
+        "label": "analysis_sco_refs",
+        "from": "registry_from_1061794",
+        "to": 1061790,
+        "id": "3c9506c9-4e79-4831-8835-3ed683a64f96"
+      },
+      {
+        "label": "analysis_sco_refs",
+        "from": "registry_from_1061794",
+        "to": 699515,
+        "id": "447b5b6a-2ce6-4e52-aa50-e44e0eda3164"
+      },
+      {
+        "label": "analysis_sco_refs",
+        "from": "registry_from_1061794",
+        "to": 699518,
+        "id": "ebbb73cc-3572-4c04-92d4-44801302d670"
+      },
+      {
+        "label": "analysis_sco_refs",
+        "from": "registry_from_1061794",
+        "to": 1061789,
+        "id": "470152e2-09fc-4552-bee8-7aaba872d419"
+      },
+      {
+        "label": "analysis_sco_refs",
+        "from": "process_from_1061794",
+        "to": 1061793,
+        "id": "0029625a-9dd9-4c01-8883-1d75cf4e6e2e"
+      },
+      {
+        "label": "analysis_sco_refs",
+        "from": "process_from_1061794",
+        "to": 1061792,
+        "id": "b6f6d977-5d65-482b-bde8-f152fe53b121"
+      },
+      {
+        "label": "analysis_sco_refs",
+        "from": 1061793,
+        "to": "malware-analysis_from_1061793",
+        "id": "213d9890-adf9-4e32-92d1-f1bf1aebee0c"
+      },
+      {
+        "label": "dynamic-analysis-of",
+        "from": "malware_from_1061794",
+        "to": 1061773,
+        "id": "04c87901-e519-442a-b894-c0d79bd8639f"
+      },
+      {
+        "label": "analysis_sco_refs",
+        "from": "malware-analysis_from_1061793",
+        "to": 1061794,
+        "id": "c22e8685-c465-4ad0-b221-f82dc754e9ef"
+      },
+      {
+        "label": "analysis_sco_refs",
+        "from": 699518,
+        "to": "malware-analysis_from_699518",
+        "id": "70d3a03b-2287-4185-a121-5ac6bb6b4598"
+      },
+      {
+        "label": "analysis_sco_refs",
+        "from": "malware-analysis_from_699518",
+        "to": 1061794,
+        "id": "1c457053-c4d5-4de3-b998-bfddb3cc7925"
+      },
+      {
+        "label": "analysis_sco_refs",
+        "from": "malware-analysis_from_699518",
+        "to": 1054258,
+        "id": "25cbebcd-8094-4832-ba9d-9c6064afe2e3"
+      },
+      {
+        "label": "analysis_sco_refs",
+        "from": "malware-analysis_from_699518",
+        "to": 1031546,
+        "id": "b83edf5e-af0a-46b8-ae88-01df9a734739"
+      },
+      {
+        "label": "analysis_sco_refs",
+        "from": "malware-analysis_from_699518",
+        "to": 985007,
+        "id": "c8766770-a7dd-4303-96d0-211f4356276b"
+      },
+      {
+        "label": "analysis_sco_refs",
+        "from": "malware-analysis_from_699518",
+        "to": 972359,
+        "id": "865a5cee-bae5-419f-ba5f-0c2f56f3b007"
+      },
+      {
+        "label": "analysis_sco_refs",
+        "from": "malware-analysis_from_699518",
+        "to": 968080,
+        "id": "f59b399f-3bbf-48ee-bb4b-8f21914112b7"
+      },
+      {
+        "label": "analysis_sco_refs",
+        "from": "malware-analysis_from_699518",
+        "to": 949860,
+        "id": "63b7c758-e088-443b-a8cd-0aaa3ebcbfd7"
+      },
+      {
+        "label": "analysis_sco_refs",
+        "from": "malware-analysis_from_699518",
+        "to": 896695,
+        "id": "a9aaa8a7-fde4-46ec-99de-d9032016b864"
+      },
+      {
+        "label": "analysis_sco_refs",
+        "from": "malware-analysis_from_699518",
+        "to": 883193,
+        "id": "1a58dec0-2545-4fc6-a9f2-a31de5dc0c8d"
+      },
+      {
+        "label": "analysis_sco_refs",
+        "from": "malware-analysis_from_699518",
+        "to": 875793,
+        "id": "dfa17661-9f89-4781-854e-7e019885da58"
+      },
+      {
+        "from": 972359,
+        "to": "registry_from_972359",
+        "id": "de295a9f-0b6f-4033-8e95-898ab89dd92b"
+      },
+      {
+        "label": "analysis_sco_refs",
+        "from": "registry_from_972359",
+        "to": 972304,
+        "id": "0640d899-b960-4b57-aab9-3dc4f38d6351"
+      },
+      {
+        "label": "analysis_sco_refs",
+        "from": 972304,
+        "to": "malware-analysis_from_972304",
+        "id": "2f238cbb-688f-4b03-b004-c56a3858db28"
+      },
+      {
+        "label": "analysis_sco_refs",
+        "from": "malware-analysis_from_972304",
+        "to": 972359,
+        "id": "e3a5f2e0-e07a-4c32-ba57-25bdfe625122"
+      }
+    ]
+  },
+  "key": {
+    "keyword": "65c6deded268392e0f5c0003479d1999"
+  }
+}

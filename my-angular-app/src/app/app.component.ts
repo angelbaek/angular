@@ -1,4 +1,11 @@
-import { AfterViewInit, Component, OnInit } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  OnInit,
+  ViewChild,
+  ElementRef,
+} from '@angular/core';
+
 import { AngularFaviconService } from 'angular-favicon';
 import { HttpClient } from '@angular/common/http';
 import { Router, NavigationEnd } from '@angular/router';
@@ -8,6 +15,8 @@ import { Neo4jConfig } from './neo4jConfig';
 import { Neo4jService } from './neo4j.service';
 import { RealtionshipConfig } from './relationConfig';
 import { ActivatedRoute } from '@angular/router';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 import NeoVis from 'neovis.js';
 
@@ -72,9 +81,12 @@ interface MenuItem {
  * 클래스
  */
 export class AppComponent implements OnInit {
+  @ViewChild('fileInput') fileInput!: ElementRef;
+
   angularIp: string = '192.168.32.22'; // 앵귤러 프로젝트 ip
   backendNodeExpressPort: string = '3000'; // 노드 익스프레스 ip
   neo4jPort: string = '7687';
+
   visibility: string = 'hidden'; // 기본값은 hidden으로 설정
   loadingVisibility: string = 'visible'; // 로딩 애니메이션
   currentUrl: string = ''; // 현재 브라우저 URL을 저장할 속성
@@ -87,6 +99,7 @@ export class AppComponent implements OnInit {
   edgeFontSize: number = 15; // 엣지 폰트사이즈
   apiData: any = []; // API 객체
   targetWord: string = ''; // 문자열 해석
+  compareQueryString: string = '';
   clickOff: any; // 클릭 비활성화 시 받을 객체
   groupedNodes = new Map<string, { rawid: any; name: any }[]>(); // 그룹노드
   selectedGroup: string = ''; // 사용자가 선택한 그룹 이름
@@ -119,8 +132,13 @@ export class AppComponent implements OnInit {
           for (let key in params) {
             console.log(key);
             // keyword or main_name 타겟워드 대입
-            if (key == 'keyword' || key == 'main_name') {
+            if (key == 'keyword') {
               this.targetWord = params[key];
+              this.compareQueryString = 'keyword';
+              console.log('타겟워드:', this.targetWord);
+            } else if (key == 'main_name') {
+              this.targetWord = params[key];
+              this.compareQueryString = 'main_name';
               console.log('타겟워드:', this.targetWord);
             }
 
@@ -172,7 +190,10 @@ export class AppComponent implements OnInit {
     if (Object.keys(dataCount).length === 0) {
       // dataCount가 빈 객체인 경우의 처리 로직
       console.log('No data available for the chart.');
+      this.timeLineGraphVisibility = 'none';
       return; // 이후의 로직을 실행하지 않고 함수를 종료
+    } else {
+      this.timeLineGraphVisibility = 'flex';
     }
 
     // 모든 시리즈 데이터에서 최대값을 찾습니다.
@@ -523,7 +544,9 @@ export class AppComponent implements OnInit {
     });
     nodes.update(nodeUpdateTarget);
   }
-
+  mouseX = 0;
+  mouseY = 0;
+  contextMenuVisible = false;
   /**
    * neovis를 이용하여 초기 viz 그래프를 setup후 렌더링 메소드
    */
@@ -597,6 +620,20 @@ export class AppComponent implements OnInit {
      * 렌더링 완료 후 각 노드들의 events를 처리할 메소드
      */
     this.viz.registerOnEvent('completed', (evt: any) => {
+      this.viz.network.on('oncontext', (params: any) => {
+        params.event.preventDefault();
+        const nodeID = this.viz.network.getNodeAt(params.pointer.DOM);
+        console.log('우클릭', nodeID);
+        if (nodeID) {
+          this.viz.network.selectNodes([nodeID]);
+          this.mouseX = params.event.pageX;
+          this.mouseY = params.event.pageY;
+          // 추가적인 로직을 실행할 수 있습니다.
+          // 예를 들어, 컨텍스트 메뉴를 표시하거나 노드에 대한 정보를 표시하는 등의 동작을 수행할 수 있습니다.
+          this.openNodeInfoModal(nodeID);
+        }
+      });
+
       this.viz.network.on('selectNode', (properties: any) => {
         // 노드를 선택했을 때 이벤트
 
@@ -727,151 +764,169 @@ export class AppComponent implements OnInit {
 
       // 더블클릭 event
       this.viz.network.on('doubleClick', (properties: any) => {
-        const clickedNodeIds = properties.nodes;
-        console.log(clickedNodeIds);
-        if (clickedNodeIds[0] == 'keyword') {
-          console.log('키워드 더블클릭');
-          return;
-        }
-        const clickedNodeEdgesInfo = properties.edges;
-        const clickedNodeEdgesLength = properties.edges.length;
-        console.log(
-          '엣지 현황:::',
-          this.viz.network.body.data.edges.get(clickedNodeEdgesInfo)
-        );
-        const clickedNodeEdgesInfoDetail =
-          this.viz.network.body.data.edges.get(clickedNodeEdgesInfo);
-        // const edgeToObj = clickedNodeEdgesInfoDetail[0].to;
-        let edgeToObj: any;
-        if (
-          clickedNodeEdgesInfoDetail &&
-          clickedNodeEdgesInfoDetail.length > 0 &&
-          clickedNodeEdgesInfoDetail[0]
-        ) {
-          edgeToObj = clickedNodeEdgesInfoDetail[0].to;
-          // ... 나머지 코드 ...
-        } else {
-          console.log('노드를 향해 더블클릭 하시오');
-        }
-
-        const typeEdgeToObj = typeof edgeToObj;
-
-        if (clickedNodeIds.length > 0) {
-          let clickedNodeId = clickedNodeIds[0];
-          // 여기서 원하는 작업 수행
-          console.log('노드가 더블클릭됨:', clickedNodeId);
-          let typeCheck = typeof clickedNodeId;
-          console.log('타입::', typeCheck);
-          if (typeCheck != 'number') {
-            console.log('타입::그룹노드');
-            console.log(typeEdgeToObj);
-            if (typeEdgeToObj != 'number') {
-              console.log('하위 그룹노드 없음');
-              console.log(
-                '그룹노드 이미지 바꾸자~',
-                this.viz.network.body.data.nodes.get(clickedNodeId)
-              );
-              this.groupNodeOpenImage(clickedNodeId);
-              // 만약 그룹노드의 부모 노드가 keyword일 경우에 다른 로직처리
-              const connectedEdges =
-                this.viz.network.getConnectedEdges(clickedNodeId);
-              console.log('다른 로직 처리중...', connectedEdges);
-              console.log('이 그룹노드의 라벨은??', clickedNodeId);
-              const parentLabel =
-                this.viz.network.body.data.edges.get(connectedEdges)[0].from;
-              console.log(parentLabel);
-              if (parentLabel == 'keyword') {
-                const connEdgeCount =
-                  this.viz.network.getConnectedEdges(clickedNodeId);
-                console.log(connEdgeCount);
-                let count: number = 0;
-                connEdgeCount.forEach((edgeId: any) => {
-                  const edge = this.viz.network.body.data.edges.get(edgeId);
-                  console.log(edge);
-                  if (edge.to != clickedNodeId) {
-                    // 자신의 부모노드와의 관계 제외하기
-                    count++;
-                  }
-                });
-
-                if (count >= 0 || count >= 10) {
-                  // 보낼 객체 type과 target 보내기
-                  const reqObj: any = {
-                    type: clickedNodeId,
-                    word: this.targetWord,
-                    limit: count,
-                  };
-                  console.log('자 count 보낸다', count);
-                  this.apiKeywordFromGroupNode(reqObj);
-                }
-              } else {
-                // 여기부터 다시 하위 그룹노드 만들기
-
-                // 엣지 갯수 가져오기 test
-                console.log(clickedNodeId);
-                console.log(
-                  this.viz.network.body.data.edges.get(clickedNodeId)
-                );
-                const connEdgeCount =
-                  this.viz.network.getConnectedEdges(clickedNodeId);
-                console.log(connEdgeCount);
-                let count: number = 0;
-                connEdgeCount.forEach((edgeId: any) => {
-                  const edge = this.viz.network.body.data.edges.get(edgeId);
-                  console.log(edge);
-                  if (edge.to != clickedNodeId) {
-                    // 자신의 부모노드와의 관계 제외하기
-                    count++;
-                  }
-                });
-                console.log('카운트 확인::::::', count);
-                // if (count == 0 || count >= 10) { // 좌측 노드 클릭 후 더블클릭 시 안되 잠시 주석처리
-                //   // 보낼 객체 type과 target 보내기
-                //   const reqObj: any = {
-                //     type: clickedNodeId,
-                //     word: this.targetWord,
-                //     limit: count,
-                //   };
-                //   console.log('자 count 보낸다', count);
-                //   this.apiLowGroupNodeAddFromGroupNode(reqObj, clickedNodeId);
-                // }
-                if (count == 0 || count >= 1) {
-                  // 좌측 노드 클릭 후 더블클릭 시 안되 잠시 주석처리
-                  // 보낼 객체 type과 target 보내기
-
-                  const reqObj: any = {
-                    type: clickedNodeId,
-                    word: this.targetWord,
-                    limit: count,
-                  };
-                  console.log('자 count 보낸다', count);
-                  this.apiLowGroupNodeAddFromGroupNode(reqObj, clickedNodeId);
-                }
-              }
-            } else if (typeEdgeToObj == 'number') {
-              console.log('하위 노드 있음');
-            }
-            // if(clickedNodeEdgesLength)
-          } else if (typeCheck == 'number') {
-            console.log('타입::하위노드');
-            console.log('노드 아이디:', clickedNodeId);
-            // 주석 친 부분은 기존 관련 노드
-            const findNode =
-              this.viz.network.body.data.nodes.get(clickedNodeId);
-            const findNodeType = findNode.raw.properties.type;
-            console.log('타입찾자:', findNode);
-            const reqObj: any = {
-              type: findNodeType,
-              id: clickedNodeId,
-              word: this.targetWord,
-            };
-
-            // 이곳부터 새로운 하위노드 생성
-            this.apiAllNodeGet(reqObj);
-          }
-        }
+        this.nodeDoubleClick(properties);
       });
     });
+  }
+
+  nodeDoubleClick(properties: any) {
+    const clickedNodeIds = properties.nodes;
+    console.log(clickedNodeIds);
+    if (clickedNodeIds[0] == 'keyword') {
+      console.log('키워드 더블클릭');
+      return;
+    }
+    const clickedNodeEdgesInfo = properties.edges;
+    // const clickedNodeEdgesLength = properties.edges.length;
+    console.log(
+      '엣지 현황:::',
+      this.viz.network.body.data.edges.get(clickedNodeEdgesInfo)
+    );
+    const clickedNodeEdgesInfoDetail =
+      this.viz.network.body.data.edges.get(clickedNodeEdgesInfo);
+    // const edgeToObj = clickedNodeEdgesInfoDetail[0].to;
+    let edgeToObj: any;
+    if (
+      clickedNodeEdgesInfoDetail &&
+      clickedNodeEdgesInfoDetail.length > 0 &&
+      clickedNodeEdgesInfoDetail[0]
+    ) {
+      edgeToObj = clickedNodeEdgesInfoDetail[0].to;
+      // ... 나머지 코드 ...
+    } else {
+      console.log('노드를 향해 더블클릭 하시오');
+      return;
+    }
+
+    const typeEdgeToObj = typeof edgeToObj;
+
+    if (clickedNodeIds.length > 0) {
+      let clickedNodeId = clickedNodeIds[0];
+      // 여기서 원하는 작업 수행
+      console.log('노드가 더블클릭됨:', clickedNodeId);
+      let typeCheck = typeof clickedNodeId;
+      console.log('타입::', typeCheck);
+      if (typeCheck != 'number') {
+        console.log('타입::그룹노드');
+        console.log(typeEdgeToObj);
+        if (typeEdgeToObj != 'number') {
+          console.log('하위 그룹노드 없음');
+          console.log(
+            '그룹노드 이미지 바꾸자~',
+            this.viz.network.body.data.nodes.get(clickedNodeId)
+          );
+          this.groupNodeOpenImage(clickedNodeId);
+          // 만약 그룹노드의 부모 노드가 keyword일 경우에 다른 로직처리
+          const connectedEdges =
+            this.viz.network.getConnectedEdges(clickedNodeId);
+          console.log('다른 로직 처리중...', connectedEdges);
+          console.log('이 그룹노드의 라벨은??', clickedNodeId);
+          const parentLabel =
+            this.viz.network.body.data.edges.get(connectedEdges)[0].from;
+          console.log(parentLabel);
+          if (parentLabel == 'keyword') {
+            const connEdgeCount =
+              this.viz.network.getConnectedEdges(clickedNodeId);
+            console.log(connEdgeCount);
+            let count: number = 0;
+            connEdgeCount.forEach((edgeId: any) => {
+              const edge = this.viz.network.body.data.edges.get(edgeId);
+              console.log(edge);
+              if (edge.to != clickedNodeId) {
+                // 자신의 부모노드와의 관계 제외하기
+                count++;
+              }
+            });
+
+            if (count >= 0 || count >= 10) {
+              // 보낼 객체 type과 target 보내기
+              const reqObj: any = {
+                type: clickedNodeId,
+                word: this.targetWord,
+                limit: count,
+              };
+              console.log('자 count 보낸다', count);
+              this.apiKeywordFromGroupNode(reqObj);
+            }
+          } else {
+            // 여기부터 다시 하위 그룹노드 만들기
+
+            // 엣지 갯수 가져오기 test
+            console.log(clickedNodeId);
+            console.log(this.viz.network.body.data.edges.get(clickedNodeId));
+            const connEdgeCount =
+              this.viz.network.getConnectedEdges(clickedNodeId);
+            console.log(connEdgeCount);
+            let count: number = 0;
+            connEdgeCount.forEach((edgeId: any) => {
+              const edge = this.viz.network.body.data.edges.get(edgeId);
+              console.log(edge);
+              if (edge.to != clickedNodeId) {
+                // 자신의 부모노드와의 관계 제외하기
+                count++;
+              }
+            });
+            console.log('카운트 확인::::::', count);
+            // if (count == 0 || count >= 10) { // 좌측 노드 클릭 후 더블클릭 시 안되 잠시 주석처리
+            //   // 보낼 객체 type과 target 보내기
+            //   const reqObj: any = {
+            //     type: clickedNodeId,
+            //     word: this.targetWord,
+            //     limit: count,
+            //   };
+            //   console.log('자 count 보낸다', count);
+            //   this.apiLowGroupNodeAddFromGroupNode(reqObj, clickedNodeId);
+            // }
+            if (count == 0 || count >= 1) {
+              // 좌측 노드 클릭 후 더블클릭 시 안되 잠시 주석처리
+              // 보낼 객체 type과 target 보내기
+
+              const reqObj: any = {
+                type: clickedNodeId,
+                word: this.targetWord,
+                limit: count,
+              };
+              console.log('자 count 보낸다', count);
+              this.apiLowGroupNodeAddFromGroupNode(reqObj, clickedNodeId);
+            }
+          }
+        } else if (typeEdgeToObj == 'number') {
+          console.log('하위 노드 있음');
+        }
+        // if(clickedNodeEdgesLength)
+      } else if (typeCheck == 'number') {
+        console.log('타입::하위노드');
+        console.log('노드 아이디:', clickedNodeId);
+        // 주석 친 부분은 기존 관련 노드
+        const findNode = this.viz.network.body.data.nodes.get(clickedNodeId);
+        const findNodeType = findNode.raw.properties.type;
+        console.log('타입찾자:', findNode);
+        const reqObj: any = {
+          type: findNodeType,
+          id: clickedNodeId,
+          word: this.targetWord,
+        };
+
+        // 이곳부터 새로운 하위노드 생성
+        this.apiAllNodeGet(reqObj);
+      }
+    }
+  }
+  extention(param: any) {
+    const req = { nodes: [param.id] };
+    this.nodeDoubleClick(req);
+  }
+
+  tasdsadqwewqeasds: any;
+  openNodeInfoModal(nodeId: string) {
+    // nodeId를 사용하여 노드 정보를 가져옵니다.
+    const nodeData = this.viz.network.body.data.nodes.get(nodeId);
+    this.tasdsadqwewqeasds = nodeData;
+    this.contextMenuVisible = true;
+  }
+
+  closeModal(): void {
+    this.contextMenuVisible = false;
   }
 
   selectedGroups: string[] = []; // 선택된 그룹들을 저장하는 배열
@@ -1361,13 +1416,33 @@ export class AppComponent implements OnInit {
           const findNode = this.viz.network.body.data.nodes.get(id);
           if (findNode) {
             // 있을때
-            this.focusNode(id);
+            // this.focusNode(id);
             // this.viz.network.body.data.edges.add({
             //   id: rawId,
             //   label: ,
             //   from: rawId,
             //   to: label + '_from_' + rawId,
             // });
+            // 엣지가 추가되어있는지 확인 후 없으면 추가하기
+            const parentId = params.id;
+            const rawId = element.m.identity.low;
+            const rawName = element.m.properties.name;
+            const rawType = element.m.properties.type;
+            const rawProperties = element.m.properties;
+            const edgeLabel = params.type.rTypes[0];
+            const findWord = id + '_from_' + parentId;
+            const findEdge = this.viz.network.body.data.edges.get(findWord);
+            if (!findEdge) {
+              console.log('존재하지 않으니 엣지 추가하자');
+              this.viz.network.body.data.edges.add({
+                id: findWord,
+                label: edgeLabel,
+                from: parentId,
+                to: id,
+              });
+            } else {
+              console.log('존재함');
+            }
           } else {
             // 없을때
             const parentId = params.id;
@@ -1823,6 +1898,300 @@ export class AppComponent implements OnInit {
       }
     });
     updateTargetNodes.update(nodesToUpdate);
+  }
+
+  triggerFileInput() {
+    this.fileInput.nativeElement.click();
+  }
+
+  graphInitializing() {
+    this.viz.network.setData({ nodes: [], edges: [] });
+    this.chartInit();
+    this.data = {};
+    this.filterType = null;
+    this.fileTypeCounts = null;
+    this.filterObj = {
+      nodeType: {},
+      fileType: {},
+      on: '',
+      fileOn: '',
+    };
+    this.filtering();
+    // this.chart();
+  }
+
+  chartInit() {
+    this.chartOptions = []; // 차트옵션
+    this.chartSeries = []; // 차트시리즈
+    // this.timeLineGraphVisibility = 'none';
+  }
+
+  // 파일이 선택되면 호출되는 함수
+  onFileSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      this.visibility = 'hidden';
+      this.loadingVisibility = 'visible';
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const content = reader.result as string;
+        // 여기에서 파일 내용을 처리합니다. 예를 들어 JSON으로 파싱할 수 있습니다.
+        try {
+          const json = JSON.parse(content);
+          this.chartInit();
+          this.viz.network.setData({ nodes: [], edges: [] });
+          const nodes = json.nodes;
+          const edges = json.edges;
+          this.viz.network.setData({ nodes: nodes, edges: edges });
+          const keys = Object.keys(json.target)[0];
+          const keysValue = json.target[keys];
+          if (keys == 'keyword') {
+            this.targetWord = keysValue;
+          } else if (keys == 'main_name') {
+            this.targetWord = keysValue;
+          }
+          this.apiData = [];
+          this.apiData.push({ key: keys, value: keysValue });
+          this.graphResult(this.apiData);
+          this.filtering();
+          this.chart();
+          setTimeout(() => {
+            this.visibility = 'visible';
+            this.loadingVisibility = 'hidden';
+          }, 3000);
+        } catch (err) {
+          console.error('파일을 읽는 도중 오류가 발생했습니다.', err);
+          this.visibility = 'visible';
+          this.loadingVisibility = 'hidden';
+        }
+      };
+
+      event.target.value = '';
+      reader.readAsText(file);
+    }
+  }
+
+  // 알림창 관련
+  alarmText: string = '';
+  alarmVisible: string = 'none';
+
+  // 백그라운드
+  backgroundVisible: string = 'none';
+
+  // 모달창 관련
+  modalTitle: string = '';
+  modalVisible: string = 'none';
+  modalGraphLoadList: [] = [];
+
+  // 선택된 그래프 파일명을 저장하는 프로퍼티
+  selectedGraphFile: string = '';
+
+  // 저장데이터 요청 api
+  graphLoad() {
+    const params = {
+      user: this.user,
+      title: this.selectedGraphFile,
+    };
+    if (this.selectedGraphFile == '') {
+      this.alarmText = '파일을 선택 후 사용하세요';
+      this.modalConfirm();
+      this.alarmOn();
+      return;
+    }
+    this.http
+      .post(
+        `http://${this.angularIp}:${this.backendNodeExpressPort}/api/graph/load`,
+        params
+      )
+      .subscribe((response: any) => {
+        this.modalConfirm();
+        console.log(response);
+        // 그래프, 검색결과, 필터, 시계열 작업하기
+        // this.chartInit();
+        // this.graphInit();
+        const nodes = response.data.nodes;
+        const edges = response.data.edges;
+        this.viz.network.setData({ nodes: nodes, edges: edges });
+        const keys = Object.keys(response.key)[0];
+        const keysValue = response.key[keys];
+        if (keys == 'keyword') {
+          this.targetWord = keysValue;
+        } else if (keys == 'main_name') {
+          this.targetWord = keysValue;
+        }
+        this.apiData = [];
+        this.apiData.push({ key: keys, value: keysValue });
+        this.graphResult(this.apiData);
+        this.filtering();
+        this.chartInit();
+        this.chart();
+      });
+  }
+
+  // 저장목록 요청 api
+  graphListLoad() {
+    const params = {
+      user: this.user,
+    };
+    this.http
+      .post(
+        `http://${this.angularIp}:${this.backendNodeExpressPort}/api/graph/list/load`,
+        params
+      )
+      .subscribe(
+        (response: any) => {
+          console.log(response);
+          this.modalGraphLoadList = response;
+          this.modalOn();
+        },
+        (error) => {
+          // 에러가 발생했을 때의 처리를 여기에 추가할 수 있습니다.
+          console.error('An error occurred:', error);
+          this.alarmText = '저장 데이터가 없습니다';
+          this.alarmOn();
+        }
+      );
+  }
+
+  // 그래프 저장
+  graphSave() {
+    const nodes = this.viz.network.body.data.nodes.get();
+    const edges = this.viz.network.body.data.edges.get();
+    const data = { nodes: nodes, edges: edges };
+    const params = {
+      user: this.user,
+      key: { [this.compareQueryString]: this.targetWord },
+      data: data,
+    };
+    this.http
+      .post(
+        `http://${this.angularIp}:${this.backendNodeExpressPort}/api/graph/save`,
+        { data: params },
+        { responseType: 'text' }
+      )
+      .subscribe((response: any) => {
+        this.alarmOn();
+        if (response == 'Success') {
+          this.alarmText = '그래프가 저장되었습니다';
+        } else if (response == 'Failed') {
+          this.alarmText = '그래프가 저장에 실패하였습니다';
+        }
+      });
+  }
+
+  modalOn() {
+    this.modalVisible = 'block';
+    this.backgroundVisible = 'block';
+  }
+
+  modalConfirm() {
+    this.modalVisible = 'none';
+    this.backgroundVisible = 'none';
+  }
+
+  alarmOn() {
+    this.alarmVisible = 'block';
+    this.backgroundVisible = 'block';
+  }
+
+  alarmConfirm() {
+    this.alarmVisible = 'none';
+    this.backgroundVisible = 'none';
+  }
+
+  // 파일 다운
+  fileDown() {
+    // Neovis.js 인스턴스에서 데이터 추출 (가정)
+    const nodes = this.viz.network.body.data.nodes.get();
+    const edges = this.viz.network.body.data.edges.get();
+    const keyobj = this.compareQueryString;
+    const value = this.targetWord;
+    const graphData = {
+      nodes: nodes,
+      edges: edges,
+      target: { [keyobj]: value },
+    };
+
+    // JSON 포맷으로 변환
+    var jsonStr = JSON.stringify(graphData, null, 2);
+
+    // 파일 생성 및 다운로드
+    var blob = new Blob([jsonStr], { type: 'application/json' });
+    var url = URL.createObjectURL(blob);
+
+    // a 태그를 만들어 파일 다운로드 링크 생성
+    var a = document.createElement('a');
+    a.download = 'graph-data.json';
+    a.href = url;
+    a.textContent = 'Download graph-data.json';
+
+    // a 태그를 클릭하여 다운로드 실행
+    a.click();
+
+    // 생성된 URL 객체 해제
+    URL.revokeObjectURL(url);
+    this.documentFileDown(graphData);
+  }
+
+  documentFileDown(graphData: any) {
+    const canvasElement = document.querySelector('canvas');
+    if (canvasElement) {
+      html2canvas(canvasElement as HTMLElement).then((canvas) => {
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF();
+
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = pdf.internal.pageSize.getHeight();
+
+        // 제목을 추가합니다.
+        const title = 'Node Info';
+        const titleFontSize = 20;
+        const titleX = 10; // 페이지 왼쪽 여백에서부터의 x 좌표
+        const titleY = 30; // 페이지 상단에서부터의 y 좌표 + 여백
+
+        pdf.setFontSize(titleFontSize);
+        pdf.setTextColor(20, 60, 127); // 글자색을 흰색으로 설정
+        // pdf.setFillColor(0, 0, 255); // 배경색을 파란색으로 설정
+        const titleWidth =
+          (pdf.getStringUnitWidth(title) * titleFontSize) /
+          pdf.internal.scaleFactor;
+
+        pdf.text(title, titleX + 3, titleY); // 제목 텍스트를 배경 사각형 위에 추가
+
+        // 캔버스 이미지를 페이지에 추가합니다.
+        const imgProps = pdf.getImageProperties(imgData);
+        const canvasWidth = pdfWidth;
+        const canvasHeight = (imgProps.height * canvasWidth) / imgProps.width;
+        pdf.addImage(imgData, 'PNG', 0, titleY + 10, canvasWidth, canvasHeight);
+        // 본문에 대한 글자색을 검은색으로 설정합니다.
+        pdf.setTextColor(0, 0, 0);
+        pdf.setFontSize(12);
+
+        // 텍스트를 추가하기 시작할 y 위치를 설정합니다.
+        let yPosition = titleY + canvasHeight + 20; // 이미지와 제목 아래에 여백을 추가합니다.
+
+        const lines = pdf.splitTextToSize(
+          JSON.stringify(graphData, null, 2),
+          pdfWidth - 20
+        );
+
+        lines.forEach((line: any) => {
+          if (yPosition >= pdfHeight - 10) {
+            // 페이지의 바닥까지 남은 여백을 고려합니다.
+            pdf.addPage();
+            yPosition = 20; // 새 페이지 상단의 여백 설정
+            pdf.setTextColor(0, 0, 0);
+            pdf.setFontSize(12);
+          }
+          pdf.text(line, 10, yPosition);
+          yPosition += 7; // 줄 간격 설정
+        });
+
+        pdf.save('graph-report.pdf');
+      });
+    } else {
+      console.error('Canvas element not found');
+    }
   }
 
   // string 타입으로 변환
@@ -2572,6 +2941,62 @@ export class AppComponent implements OnInit {
           console.log('상위 노드 id', highNodeId);
           const groupLabel = this.typeConfirm(rawType);
           if (!this.viz.network.body.data.nodes.get(word)) {
+            // 그룹노드 없는데 만약 그 그룹노드와 상위 그룹노드가 같을경우 조건
+            const connNode =
+              this.viz.network.getConnectedNodes(targetHighNodeId);
+            const parts = word.split('_from_');
+            const beforeFrom = parts[0];
+            for (const element of connNode) {
+              console.log(element);
+              if (element == beforeFrom) {
+                //상위 그룹노드와 하위 그룹노드가 같을때
+                this.viz.network.body.data.nodes.add({
+                  id: rawId,
+                  label: rawName,
+                  title: rawName,
+                  group: rawType,
+                  shape: 'image',
+                  image: `../assets/images/${rawType}/${rawType}_4.png`,
+                  raw: { properties: rawProperties },
+                  visConfig: {
+                    nodes: {
+                      size: 55,
+                      font: {
+                        // background: 'black',
+                        color: '#343434',
+                        size: this.nodeFontSize, // px
+                        face: 'pretendard',
+                        strokeWidth: 2, // px
+                        // strokeColor: "blue",
+                      },
+                    },
+
+                    edges: {
+                      arrows: {
+                        to: { enabled: true },
+                      },
+                      font: {
+                        // background: 'black',
+                        color: '#343434',
+                        size: this.edgeFontSize, // px
+                        face: 'pretendard',
+                        strokeWidth: 2, // px
+                        // strokeColor: "blue",
+                      },
+                    },
+                  },
+                });
+                this.viz.network.body.data.edges.add({
+                  label: rType,
+                  from: highNodeId,
+                  to: rawId,
+                });
+                this.chart();
+                this.filtering();
+                return;
+              }
+            }
+
             console.log(this.viz.network.body.data.nodes.get(word));
             console.log('그룹노드 없음');
             this.viz.network.body.data.nodes.add({

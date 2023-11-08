@@ -1,0 +1,228 @@
+{
+  "data": {
+    "nodes": [
+      {
+        "id": "keyword",
+        "label": "keyword",
+        "shape": "image",
+        "title": "keyword",
+        "group": "keyword",
+        "image": "../assets/images/keyword/keyword_1.png",
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        }
+      },
+      {
+        "id": "file",
+        "label": "file",
+        "shape": "image",
+        "group": "file",
+        "image": "../assets/images/file/file_1.png",
+        "title": "file",
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        }
+      },
+      {
+        "id": "malware",
+        "label": "malware",
+        "shape": "image",
+        "group": "malware",
+        "image": "../assets/images/malware/malware_1.png",
+        "title": "malware",
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        }
+      },
+      {
+        "id": "malware-analysis",
+        "label": "malware-analysis",
+        "shape": "image",
+        "group": "malware-analysis",
+        "image": "../assets/images/malware-analysis/malware-analysis_1.png",
+        "title": "malware-analysis",
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        }
+      },
+      {
+        "id": "registry",
+        "label": "registry",
+        "shape": "image",
+        "group": "registry",
+        "image": "../assets/images/registry/registry_1.png",
+        "title": "registry",
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        }
+      },
+      {
+        "id": "process",
+        "label": "process",
+        "shape": "image",
+        "group": "process",
+        "image": "../assets/images/process/process_1.png",
+        "title": "process",
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "file_Group",
+        "from": "keyword",
+        "to": "file"
+      },
+      {
+        "id": "malware_Group",
+        "from": "keyword",
+        "to": "malware"
+      },
+      {
+        "id": "malware-analysis_Group",
+        "from": "keyword",
+        "to": "malware-analysis"
+      },
+      {
+        "id": "registry_Group",
+        "from": "keyword",
+        "to": "registry"
+      },
+      {
+        "id": "process_Group",
+        "from": "keyword",
+        "to": "process"
+      }
+    ]
+  },
+  "key": {
+    "keyword": "65c6deded268392e0f5c0003479d1999"
+  }
+}
