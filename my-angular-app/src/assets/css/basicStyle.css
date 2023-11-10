@@ -2705,3 +2705,25 @@ apx-chart {
   position: fixed;
   transform: translate(-50%, -50%);
 }
+
+.backward_and_forward {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  background-color: #c9dce7;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 0.4rem;
+}
+
+.backward_and_forward:hover {
+  background-color: #aec6d4;
+}
+
+.fa-backward,
+.fa-forward {
+  align-self: center;
+  padding-top: 2px;
+}

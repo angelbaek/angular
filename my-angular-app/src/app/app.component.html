@@ -407,6 +407,25 @@
       <div class="main-con-box">
         <!--컨텐츠 상다 검색및 버튼 영역-->
         <div class="con-top-box">
+          <!-- 뒤로, 앞으로 -->
+          <button
+            class="backward_and_forward"
+            (click)="backward()"
+            *ngIf="searchIndex > 0 && localIndexNum <= 10"
+          >
+            <i class="fa-solid fa-backward"></i>
+          </button>
+          <button
+            class="backward_and_forward"
+            (click)="forward()"
+            *ngIf="
+              searchIndex >= 0 &&
+              searchIndex != localIndexNum - 1 &&
+              localIndexNum != 1
+            "
+          >
+            <i class="fa-solid fa-forward"></i>
+          </button>
           <!--검색-->
           <div class="con-search">
             <div class="con-search-input">
@@ -1323,9 +1342,9 @@
     <div class="right-mouse-box">
       <ul class="over-list">
         <li (click)="extention(tasdsadqwewqeasds)">확장</li>
-        <li>삭제</li>
-        <li>뒤로가기</li>
-        <li>앞으로가기</li>
+        <li (click)="nodeRemove(tasdsadqwewqeasds)">삭제</li>
+        <li (click)="backward()">뒤로가기</li>
+        <li (click)="forward()">앞으로가기</li>
         <li (click)="fileDown()">추출</li>
       </ul>
     </div>

@@ -158,6 +158,7 @@ export class AppComponent implements OnInit {
   ngOnInit(): void {
     this.draw();
     this.ngxFavicon.setFavicon('../assets/images/favicon.ico');
+    localStorage.clear();
   }
   // setupNodeEventListeners() {
   //   // 노드가 추가될 때의 이벤트 핸들러
@@ -749,6 +750,7 @@ export class AppComponent implements OnInit {
           ); // 이미지 주소 변경
           nodeImageChange.image = updatedImage;
           this.viz.network.body.data.nodes.update(nodeImageChange);
+        } else {
         }
 
         connectedNodes.forEach((connectedNodeId: any) => {
@@ -767,6 +769,65 @@ export class AppComponent implements OnInit {
         this.nodeDoubleClick(properties);
       });
     });
+  }
+
+  localIndexNum = 0;
+  // 탐색 인덱스
+  searchIndex = -1;
+
+  localStorageTest() {
+    // 현재 저장된 항목들을 가져옵니다.
+    const nodes = this.viz.network.body.data.nodes.get();
+    const edges = this.viz.network.body.data.edges.get();
+    const data = { nodes: nodes, edges: edges };
+
+    if (this.localIndexNum != 10) {
+      localStorage.setItem(`${this.localIndexNum}`, JSON.stringify(data));
+      this.localIndexNum++;
+      this.searchIndex++;
+    } else if (this.localIndexNum == 10) {
+      localStorage.removeItem('0');
+      for (let i = 1; i <= 9; i++) {
+        const item: any = localStorage.getItem(`${i}`);
+        localStorage.setItem(`${i - 1}`, item);
+      }
+      localStorage.setItem(`9`, JSON.stringify(data));
+      const output: any = localStorage.getItem('0');
+      console.log('마지막 삭제 반영 후 마지막 데이터:::', JSON.parse(output));
+    }
+  }
+
+  backward() {
+    this.searchIndex--;
+    console.log('로컬탐색:', this.searchIndex, '맥스값:', this.localIndexNum);
+    const testString: any = localStorage.getItem(`${this.searchIndex}`);
+    const test = JSON.parse(testString);
+    const nodes = test.nodes;
+    const edges = test.edges;
+    this.viz.network.setData({ nodes: nodes, edges: edges });
+    if (this.searchIndex == 0) {
+      console.log('더이상 탐색X');
+    } else {
+      this.chart();
+      this.filtering(false);
+    }
+  }
+
+  forward() {
+    if (this.searchIndex + 1 == this.localIndexNum) {
+      console.log('더 이상 탐색X');
+      return;
+    }
+    console.log('로컬탐색 증가전:', this.searchIndex);
+    this.searchIndex++;
+    console.log('로컬탐색:', this.searchIndex, '맥스값:', this.localIndexNum);
+    const testString: any = localStorage.getItem(`${this.searchIndex}`);
+    const test = JSON.parse(testString);
+    const nodes = test.nodes;
+    const edges = test.edges;
+    this.viz.network.setData({ nodes: nodes, edges: edges });
+    this.chart();
+    this.filtering(false);
   }
 
   nodeDoubleClick(properties: any) {
@@ -912,6 +973,18 @@ export class AppComponent implements OnInit {
       }
     }
   }
+
+  nodeRemove(param: any) {
+    const node = this.viz.network.body.data.nodes.get(param.id);
+    // this.viz.network.body.data.nodes.remove();
+    const connectedNodes = this.viz.network.getConnectedEdges(param.id);
+    this.viz.network.body.data.nodes.remove(param.id);
+    connectedNodes.forEach((element: any) => {
+      this.viz.network.body.data.edges.remove(element);
+    });
+    console.log(node, connectedNodes);
+  }
+
   extention(param: any) {
     const req = { nodes: [param.id] };
     this.nodeDoubleClick(req);
@@ -1191,22 +1264,29 @@ export class AppComponent implements OnInit {
             const hasNumber = /\d/.test(nodeId);
 
             if (hasNumber) {
+              // 그리고 relation이 있는지도 확인해야됨
               console.log('nodeId에 숫자가 포함되어 있습니다.');
               this.viz.network.body.data.edges.add({
                 label: edgeLabel,
-                // id: rawId,
+                id: rawId + '_from_' + nodeId,
                 from: nodeId,
                 to: rawId,
               });
             } else {
               // 원본 그룹 노드
               console.log('nodeId에 숫자가 포함되어 있지 않습니다.');
-              this.viz.network.body.data.edges.add({
-                label: edgeLabel,
-                // id: rawId,
-                from: nodeId,
-                to: rawId,
-              });
+              // 그리고 relation이 있는지도 확인해야됨
+              const findIdRel = rawId + '_from_' + nodeId;
+              if (this.viz.network.body.data.edges.get(findIdRel)) {
+                console.log('있으니 pass');
+              } else {
+                this.viz.network.body.data.edges.add({
+                  label: edgeLabel,
+                  id: rawId + '_from_' + nodeId,
+                  from: nodeId,
+                  to: rawId,
+                });
+              }
             }
           } else {
             this.viz.network.body.data.nodes.add({
@@ -1247,14 +1327,16 @@ export class AppComponent implements OnInit {
             //그룹노드와 원본노드 엣지 추가
             this.viz.network.body.data.edges.add({
               label: edgeLabel,
-              // id: rawId,
+              id: rawId + '_from_' + nodeId,
               from: nodeId,
               to: rawId,
             });
-            this.chart();
-            this.filtering();
+            // this.chart();
+            // this.filtering(true);
           }
         });
+        this.chart();
+        this.filtering(true);
       });
   }
 
@@ -1333,6 +1415,8 @@ export class AppComponent implements OnInit {
               });
             }
           }
+          this.chart();
+          this.filtering(true);
         } else if (!multiBoolean) {
           console.log('다중노드 아니고 상위 노드와 같은지 비교 로직 필요');
           console.log(response.data);
@@ -1378,8 +1462,8 @@ export class AppComponent implements OnInit {
             this.anotherLabelAddNodeGroup(req);
           }
         }
-        this.chart();
-        this.filtering();
+        // this.chart();
+        // this.filtering(true);
       });
   }
 
@@ -1491,11 +1575,11 @@ export class AppComponent implements OnInit {
             //그룹노드와 원본노드 엣지 추가
             this.viz.network.body.data.edges.add({
               label: edgeLabel,
-              // id: rawId,
+              id: rawId + '_from_' + parentId,
               from: parentId,
               to: rawId,
             });
-            this.filtering();
+            this.filtering(true);
           }
         });
       });
@@ -1916,7 +2000,7 @@ export class AppComponent implements OnInit {
       on: '',
       fileOn: '',
     };
-    this.filtering();
+    this.filtering(true);
     // this.chart();
   }
 
@@ -1953,7 +2037,7 @@ export class AppComponent implements OnInit {
           this.apiData = [];
           this.apiData.push({ key: keys, value: keysValue });
           this.graphResult(this.apiData);
-          this.filtering();
+          this.filtering(true);
           this.chart();
           setTimeout(() => {
             this.visibility = 'visible';
@@ -2022,7 +2106,7 @@ export class AppComponent implements OnInit {
         this.apiData = [];
         this.apiData.push({ key: keys, value: keysValue });
         this.graphResult(this.apiData);
-        this.filtering();
+        this.filtering(true);
         this.chartInit();
         this.chart();
       });
@@ -2204,7 +2288,8 @@ export class AppComponent implements OnInit {
   fileTypeCounts: any;
 
   //필터
-  filtering() {
+  filtering(param: boolean) {
+    console.log('필터링 시행됨!!!!!!!!!!!!!!!!!!!!!!!!!');
     // 모든 노드를 가져옵니다.
     const nodes = this.viz.network.body.data.nodes.get();
 
@@ -2244,6 +2329,10 @@ export class AppComponent implements OnInit {
         this.filterObj.fileType[key] = { or: false, and: false, not: false };
       }
       console.log('파일타입 결과물:', this.filterObj);
+    }
+
+    if (param) {
+      this.localStorageTest();
     }
   }
 
@@ -2301,14 +2390,14 @@ export class AppComponent implements OnInit {
           });
           //그룹노드와 원본노드 엣지 추가
           this.viz.network.body.data.edges.add({
-            // id: rawId,
+            // id: label + '_from_' + rawId,
             label: relationLabel,
             from: rawId,
             to: label + '_from_' + rawId,
           });
         }
         this.chart();
-        this.filtering();
+        this.filtering(true);
       });
   }
 
@@ -2448,7 +2537,7 @@ export class AppComponent implements OnInit {
         }
       });
     this.chart();
-    this.filtering();
+    this.filtering(true);
   }
 
   // 상위 그룹노드가 있는 그룹노드 더블클릭 시 하위 노드 만들기
@@ -2509,7 +2598,7 @@ export class AppComponent implements OnInit {
             //그룹노드와 원본노드 엣지 추가
             this.viz.network.body.data.edges.add({
               label: edgeLabel,
-              // id: rawId,
+              id: rawId + '_from_' + nodeId,
               from: nodeId,
               to: rawId,
             });
@@ -2528,7 +2617,7 @@ export class AppComponent implements OnInit {
               //그룹노드와 원본노드 엣지 추가
               this.viz.network.body.data.edges.add({
                 label: edgeLabel,
-                // id: rawId,
+                id: rawId + 'from' + nodeId,
                 from: nodeId,
                 to: rawId,
                 // from: rawId,
@@ -2538,7 +2627,7 @@ export class AppComponent implements OnInit {
           }
         });
         this.chart();
-        this.filtering();
+        this.filtering(true);
       });
   }
 
@@ -2579,10 +2668,10 @@ export class AppComponent implements OnInit {
         }
         this.loadingVisibility = 'hidden';
         this.visibility = 'visible';
-        // this.chart();
         // 우측 그래프 검색결과 추가
         this.graphResult(params);
-        this.filtering();
+        // this.filtering(true);
+        // this.localStorageTest();
       });
   }
 
@@ -2703,7 +2792,7 @@ export class AppComponent implements OnInit {
         });
       });
     this.chart();
-    this.filtering();
+    this.filtering(true);
   }
 
   graphResult(params: any) {
@@ -2819,7 +2908,8 @@ export class AppComponent implements OnInit {
     });
 
     this.chart();
-    this.filtering();
+
+    this.filtering(true);
   }
 
   firstGraphKeyword(response: any) {
@@ -2912,6 +3002,9 @@ export class AppComponent implements OnInit {
         to: type,
       });
     });
+
+    this.chart();
+    this.filtering(true);
   }
 
   // 좌측 탭 클릭 노드 추가
@@ -2987,12 +3080,13 @@ export class AppComponent implements OnInit {
                   },
                 });
                 this.viz.network.body.data.edges.add({
+                  id: rawId + '_from_' + highNodeId,
                   label: rType,
                   from: highNodeId,
                   to: rawId,
                 });
                 this.chart();
-                this.filtering();
+                this.filtering(true);
                 return;
               }
             }
@@ -3037,7 +3131,7 @@ export class AppComponent implements OnInit {
             });
             //그룹노드와 원본노드 엣지 추가
             this.viz.network.body.data.edges.add({
-              // id: rawId,
+              id: word + '_from_' + targetHighNodeId,
               from: targetHighNodeId,
               to: word,
             });
@@ -3089,12 +3183,14 @@ export class AppComponent implements OnInit {
             console.log('내가 추가한 상위노드와 같을때');
             //그룹노드와 원본노드 엣지 추가
             this.viz.network.body.data.edges.add({
+              id: rawId + '_from_' + highNodeId,
               label: rType,
               from: highNodeId,
               to: rawId,
             });
           } else {
             this.viz.network.body.data.edges.add({
+              id: rawId + '_from_' + highNodeId,
               label: rType,
               from: word,
               to: rawId,
@@ -3107,7 +3203,7 @@ export class AppComponent implements OnInit {
           //   to: rawId,
           // });
           this.chart();
-          this.filtering();
+          this.filtering(true);
         } else {
           console.log('포커스 이벤트 발동');
           this.focusNode(rawId);
