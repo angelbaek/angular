@@ -6,9 +6,10 @@ import { AppComponent } from './app.component';
 import { HttpClientModule } from '@angular/common/http';
 import { NgxApexchartsModule } from 'ngx-apexcharts';
 import { SessionComponentComponent } from './session-component/session-component.component';
+import { NeovizGraphComponent } from './neoviz-graph/neoviz-graph.component';
 
 @NgModule({
-  declarations: [AppComponent, SessionComponentComponent],
+  declarations: [AppComponent, SessionComponentComponent, NeovizGraphComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,

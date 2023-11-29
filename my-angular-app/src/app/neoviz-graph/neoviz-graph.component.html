@@ -1,0 +1,1888 @@
+<body
+  class="h-full find-body app-container"
+  (click)="closeModal()"  
+>
+  <!--상단-->
+  <!--헤드-->
+  <section class="head-wrap">
+    <div class="head-nav">
+      <div class="head-nav-left">
+        <div class="menu">
+          <span class="material-symbols-outlined left-btn">menu</span>
+        </div>
+        <div class="logo">
+          <!--SAMPLELOGO-->
+          <a href="index.html"
+            ><img src="../assets/images/logo.png" alt=""
+          /></a>
+        </div>
+      </div>
+      <div class="head-nav-center">
+        <div class="head-nav-menu">
+          <div class="item mm-1" data-head-menu="1">
+            <a>파일</a><br />
+            <div class="sub-nav sub-1">
+              <ul class="top-sub-menu">
+                <li (click)="graphListLoad()">불러오기</li>
+                <li (click)="graphSave()">저장</li>
+                <li (click)="graphSaveRename()">다른이름으로 저장</li>
+                <li (click)="triggerFileInput()">열기</li>
+                <li (click)="triggerFileInputJson()">파일조회(대용량)</li>
+                <li (click)="triggerFileInput()">업로드</li>
+                <li (click)="fileDown(false, true)">문서형식 추출</li>
+                <li (click)="fileDown(true, false)">그래프 추출</li>
+                <input
+                  type="file"
+                  #jsonSearchfileInput
+                  style="display: none"
+                  (change)="jsonSearch($event)"
+                  accept=".json"
+                />
+                <input
+                  type="file"
+                  #fileInput
+                  style="display: none"
+                  (change)="onFileSelected($event)"
+                  accept=".json"
+                />
+              </ul>
+            </div>
+          </div>
+          <div class="item mm-2" data-head-menu="2">
+            <a>편집</a><br />
+            <div class="sub-nav sub-2">
+              <ul class="top-sub-menu">
+                <li (click)="graphInitializing()">그래프 초기화</li>
+                <!-- <li (click)="graphSave()">저장</li> -->
+                <!-- <li (click)="graphListLoad()">불러오기</li> -->
+                <li (click)="backward()">뒤로가기</li>
+                <li (click)="forward()">앞으로가기</li>
+                <li (click)="nodeRemove(clickOff)">노드 삭제</li>
+                <li (click)="nodeSearch()">노드 검색</li>
+              </ul>
+            </div>
+          </div>
+          <div class="item mm-3" data-head-menu="3">
+            <!-- 물리엔진 켜짐 라벨 표기 파일추출 노드삭제 그래프 초기화 저장 불러오기 파일조회 업로드 -->
+            <a>보기</a><br />
+            <div class="sub-nav sub-3">
+              <ul class="top-sub-menu">
+                <li (click)="checkRadio($event); pysicsOn()">
+                  <input
+                    type="radio"
+                    name="pysical"
+                    id="pysical_on"
+                    #radioInput
+                    checked
+                  />
+                  <p>물리엔진 켜짐</p>
+                </li>
+                <li (click)="checkRadio($event); pysicsOff()">
+                  <input
+                    type="radio"
+                    name="pysical"
+                    id="pysical_off"
+                    #radioInput
+                  />
+                  <p>물리엔진 꺼짐</p>
+                </li>
+                <li (click)="checkRadio($event); labelOn()">
+                  <input
+                    type="radio"
+                    name="label"
+                    id="label_on"
+                    #radioInput
+                    checked
+                  />
+                  <p>라벨 켜짐</p>
+                </li>
+                <li (click)="checkRadio($event); labelOff()">
+                  <input type="radio" name="label" id="label_off" #radioInput />
+                  <p>라벨 꺼짐</p>
+                </li>
+                <li (click)="zoomIn()">확대</li>
+                <li (click)="zoomOut()">축소</li>
+                <li (click)="realFullScreen()">전체화면</li>
+              </ul>
+            </div>
+          </div>
+          <div class="item mm-4" data-head-menu="4">
+            <a>도움말</a><br />
+            <div class="sub-nav sub-4">
+              <ul class="top-sub-menu">
+                <li (click)="patchInfo()" style="display: block">패치 정보</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- <div class="sub-nav sub-5">
+                <ul class="top-sub-menu">
+                  <li>Menu list one</li>
+                  <li>Menu list one</li>
+                  <li>Menu list one</li>
+                </ul>
+              </div> -->
+
+          <!-- <div class="item mm-7" data-head-menu="7">
+              <a>저장</a><br />
+              <div class="sub-nav sub-7">
+                <ul class="top-sub-menu">
+                  <li>Menu list one</li>
+                  <li>Menu list one</li>
+                  <li>Menu list one</li>
+                </ul>
+              </div>
+            </div>
+            <div class="item mm-8" data-head-menu="8">
+              <a>불러오기</a><br />
+              <div class="sub-nav sub-8">
+                <ul class="top-sub-menu">
+                  <li>Menu list one</li>
+                  <li>Menu list one</li>
+                  <li>Menu list one</li>
+                </ul>
+              </div>
+            </div> -->
+          <!-- <div class="item mm-9" data-head-menu="9">
+              <a>파일조회</a><br />
+              <div class="sub-nav sub-9">
+                <ul class="top-sub-menu">
+                  <li>Menu list one</li>
+                  <li>Menu list one</li>
+                  <li>Menu list one</li>
+                </ul>
+              </div>
+            </div>
+            <div class="item mm-10" data-head-menu="10">
+              <a>업로드</a><br />
+              <div class="sub-nav sub-10">
+                <ul class="top-sub-menu">
+                  <li>Menu list one</li>
+                  <li>Menu list one</li>
+                  <li>Menu list one</li>
+                </ul>
+              </div>
+            </div> -->
+        </div>
+      </div>
+      <div class="head-nav-right">
+        <div class="info">
+          <a>{{ user }}</a>
+        </div>
+        <div class="btn">
+          <span class="material-symbols-outlined">settings</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!--본문 전체-------------------------------------------------------------------------->
+
+  <section class="total-wrap">
+    <!--좌측 기본영역 - 가운데 영역 줄임-->
+    <div class="left-box-space">
+      <!--좌측 공간을잡기 위한것-->
+    </div>
+    <div class="left-box">
+      <!--박스 전체 상단 제목-->
+      <div class="box-title left-bg">
+        <div class="box-title-text">그래프 정보</div>
+        <div class="box-title-btn">
+          <span class="material-symbols-outlined left-btn">arrow_back</span>
+        </div>
+      </div>
+
+      <!--스크롤 위해 전체 컨텐츠 감싸기-->
+      <div class="box-contents-scroll">
+        <!--박스 탭-->
+        <div class="box-tab left-bb nav nav-pills">
+          <div
+            class="nav-item tab-one left-bg active left-tab-1"
+            data-bs-toggle="pill"
+            href="#con-01"
+            (click)="isRelatedNodeClicked = !isRelatedNodeClicked"
+          >
+            노드 정보
+          </div>
+          <div
+            class="nav-item tab-one tab-basic-bg left-tab-2"
+            data-bs-toggle="pill"
+            href="#con-02"
+            (click)="isRelatedNodeClicked = !isRelatedNodeClicked"
+          >
+            연관 노드
+          </div>
+        </div>
+
+        <div class="tab-content">
+          <!--첫번째 탭-->
+          <div class="tab-pane active" id="con-01">
+            <!--정보내용 테이블-->
+            <div class="box-table">
+              <table class="basic-table">
+                <tbody *ngIf="selectedNodeData">
+                  <tr *ngFor="let data of nodeDataArray">
+                    <td class="tr-title" id="node-info-td-title">
+                      {{ data.key }}
+                    </td>
+                    <td id="node-info-td-value">
+                      <div class="text-container">
+                        {{ data.value }}
+                        <i
+                          class="fa-solid fa-paste"
+                          style="color: #597ead; padding-left: 2px"
+                          (click)="clipCopy(data.value)"
+                        ></i>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <!--첫번째 탭-->
+
+          <!--두번째 탭-->
+          <!-- <div class="tab-pane fade plr-15" id="con-02">두번째 박스 내용</div> -->
+          <!-- 첫번째 태그: 각 그룹 이름 표시 -->
+          <ng-container *ngIf="isRelatedNodeClicked">
+            <div
+              *ngFor="let group of groupKeys"
+              (click)="toggleGroup(group)"
+              [attr.data-group]="group"
+              [ngClass]="{ 'active-group': selectedGroups.includes(group) }"
+            >
+              <div class="relatedNode_first">
+                <div class="depth-icon">
+                  <div class="depth-plus">
+                    <!-- <img src="assets/images/depth-plus.png" /> -->
+                    <img
+                      [src]="
+                        selectedGroups.includes(group)
+                          ? 'assets/images/depth-minus.png'
+                          : 'assets/images/depth-plus.png'
+                      "
+                    />
+                  </div>
+                </div>
+                <div class="depth-title">{{ group }}</div>
+                <!-- <div class="depth-num">10</div> -->
+                <div class="depth-num">
+                  {{ groupedNodes.get(group)?.length }}
+                </div>
+              </div>
+              <!-- <ul *ngIf="selectedGroup === group" class="relatedNode_second_ul"> -->
+              <ul
+                *ngIf="selectedGroups.includes(group)"
+                class="relatedNode_second_ul"
+              >
+                <li
+                  *ngFor="let item of groupedNodes.get(group)"
+                  class="relatedNode_second"
+                  (click)="focusNode(item.rawid); $event.stopPropagation()"
+                >
+                  <div class="depth-icon">
+                    <div class="depth-line"></div>
+                  </div>
+                  <div class="depth-title">{{ item.name }}</div>
+                </li>
+              </ul>
+            </div>
+          </ng-container>
+
+          <!--두번째 탭-->
+        </div>
+
+        <!--박스 탭-->
+        <div class="box-tab left-bb">
+          <div class="tab-one left-bg chk-on">관계 정보</div>
+        </div>
+        <!--뎁스 리스트-->
+        <div class="box-depth">
+          <ul class="left-depth-list-one">
+            <!-- 1st Step Menu -->
+            <li
+              *ngFor="let menuItem of menuDataArray; let i = index"
+              [class.depth-choice]="menuItem.isExpanded"
+              [class.active]="menuItem.isExpanded"
+              (click)="toggleMenu(i)"
+              class="left-m1-1"
+            >
+              <div class="left-depth-list-one_div">
+                <div class="depth-icon">
+                  <div class="depth-plus">
+                    <img
+                      [src]="
+                        menuItem.isExpanded
+                          ? 'assets/images/depth-minus.png'
+                          : 'assets/images/depth-plus.png'
+                      "
+                      alt=""
+                    />
+                  </div>
+                </div>
+                <div class="depth-title">{{ menuItem.type }}</div>
+                <div class="depth-num">{{ menuItem.data.count }}</div>
+              </div>
+
+              <!-- 2nd Step Menu -->
+              <ul *ngIf="menuItem.isExpanded" class="left-depth-list-two">
+                <li
+                  *ngFor="
+                    let relatedNode of menuItem.data.relatedNodeTypes
+                      | keyvalue;
+                    let j = index
+                  "
+                  class="left-m2-1"
+                  (click)="
+                    toggleSubMenu(i, relatedNode.key); $event.stopPropagation()
+                  "
+                  [class.active]="relatedNode.value.isExpanded"
+                >
+                  <div class="left-depth-list-two">
+                    <div class="depth-icon">
+                      <div class="depth-plus">
+                        <img
+                          [src]="
+                            relatedNode.value.isExpanded
+                              ? 'assets/images/depth-minus.png'
+                              : 'assets/images/depth-plus.png'
+                          "
+                          alt=""
+                        />
+                      </div>
+                    </div>
+                    <div class="depth-title">{{ relatedNode.key }}</div>
+                    <div class="depth-num">{{ relatedNode.value.count }}</div>
+                  </div>
+
+                  <!-- 3rd Step Menu -->
+                  <ul
+                    *ngIf="relatedNode.value.isExpanded"
+                    class="left-depth-list-third"
+                  >
+                    <li
+                      *ngFor="let item of relatedNode?.['value']?.combined | slice:0:displayedItemsCount[relatedNode.key]"
+                    >
+                      <div class="depth-icon">
+                        <div class="depth-line"></div>
+                      </div>
+
+                      <div
+                        class="depth-title"
+                        (click)="
+                          clickNodeAdd(item.id, item.highNodeId, menuItem.type);
+                          $event.stopPropagation()
+                        "
+                      >
+                        {{ item.value }}
+                      </div>
+                    </li>
+                  </ul>
+                  <button
+                    class="color-1"
+                    *ngIf="shouldShowMoreButton(relatedNode) && relatedNode?.['value']?.isExpanded"
+                    (click)="
+                      increaseDisplayedItems(relatedNode.key);
+                      $event.stopPropagation()
+                    "
+                  >
+                    더 보기
+                  </button>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+        <!-- 악성코드 정보 -->
+        <div *ngIf="Object.keys(malwareAPIResult).length > 0">
+          <!--박스 탭-->
+          <div class="box-tab left-bb nav nav-pills">
+            <div
+              class="nav-item tab-one left-bg active left-tab-3"
+              data-bs-toggle="pill"
+              href="#con-03"
+            >
+              악성코드 정보
+            </div>
+          </div>
+          <div class="box-table">
+            <table class="basic-table">
+              <tbody>
+                <tr *ngFor="let data of Object.keys(malwareAPIResult)">
+                  <td class="tr-title" id="node-info-td-title">
+                    {{ data }}
+                  </td>
+                  <td id="node-info-td-value">
+                    <div class="text-container">
+                      {{ malwareAPIResult[data] }}
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="left-foot-search-ai wrap-h-0">
+        <!--검색-->
+        <div class="con-search w-90p">
+          <div class="con-search-input">
+            <input type="text" placeholder="AI SEARCH" />
+          </div>
+          <div class="con-search-btn">
+            <span class="material-symbols-outlined side-btn">search</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="left-foot-search-wiki wrap-h-0">
+        <!--검색-->
+        <div class="con-search w-90p">
+          <div class="con-search-input">
+            <input type="text" placeholder="WIKI SEARCH" />
+          </div>
+          <div class="con-search-btn">
+            <span class="material-symbols-outlined side-btn">search</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!--좌측 기본영역 끝-->
+
+    <!--센터 영역-->
+    <div class="center-box">
+      <!--컨텐츠 영역-->
+      <div class="main-con-box">
+        <!--컨텐츠 상다 검색및 버튼 영역-->
+        <div class="con-top-box">
+          <div class="btn-no-bg pl-10">
+            <!-- <button
+                class="right-btn color-1 ai-search left-search-btn-ai pr-30 ptb-8"
+              >
+                Graph serach
+              </button> -->
+            <button
+              class="color-1 ai-search left-search-btn-ai ptb-8"
+              id="web-search"
+              (click)="webSearchShow()"
+            >
+              웹기반 검색
+              <i class="fa-solid fa-arrow-right" style="padding-left: 10px"></i>
+            </button>
+          </div>
+          <!-- 뒤로, 앞으로 -->
+          <button
+            class="backward_and_forward"
+            (click)="backward()"
+            *ngIf="searchIndex > 0 && localIndexNum <= 10"
+          >
+            <i class="fa-solid fa-backward"></i>
+          </button>
+          <button
+            class="backward_and_forward"
+            (click)="forward()"
+            *ngIf="
+              searchIndex >= 0 &&
+              searchIndex != localIndexNum - 1 &&
+              localIndexNum != 1
+            "
+          >
+            <i class="fa-solid fa-forward"></i>
+          </button>
+          <!--검색-->
+          <div class="con-search">
+            <div class="con-search-input">
+              <input
+                type="text"
+                [(ngModel)]="webSearchText"
+                placeholder="웹 기반 검색"
+                id="web-search-input"
+              />
+            </div>
+            <div class="con-search-btn" (click)="webSearch()">
+              <span class="material-symbols-outlined side-btn">search</span>
+            </div>
+          </div>
+          <!--버튼-->
+          <div class="con-btn">
+            <div class="btn-circle" (click)="toggleFullScreen()">
+              <span class="material-symbols-outlined fs-25">fullscreen</span>
+            </div>
+            <div class="btn-circle" (click)="zoomIn()">
+              <span class="material-symbols-outlined"> add </span>
+            </div>
+            <div class="btn-circle" (click)="zoomOut()">
+              <span class="material-symbols-outlined"> remove </span>
+            </div>
+            <!-- <div class="btn-no-bg pl-10">              
+                <button
+                  class="right-btn color-1 ai-search left-search-btn-ai ptb-8"
+                  id="graph-search"
+                >
+                  그래프 검색
+                  <i
+                    class="fa-solid fa-arrow-right"
+                    style="padding-left: 10px"
+                  ></i>
+                </button>
+              </div> -->
+          </div>
+        </div>
+        <!--컨텐츠 상다 검색및 버튼 영역 끝-->
+
+        <!--실제 컨텐츠 들어갈 자리-->
+        <div class="main-contents" style="border: none">
+          <!-- <div class="" id="viz"></div> -->
+          <div
+            class=""
+            id="viz"
+            [style.visibility]="visibility"
+            style="border: none"
+          ></div>
+        </div>
+        <!--실제 컨텐츠 들어갈 자리 끝-->
+      </div>
+      <!--컨텐츠 영역 끝-->
+
+      <!--하단 그래프영역- 가운데 영역 넓이 따라감-->
+      <div></div>
+      <div
+        class="graph-box"
+        style="display: flex"
+        *ngIf="chartOptions"
+        [style.display]="timeLineGraphVisibility"
+      >
+        <!-- <div *ngIf="chartOptions">
+            apexcharts 컴포넌트
+            <apx-chart
+              [series]="chartSeries"
+              [chart]="chartOptions.chart"
+              [xaxis]="chartOptions.xaxis"
+              (click)="onBarClick($event)"
+            ></apx-chart>
+          </div> -->
+
+        <div class="graph-prev">
+          <span class="material-symbols-outlined d-none">arrow_back_ios</span>
+        </div>
+        <div class="graph-con">
+          <div class="graph-num-out"></div>
+          <!-- <div class="apex-graph" id="apexBar2"></div> -->
+          <div
+            class="typing_loader"
+            [style.visibility]="chartLoadingVisibility"
+          ></div>
+          <div style="margin-top: 10px">
+            <!-- apexcharts 컴포넌트 -->
+            <apx-chart
+              [series]="chartSeries"
+              [chart]="chartOptions.chart"
+              [xaxis]="chartOptions.xaxis"
+              [yaxis]="chartOptions.yaxis"
+              [plotOptions]="chartOptions.plotOptions"
+              [grid]="chartOptions.grid"
+              [legend]="chartOptions.legend"
+              [stroke]="chartOptions.stroke"
+              [theme]="chartOptions.theme"
+              [tooltip]="chartOptions.tooltip"
+              [dataLabels]="chartOptions.dataLabels"
+              [fill]="chartOptions.fill"
+              [colors]="chartOptions.colors"
+              style="display: block"
+              (click)="onSelect($event)"
+            >
+              ></apx-chart
+            >
+          </div>
+          <!-- <div class="graph-line"></div> -->
+        </div>
+        <div class="graph-next">
+          <span class="material-symbols-outlined d-none"
+            >arrow_forward_ios</span
+          >
+        </div>
+      </div>
+      <!--하단 그래프영역 끝-->
+
+      <!--좌측 추가펼침영역 - 가운데 영역 덮음-->
+      <div
+        class="side-box"
+        [style.visibility]="webSearchVisible"
+        [ngClass]="{ 'on-web': webSearchVisible == 'visible' }"
+      >
+        <!--  -->
+        <!--박스 전체 상단 제목-->
+        <div class="box-title side-bg">
+          <div class="box-title-text">웹 기반 검색</div>
+          <div class="box-title-btn" (click)="toggleWebSearch()">
+            <span class="material-symbols-outlined side-btn">arrow_back</span>
+          </div>
+        </div>
+        <!--스크롤 위해 전체 컨텐츠 감싸기-->
+        <div class="box-contents-scroll">
+          <!--체크박스 검색결과-->
+          <div class="box-check-result">
+            <!-- <div class="result-sort">
+                <select name="" id="">
+                  <option value="">Result Sort</option>
+                  <option value="">Result Sort</option>
+                </select>
+              </div> -->
+            <!-- <div class="check-result-con">
+                <div class="check-result-con-text">
+                  Take the CyberTrap challenge
+                </div>
+                <div class="check-result-con-check checkbox-wrapper-2">
+                  <input type="checkbox" class="ikxBAC p-0" />
+                </div>
+              </div> -->
+            <!-- <div class="check-result-con check-on">
+                <div class="check-result-con-text">
+                  Take the CyberTrap challenge
+                </div>
+                <div class="check-result-con-check checkbox-wrapper-2">
+                  <input type="checkbox" class="ikxBAC p-0" checked="on" />
+                </div>
+              </div>
+              <div class="check-result-con">
+                <div class="check-result-con-text">
+                  Take the CyberTrap challenge - Stop data theft Stop data theft
+                </div>
+                <div class="check-result-con-check checkbox-wrapper-2">
+                  <input type="checkbox" class="ikxBAC p-0" />
+                </div>
+              </div> -->
+          </div>
+          <!--체크박스 검색결과-->
+
+          <!--박스 탭-->
+          <div class="box-tab side-bb">
+            <div class="tab-one side-bg chk-on">구글 검색결과</div>
+          </div>
+          <!--기본 검색결과-->
+          <div class="box-basic-result">
+            <div class="basic-result-con">
+              <ul class="basic-resul-list">
+                <li *ngFor="let item of googleResult">
+                  <a [href]="item[2]" target="_blank">{{ item[1] }}</a>
+                </li>
+              </ul>
+              <div class="result-btn" *ngIf="googleResult.length > 10">
+                <button class="color-1">더보기</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="box-tab side-bb">
+            <div class="tab-one side-bg chk-on">위키 검색결과</div>
+          </div>
+          <!--기본 검색결과-->
+          <div class="box-basic-result">
+            <div class="basic-result-con">
+              <ul class="basic-resul-list">
+                <!-- <li class="check-on">Searching ofr hacking</li> -->
+                <li class="detail">
+                  <div class="detail-con">
+                    <div class="title"></div>
+                    <div class="con" *ngIf="wikiResult != ''" id="wiki_result">
+                      {{ wikiResult }}
+                    </div>
+                  </div>
+                </li>
+              </ul>
+              <!-- <div class="result-btn">
+                  <button class="color-1">더보기</button>
+                </div> -->
+            </div>
+          </div>
+        </div>
+      </div>
+      <!--좌측 추가펼침영역 끝-->
+    </div>
+    <!--센터 영역 끝-->
+
+    <!--우측 영역 - 가운데 영역 줄임-->
+    <div class="right-box-space">
+      <!--우측 공간을 위해-->
+    </div>
+    <div class="right-box">
+      <!-- 버튼 -->
+      <div class="btn-no-bg pl-10">
+        <button
+          class="right-btn color-1 ai-search left-search-btn-ai ptb-8"
+          id="graph-search"
+        >
+          그래프 검색
+          <i class="fa-solid fa-arrow-right" style="padding-left: 10px"></i>
+        </button>
+      </div>
+      <!--박스 전체 상단 제목-->
+      <div class="box-title right-bg ptb-0">
+        <div class="box-title-tab">
+          <!--박스 탭-->
+          <div class="box-tab2 nav nav-pills">
+            <div
+              class="nav-item tab-one active right-tab-1 check-on"
+              data-bs-toggle="pill"
+              href="#con-03"
+            >
+              그래프 검색
+            </div>
+            <div
+              class="nav-item tab-one right-tab-2"
+              data-bs-toggle="pill"
+              href="#con-04"
+            >
+              그래프 다중검색
+            </div>
+            <div
+              class="nav-item tab-one right-tab-3"
+              data-bs-toggle="pill"
+              href="#con-05"
+            >
+              조건 검색
+            </div>
+            <div
+              class="nav-item tab-one right-tab-4"
+              data-bs-toggle="pill"
+              href="#con-06"
+            >
+              AI 검색
+            </div>
+          </div>
+        </div>
+
+        <div class="box-title-btn d-none">
+          <span class="material-symbols-outlined right-btn">arrow_forward</span>
+        </div>
+      </div>
+      <!--스크롤 위해 전체 컨텐츠 감싸기-->
+      <div class="box-contents-scroll">
+        <!--탭내용-->
+        <div class="tab-content">
+          <!--첫번째 탭-->
+
+          <div class="tab-pane active" id="con-03">
+            <div class="con-search" id="graph-search-input">
+              <div class="con-search-input">
+                <input
+                  type="text"
+                  [(ngModel)]="graphSearchValue"
+                  placeholder="그래프 검색"
+                />
+              </div>
+              <div class="con-search-btn" (click)="graphSearch()">
+                <span class="material-symbols-outlined side-btn">search</span>
+              </div>
+            </div>
+            <!--그래프 검색결과-->
+            <div class="box-tab right-bb">
+              <div class="tab-one right-bg chk-on">그래프 검색결과</div>
+            </div>
+
+            <!--뎁스 리스트-->
+            <div class="box-depth">
+              <ul class="right-depth-list-one">
+                <ul>
+                  <li
+                    *ngFor="let key of Object.keys(data)"
+                    (click)="toggleKeyContent(key)"
+                    [class.expanded]="selectedKeys.includes(key)"
+                  >
+                    <div class="right-m1-1">
+                      <div class="depth-icon">
+                        <div class="depth-plus">
+                          <!-- <img src="assets/images/depth-plus.png" alt="" /> -->
+                          <img
+                            [src]="
+                              selectedKeys.includes(key)
+                                ? 'assets/images/depth-minus.png'
+                                : 'assets/images/depth-plus.png'
+                            "
+                          />
+                        </div>
+                      </div>
+                      <div class="depth-title">{{ key }}</div>
+                      <div class="depth-search p-10">
+                        <div class="con-search w-150 h-25 border-1-b2">
+                          <div class="con-search-input">
+                            <input
+                              type="text"
+                              [(ngModel)]="searchQueries[key]"
+                              placeholder="검색"
+                              (click)="$event.stopPropagation()"
+                            />
+                          </div>
+                          <div
+                            class="con-search-btn"
+                            (click)="getFilteredData(key)"
+                          >
+                            <span class="material-symbols-outlined side-btn"
+                              >search</span
+                            >
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- 선택된 키와 현재 키가 동일할 경우에만 하위 항목들을 표시 -->
+                    <div>
+                      <li class="depth-under right-m1-1-under">
+                        <ul
+                          *ngIf="selectedKeys.includes(key)"
+                          class="right-depth-list-third"
+                        >
+                          <li
+                            *ngFor="
+                              let item of getFilteredData(key)
+                                | slice : 0 : displayedCounts[key]
+                            "
+                            class="depth-under right-m1-1-under"
+                          >
+                            <div class="depth-icon">
+                              <div class="depth-line"></div>
+                            </div>
+                            <div
+                              class="depth-title"
+                              (click)="
+                                $event.stopPropagation();
+                                test(key, item.id, item.name)
+                              "
+                            >
+                              {{ item.name }}
+                            </div>
+                          </li>
+                        </ul>
+                        <div
+                          class="more"
+                          *ngIf="
+                            getFilteredData(key).length > 10 &&
+                            selectedKeys.includes(key)
+                          "
+                          (click)="loadMore(key, $event)"
+                        >
+                          더보기
+                        </div>
+                      </li>
+                    </div>
+                  </li>
+                </ul>
+              </ul>
+            </div>
+
+            <!--박스 탭-->
+            <!-- <div class="box-tab right-bb mt-20">
+                <div class="tab-one right-bg chk-on">Basic Result</div>
+              </div> -->
+
+            <!--기본 검색결과-->
+            <!-- <div class="box-basic-result">
+                <div class="basic-result-con">
+                  <ul class="basic-resul-list">
+                    <li>Searching ofr hacking softwqar</li>
+                    <li>
+                      Searching ofr hacking softwqar leads to vuinerable leads to
+                      vuinerable
+                    </li>
+                    <li>Searching ofr hacking softwqar leads to</li>
+                    <li class="check-on">Searching ofr hacking</li>
+                    <li class="detail">
+                      <div class="detail-con">
+                        <div class="title">Celebrity hacker to piead quilty</div>
+                        <div class="con">
+                          설명 - 납 또는 연은 화학 원소로, 기호는 PD이고 흰자
+                          번호는 82이다. 무겁고, 가단성의 특성이 있는 전이후
+                          금속으로, 자르고 난 단면은 푸르스름한 빛을 떠나
+                          공기중에서 변색이 되어 흐릿한 회색이 된다 - 위키백과 -
+                        </div>
+                      </div>
+                    </li>
+                    <li>Searching ofr hacking softwqar</li>
+                  </ul>
+                  <div class="result-btn">
+                    <button class="color-2">MORE</button>
+                  </div>
+                </div>
+              </div> -->
+          </div>
+          <!--두번째 탭-->
+          <div class="tab-pane pade" id="con-04">
+            <!--그래프 검색 설정-->
+            <div class="graph-search">
+              <div class="graph-search-btn">
+                <div>
+                  <button (click)="graphMultiAddOrSearch('add')">추가</button>
+                </div>
+                <div><button (click)="graphMultiDel()">삭제</button></div>
+                <div><button (click)="graphMultiInit()">초기화</button></div>
+                <div>
+                  <button
+                    class="search"
+                    (click)="graphMultiAddOrSearch('search')"
+                  >
+                    검색
+                  </button>
+                </div>
+              </div>
+              <div class="graph-search-setting">
+                <div class="graph-sort">
+                  <!--노드선택-->
+                  <div class="graph-node">
+                    <div class="">
+                      <select
+                        name=""
+                        id=""
+                        [(ngModel)]="graphMultiFilterObj.firstNode.selectVal"
+                        [disabled]="depth >= 1"
+                      >
+                        <option
+                          [value]="item"
+                          *ngFor="
+                            let item of graphMultiFilterObj.firstNode
+                              .resultArray
+                          "
+                        >
+                          {{ item }}
+                        </option>
+                      </select>
+                    </div>
+                    <div class="">
+                      <input
+                        type="text"
+                        [(ngModel)]="graphMultiFilterObj.firstNode.inputText"
+                        [disabled]="depth >= 1"
+                      />
+                    </div>
+                  </div>
+                  <!--타입선택-->
+                  <div
+                    class="graph-type"
+                    *ngIf="graphMultiFilterObj.firstRel.resultArray.length > 0"
+                  >
+                    <div class="">
+                      <select
+                        name=""
+                        id=""
+                        class="m-0"
+                        [(ngModel)]="graphMultiFilterObj.firstRel.selectVal"
+                        [disabled]="depth >= 2"
+                      >
+                        <option
+                          [value]="item"
+                          *ngFor="
+                            let item of graphMultiFilterObj.firstRel.resultArray
+                          "
+                        >
+                          {{ item }}
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <!--노드선택-->
+                  <div
+                    class="graph-node"
+                    *ngIf="
+                      graphMultiFilterObj.secondNode.resultArray.length > 0
+                    "
+                  >
+                    <div class="">
+                      <select
+                        name=""
+                        id=""
+                        [(ngModel)]="graphMultiFilterObj.secondNode.selectVal"
+                        [disabled]="depth >= 3"
+                      >
+                        <option
+                          [value]="item"
+                          *ngFor="
+                            let item of graphMultiFilterObj.secondNode
+                              .resultArray
+                          "
+                        >
+                          {{ item }}
+                        </option>
+                      </select>
+                    </div>
+                    <div class="">
+                      <input
+                        type="text"
+                        [(ngModel)]="graphMultiFilterObj.secondNode.inputText"
+                        [disabled]="depth >= 3"
+                      />
+                    </div>
+                  </div>
+                  <!--타입선택-->
+                  <div
+                    class="graph-type"
+                    *ngIf="graphMultiFilterObj.secondRel.resultArray.length > 0"
+                  >
+                    <div class="">
+                      <select
+                        name=""
+                        id=""
+                        class="m-0"
+                        [(ngModel)]="graphMultiFilterObj.secondRel.selectVal"
+                        [disabled]="depth >= 4"
+                      >
+                        <option
+                          [value]="item"
+                          *ngFor="
+                            let item of graphMultiFilterObj.secondRel
+                              .resultArray
+                          "
+                        >
+                          {{ item }}
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+                  <!--노드선택-->
+                  <div
+                    class="graph-node"
+                    *ngIf="graphMultiFilterObj.thirdNode.resultArray.length > 0"
+                  >
+                    <div class="">
+                      <select
+                        name=""
+                        id=""
+                        [(ngModel)]="graphMultiFilterObj.thirdNode.selectVal"
+                        [disabled]="depth >= 5"
+                      >
+                        <option
+                          [value]="item"
+                          *ngFor="
+                            let item of graphMultiFilterObj.thirdNode
+                              .resultArray
+                          "
+                        >
+                          {{ item }}
+                        </option>
+                      </select>
+                    </div>
+                    <div class="">
+                      <input
+                        type="text"
+                        [(ngModel)]="graphMultiFilterObj.thirdNode.inputText"
+                        [disabled]="depth >= 5"
+                      />
+                    </div>
+                  </div>
+                  <!--타입선택-->
+                  <div
+                    class="graph-type"
+                    *ngIf="graphMultiFilterObj.thirdRel.resultArray.length > 0"
+                  >
+                    <div class="">
+                      <select
+                        name=""
+                        id=""
+                        class="m-0"
+                        [(ngModel)]="graphMultiFilterObj.thirdRel.selectVal"
+                        [disabled]="depth >= 6"
+                      >
+                        <option
+                          [value]="item"
+                          *ngFor="
+                            let item of graphMultiFilterObj.thirdRel.resultArray
+                          "
+                        >
+                          {{ item }}
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+                  <!--노드선택-->
+                  <div
+                    class="graph-node"
+                    *ngIf="
+                      graphMultiFilterObj.fourthNode.resultArray.length > 0
+                    "
+                  >
+                    <div class="">
+                      <select
+                        name=""
+                        id=""
+                        [(ngModel)]="graphMultiFilterObj.fourthNode.selectVal"
+                        [disabled]="depth >= 7"
+                      >
+                        <option
+                          [value]="item"
+                          *ngFor="
+                            let item of graphMultiFilterObj.fourthNode
+                              .resultArray
+                          "
+                        >
+                          {{ item }}
+                        </option>
+                      </select>
+                    </div>
+                    <div class="">
+                      <input
+                        type="text"
+                        [(ngModel)]="graphMultiFilterObj.fourthNode.inputText"
+                        [disabled]="depth >= 7"
+                      />
+                    </div>
+                  </div>
+                  <!--타입선택-->
+                  <!-- <div
+                      class="graph-type"
+                      *ngIf="graphMultiFilterObj.fourthRel.resultArray"
+                    >
+                      <div class="">
+                        <select name="" id="" class="m-0">
+                          <option value="">r typo</option>
+                          <option value="">type</option>
+                        </select>
+                      </div>
+                    </div> -->
+                </div>
+              </div>
+            </div>
+
+            <!--박스 탭-->
+            <div
+              class="box-tab right-bb mt-20"
+              *ngIf="graphMultiResult.length > 0"
+            >
+              <div class="tab-one right-bg chk-on">
+                그래프 다중 검색결과 <span>{{ graphMultiResultLength }}</span>
+              </div>
+            </div>
+
+            <div class="graph-multi-box" *ngIf="graphMultiResult.length > 0">
+              <div class="graph-multi-path">
+                <div *ngIf="graphMultiFilterObj.firstNode.selectVal != ''">
+                  {{ graphMultiFilterObj.firstNode.selectVal }}
+                </div>
+                <div *ngIf="graphMultiFilterObj.firstRel.selectVal != ''">
+                  {{ graphMultiFilterObj.firstRel.selectVal }}
+                </div>
+                <div *ngIf="graphMultiFilterObj.secondNode.selectVal != ''">
+                  {{ graphMultiFilterObj.secondNode.selectVal }}
+                </div>
+                <div *ngIf="graphMultiFilterObj.secondRel.selectVal != ''">
+                  {{ graphMultiFilterObj.secondRel.selectVal }}
+                </div>
+                <div *ngIf="graphMultiFilterObj.thirdNode.selectVal != ''">
+                  {{ graphMultiFilterObj.thirdNode.selectVal }}
+                </div>
+                <div *ngIf="graphMultiFilterObj.thirdRel.selectVal != ''">
+                  {{ graphMultiFilterObj.thirdRel.selectVal }}
+                </div>
+                <div *ngIf="graphMultiFilterObj.fourthNode.selectVal != ''">
+                  {{ graphMultiFilterObj.fourthNode.selectVal }}
+                </div>
+              </div>
+
+              <!--기본 검색결과-->
+              <div class="box-basic-result2">
+                <div class="basic-result-con2">
+                  <ul class="basic-resul-list2">
+                    <li
+                      *ngFor="let item of graphMultiResult; let i = index"
+                      (click)="grapMultiSearchApiReqResultClick(i)"
+                    >
+                      {{
+                        item.start.properties.name +
+                          "-" +
+                          item.end.properties.name
+                      }}
+                    </li>
+                  </ul>
+                  <!-- <div class="result-btn">
+                      <button class="color-2">MORE</button>
+                    </div> -->
+                </div>
+              </div>
+            </div>
+
+            <!--박스 탭-->
+          </div>
+          <!--세번째 탭-->
+          <div class="tab-pane fade" id="con-05">
+            <!--그래프 필터-->
+            <div class="graph-filter-box" *ngIf="filterType | keyvalue">
+              <div class="graph-filter-reset">
+                <div
+                  class="space-plus"
+                  (click)="showNodeType()"
+                  [ngClass]="{ on: visibleNodeType == 'block' }"
+                >
+                  <img src="assets/images/depth-plus.png" alt="" />
+                </div>
+                <div
+                  class="space-minus"
+                  (click)="hiddenNodeType()"
+                  [ngClass]="{ on: visibleNodeType == 'none' }"
+                >
+                  <img src="assets/images/depth-minus.png" alt="" />
+                </div>
+                <div class="title">노드 조건</div>
+                <div class="btn" style="border: none" (click)="nodeTypeReset()">
+                  <button>초기화</button>
+                </div>
+              </div>
+              <div class="filter-list-group" [style.display]="visibleNodeType">
+                <div
+                  class="graph-filter-list"
+                  *ngFor="let item of filterType | keyvalue"
+                >
+                  <div class="name">
+                    {{ item.key + "(" + item.value + ")" }}
+                  </div>
+                  <div class="choice">
+                    <div class="not">
+                      <button
+                        (click)="onButtonClick('not', getStringKey(item.key))"
+                        [class.button-active]="
+                          filterObj.nodeType[getStringKey(item.key)]['not']
+                        "
+                        [disabled]="
+                          filterObj.on !== '' && filterObj.on !== 'not'
+                        "
+                      >
+                        not
+                      </button>
+                    </div>
+                    <div class="and">
+                      <button
+                        (click)="onButtonClick('and', getStringKey(item.key))"
+                        [class.button-active]="
+                          filterObj.nodeType[getStringKey(item.key)]['and']
+                        "
+                        [disabled]="
+                          filterObj.on !== '' && filterObj.on !== 'and'
+                        "
+                      >
+                        and
+                      </button>
+                    </div>
+                    <div class="or">
+                      <button
+                        (click)="onButtonClick('or', getStringKey(item.key))"
+                        [class.button-active]="
+                          filterObj.nodeType[getStringKey(item.key)]['or']
+                        "
+                        [disabled]="
+                          filterObj.on !== '' && filterObj.on !== 'or'
+                        "
+                      >
+                        or
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!--그래프 필터-->
+            <div class="graph-filter-box" *ngIf="fileTypeCounts">
+              <div class="graph-filter-reset">
+                <div
+                  class="space-plus"
+                  (click)="showFileType()"
+                  [ngClass]="{ on: visibleFileType == 'flex' }"
+                >
+                  <img src="assets/images/depth-plus.png" alt="" />
+                </div>
+                <div
+                  class="space-minus"
+                  (click)="hiddenFileType()"
+                  [ngClass]="{ on: visibleFileType == 'none' }"
+                >
+                  <img src="assets/images/depth-minus.png" alt="" />
+                </div>
+                <div class="title">파일 조건</div>
+                <div class="btn" style="border: none" (click)="fileTypeReset()">
+                  <button>초기화</button>
+                </div>
+              </div>
+              <div
+                class="graph-filter-list"
+                [style.display]="visibleFileType"
+                *ngFor="let item of fileTypeCounts | keyvalue"
+              >
+                <div class="name">
+                  {{ item.key + "(" + item.value + ")" }}
+                </div>
+                <div class="choice">
+                  <div class="not">
+                    <button
+                      (click)="onButtonFileClick('not', getStringKey(item.key))"
+                      [class.button-active]="
+                        filterObj.fileType[getStringKey(item.key)]['not']
+                      "
+                      [disabled]="
+                        filterObj.fileOn !== '' && filterObj.fileOn !== 'not'
+                      "
+                    >
+                      not
+                    </button>
+                  </div>
+                  <div class="and">
+                    <button
+                      (click)="onButtonFileClick('and', getStringKey(item.key))"
+                      [class.button-active]="
+                        filterObj.fileType[getStringKey(item.key)]['and']
+                      "
+                      [disabled]="
+                        filterObj.fileOn !== '' && filterObj.fileOn !== 'and'
+                      "
+                    >
+                      and
+                    </button>
+                  </div>
+                  <div class="or">
+                    <button
+                      (click)="onButtonFileClick('or', getStringKey(item.key))"
+                      [class.button-active]="
+                        filterObj.fileType[getStringKey(item.key)]['or']
+                      "
+                      [disabled]="
+                        filterObj.fileOn !== '' && filterObj.fileOn !== 'or'
+                      "
+                    >
+                      or
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <!-- <div class="graph-filter-list">
+                  <div class="name">Group(3)</div>
+                  <div class="choice">
+                    <div class="not"><button>not</button></div>
+                    <div class="and"><button>and</button></div>
+                    <div class="or"><button>or</button></div>
+                  </div>
+                </div>
+                <div class="graph-filter-list">
+                  <div class="name">Url(3)</div>
+                  <div class="choice">
+                    <div class="not"><button>not</button></div>
+                    <div class="and"><button>and</button></div>
+                    <div class="or"><button class="choice">or</button></div>
+                  </div>
+                </div> -->
+            </div>
+          </div>
+          <!--세번째 탭-->
+          <div class="tab-pane fade" id="con-06">
+            <div class="con-search" id="graph-search-input">
+              <div class="con-search-input">
+                <input
+                  type="text"
+                  [(ngModel)]="aiSearchValue"
+                  placeholder="AI 검색"
+                />
+              </div>
+              <div class="con-search-btn" (click)="aiSearch()">
+                <span class="material-symbols-outlined side-btn">search</span>
+              </div>
+            </div>
+            <div
+              class="box-tab right-bb mt-20"
+              *ngIf="aiSearchResultArray.length > 0"
+            >
+              <div class="tab-one right-bg chk-on">
+                AI 검색결과 {{ aiSearchResultArray.length }}
+              </div>
+            </div>
+
+            <!--기본 검색결과-->
+            <div class="box-basic-result">
+              <div class="basic-result-con">
+                <ul class="basic-resul-list">
+                  <li
+                    *ngFor="let item of aiSearchResultArray"
+                    (click)="aiResultClick(item)"
+                  >
+                    {{ item.name }}
+                  </li>
+                </ul>
+                <!-- <div class="result-btn">
+                    <button class="color-2">MORE</button>
+                  </div> -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!--우측 영역 끝-->
+
+    <!--ai 채팅 -->
+    <div class="right-chat-box-ai wrap-h-0 mover">
+      <div class="chat-top">
+        <div class="chat-title">AI CHAT</div>
+        <div class="chat-close right-search-btn-ai">
+          <span class="material-symbols-outlined"> close </span>
+        </div>
+      </div>
+      <div class="chat-con">
+        <div class="chat-view">
+          <div class="chat-text-left">
+            <div class="chat-text-con">
+              안녕하세요. 테스트 입니다.안녕하세요. 테스트 입니다.안녕하세요.
+              테스트 입니다.안녕하세요. 테스트 입니다.
+            </div>
+            <div class="chat-text-date">오후 13:30</div>
+          </div>
+          <div class="chat-text-left">
+            <div class="chat-text-con">안녕하세요.</div>
+            <div class="chat-text-date">오후 13:30</div>
+          </div>
+          <div class="chat-text-right">
+            <div class="chat-text-date">오후 13:30</div>
+            <div class="chat-text-con mychat">
+              안녕하세요. 테스트 입니다.안녕하세요. 테스트 입니다.안녕하세요.
+              테스트 입니다.안녕하세요. 테스트 입니다.
+            </div>
+          </div>
+          <div class="chat-text-left">
+            <div class="chat-text-con">안녕하세요.</div>
+            <div class="chat-text-date">오후 13:30</div>
+          </div>
+          <div class="chat-text-right">
+            <div class="chat-text-date">오후 13:30</div>
+            <div class="chat-text-con mychat">
+              안녕하세요. 테스트 입니다.안녕하세요. 테스트 입니다.안녕하세요.
+              테스트 입니다.안녕하세요. 테스트 입니다.
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="chat-input">
+        <div class="chat-input-form p-5">
+          <input type="text" class="w-full" />
+        </div>
+        <div class="chat-input-btn p-5">
+          <span class="material-symbols-outlined color-sub-1 cpoint">
+            send
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!--publick 채팅 -->
+    <div class="right-chat-box-public wrap-h-0 mover2">
+      <div class="chat-top">
+        <div class="chat-title">PUBLIC CHAT</div>
+        <div class="chat-close right-search-btn-public">
+          <span class="material-symbols-outlined"> close </span>
+        </div>
+      </div>
+      <div class="chat-con">
+        두번째꺼는 드래그 이동을 위해 스크립트 수정이 필요합니다.
+      </div>
+    </div>
+  </section>
+
+  <!--본문 전체 끝--------------------------------------------------------------------------->
+
+  <!--하단-->
+  <section class="bottom-wrap">
+    <div class="bottom-con">
+      <div class="left">
+        <div class="logo">
+          <img src="assets/images/logo-nsr.png" alt="" />
+        </div>
+        <div class="search">
+          <button class="color-1 ai-search left-search-btn-ai" href="#con-06">
+            AI
+          </button>
+          <button class="ai-search left-search-btn-wiki">WIKI</button>
+        </div>
+      </div>
+      <div class="center" (click)="timeGraphToggle()">
+        <button class="graph-btn">시계열 그래프</button>
+      </div>
+      <div class="right">
+        <button class="color-1 right-search-btn-ai">AI CHAT</button>
+        <button class="right-search-btn-public">PUBLIC CHAT</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Modal 마우스 우클릭 후 메뉴 선택 모달 -->
+  <div
+    class="modal fade"
+    id="exampleModal"
+    tabindex="-1"
+    aria-labelledby="exampleModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog modal-dialog-centered" style="z-index: 0">
+      <div class="modal-content">
+        <div class="mo-title">
+          <div class="text">모달창 제목</div>
+          <div class="colse">
+            <span
+              class="material-symbols-outlined"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            >
+              close
+            </span>
+          </div>
+        </div>
+        <div class="mo-content">
+          <div class="mo-con-oneline">
+            <div class="con-title">제목</div>
+            <div class="con-from"><input type="text" /></div>
+          </div>
+          <div class="mo-con-oneline">
+            <div class="con-title">제목</div>
+            <div class="con-from">
+              <select name="" id="">
+                <option value="">선택</option>
+              </select>
+            </div>
+          </div>
+          <div class="mo-con-oneline">
+            <div class="con-title">제목</div>
+            <div class="con-from"><input type="text" /></div>
+            <div class="con-btn"><button class="color-1">확인</button></div>
+          </div>
+          <div class="mo-con-oneline">
+            <div class="con-title">제목</div>
+            <div class="con-from"><input type="text" /></div>
+          </div>
+          <div class="mo-con-oneline b-0">
+            <div class="con-btn-foot">
+              <button class="color-2">취소</button>
+              <button class="color-1">저장</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- 알람창 -->
+  <div class="right-mouse-wrap" [style.display]="alarmVisible">
+    <!--이클래스의 우측을 따라감-->
+    <div class="right-mouse-box">
+      <div class="title">알림</div>
+      <div class="con">{{ alarmText }}</div>
+      <div class="alarm-div">
+        <button class="alarm-button" (click)="alarmConfirm()">확인</button>
+      </div>
+    </div>
+  </div>
+  <!-- 백그라운드 대기 창 -->
+  <div class="backgroundColor" [style.display]="backgroundVisible"></div>
+  <!-- <div class="backgroundColor"></div> -->
+  <!-- 로딩창 -->
+  <!-- <div class="loading_div"> -->
+  <div class="loading_div" [style.display]="searchDisplay">
+    <img src="../assets/images/Spinner-1.4s-200px.svg" alt="" />
+    <div class="loading">
+      <span>L</span>
+      <span>O</span>
+      <span>A</span>
+      <span>D</span>
+      <span>I</span>
+      <span>N</span>
+      <span>G</span>
+    </div>
+  </div>
+  <!-- 그래프 불러오기 모달창 -->
+  <div
+    class="modal fade show"
+    id="exampleModal"
+    tabindex="-1"
+    aria-labelledby="exampleModalLabel"
+    style="display: block"
+    aria-modal="true"
+    role="dialog"
+    [style.display]="shortPathModalDisplay"
+  >
+    <div class="modal-dialog modal-dialog-centered" style="z-index: 0">
+      <div class="modal-content">
+        <div class="mo-title">
+          <div class="text">최단거리 검색</div>
+          <div class="colse" (click)="shortPathOff()">
+            <span
+              class="material-symbols-outlined"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            >
+              close
+            </span>
+          </div>
+        </div>
+        <div class="mo-content">
+          <div class="mo-con-oneline">
+            <div class="con-title">대상이름</div>
+            <div class="con-from">
+              <input type="text" [(ngModel)]="shortPathModalTargetValue" />
+            </div>
+          </div>
+          <div class="mo-con-oneline b-0">
+            <div class="con-btn-foot">
+              <button class="color-2" (click)="shortPathOff()">취소</button>
+              <button class="color-1" (click)="shortPath()">검색</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- 그래프 불러오기 모달창 -->
+  <div
+    class="modal fade show"
+    id="exampleModal"
+    tabindex="-1"
+    aria-labelledby="exampleModalLabel"
+    style="display: block"
+    aria-modal="true"
+    role="dialog"
+    [style.display]="modalVisible"
+  >
+    <div class="modal-dialog modal-dialog-centered" style="z-index: 0">
+      <div class="modal-content">
+        <div class="mo-title">
+          <div class="text">그래프 불러오기</div>
+          <div class="colse" (click)="modalConfirm()">
+            <span
+              class="material-symbols-outlined"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            >
+              close
+            </span>
+          </div>
+        </div>
+        <div class="mo-content">
+          <!-- <div class="mo-con-oneline">
+              <div class="con-title">제목</div>
+              <div class="con-from"><input type="text" /></div>
+            </div> -->
+          <div class="mo-con-oneline" *ngIf="modalGraphLoadList">
+            <div class="con-title">그래프 파일명</div>
+            <div class="con-from">
+              <select name="" id="" [(ngModel)]="selectedGraphFile">
+                <option *ngFor="let item of modalGraphLoadList" [value]="item">
+                  {{ item }}
+                </option>
+              </select>
+            </div>
+          </div>
+          <!-- <div class="mo-con-oneline">
+              <div class="con-title">제목</div>
+              <div class="con-from"><input type="text" /></div>
+              <div class="con-btn"><button class="color-1">확인</button></div>
+            </div> -->
+          <!-- <div class="mo-con-oneline">
+              <div class="con-title">제목</div>
+              <div class="con-from"><input type="text" /></div>
+            </div> -->
+          <div class="mo-con-oneline b-0">
+            <div class="con-btn-foot">
+              <button class="color-2" (click)="modalConfirm()">취소</button>
+              <button class="color-1" (click)="graphLoad()">불러오기</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 다중-홉 모달창 -->
+  <div
+    class="modal fade show"
+    id="exampleModal"
+    tabindex="-1"
+    aria-labelledby="exampleModalLabel"
+    style="display: block"
+    aria-modal="true"
+    role="dialog"
+    [style.display]="multiHopModalDisplay"
+  >
+    <div class="modal-dialog modal-dialog-centered" style="z-index: 10">
+      <div class="modal-content">
+        <div class="mo-title">
+          <div class="text">다중-홉 검색</div>
+          <div class="colse" (click)="multiHopModalOff()">
+            <span
+              class="material-symbols-outlined"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            >
+              close
+            </span>
+          </div>
+        </div>
+        <div class="mo-content">
+          <div class="mo-con-oneline">
+            <div class="con-title">홉</div>
+            <div class="con-from">
+              <select name="" id="" [(ngModel)]="multiHopModalHoplValue">
+                <option value="1">one hop</option>
+                <option value="2">two hop</option>
+                <option value="3">three hop</option>
+              </select>
+            </div>
+          </div>
+          <div class="mo-con-oneline">
+            <div class="con-title">라벨</div>
+            <div class="con-from">
+              <select name="" id="" [(ngModel)]="multiHopModalLabelValue">
+                <option
+                  [value]="item"
+                  *ngFor="let item of graphMultiFilterObj.firstNode.resultArray"
+                >
+                  {{ item }}
+                </option>
+              </select>
+            </div>
+          </div>
+
+          <div class="mo-con-oneline">
+            <div class="con-title">대상이름</div>
+            <div class="con-from">
+              <input type="text" [(ngModel)]="multiHopModalTargetValue" />
+            </div>
+          </div>
+          <div class="mo-con-oneline b-0">
+            <div class="con-btn-foot">
+              <button class="color-2" (click)="multiHopModalOff()">취소</button>
+              <button class="color-1" (click)="multiHopSearch()">검색</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 다른이름으로 저장하기 모달 -->
+  <div
+    class="modal fade show"
+    id="exampleModal"
+    tabindex="-1"
+    aria-labelledby="exampleModalLabel"
+    style="display: block"
+    aria-modal="true"
+    role="dialog"
+    [style.display]="graphSaveRenameDisplay"
+  >
+    <div class="modal-dialog modal-dialog-centered" style="z-index: 0">
+      <div class="modal-content">
+        <div class="mo-title">
+          <div class="text">다른이름으로 저장하기</div>
+          <div class="colse">
+            <span
+              class="material-symbols-outlined"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+              (click)="graphSaveRenameCancle()"
+            >
+              close
+            </span>
+          </div>
+        </div>
+        <div class="mo-content">
+          <div class="mo-con-oneline" *ngIf="modalGraphLoadList">
+            <div class="con-title">그래프 파일명</div>
+            <div class="con-from">
+              <input type="text" [(ngModel)]="graphSaveRenameText" />
+            </div>
+          </div>
+          <div class="mo-con-oneline b-0">
+            <div class="con-btn-foot">
+              <button class="color-2" (click)="graphSaveRenameCancle()">
+                취소
+              </button>
+              <button
+                class="color-1"
+                (click)="graphSaveRenameAPI(graphSaveRenameText)"
+              >
+                저장하기
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- 우클릭 모달창 -->
+  <div
+    class="right-mouse-wrap"
+    *ngIf="contextMenuVisible"
+    [ngStyle]="{
+      top: mouseY + 'px',
+      left: mouseX + 'px',
+      position: 'fixed',
+      transform: 'translateX(0) translateY(0)'
+    }"
+    (click)="$event.stopPropagation()"
+  >
+    <div class="right-mouse-box">
+      <ul class="over-list">
+        <li (click)="extention(rightClickObj)">확장</li>
+        <li (click)="nodeRemove(rightClickObj)">삭제</li>
+        <li (click)="shortPathOn()" *ngIf="isNumber(rightClickNodeId)">
+          최단거리 검색
+        </li>
+        <li (click)="multiHopModalOn()" *ngIf="isNumber(rightClickNodeId)">
+          다중-홉 검색
+        </li>
+        <li (click)="backward()" *ngIf="searchIndex > 0 && localIndexNum <= 10">
+          뒤로가기
+        </li>
+        <li
+          (click)="forward()"
+          *ngIf="
+            searchIndex >= 0 &&
+            searchIndex != localIndexNum - 1 &&
+            localIndexNum != 1
+          "
+        >
+          앞으로가기
+        </li>
+        <li (click)="fileDown(true, true)">추출</li>
+      </ul>
+    </div>
+  </div>
+  <!-- 복사 알림 -->
+  <div [style.display]="clipBoardDisplay" class="clip_boadrd_txt">
+    복사 되었습니다
+  </div>
+  <!-- 패치 정보 -->
+  <div class="patch_version" [style.display]="patchVersionDisplay">
+    <div class="patch_version_title">
+      패치 정보<i
+        class="fa-solid fa-rectangle-xmark"
+        (click)="patchInfoClose()"
+      ></i>
+    </div>
+    <div id="patch_version_image">
+      <img src="../assets/images/logo.png" alt="" />
+    </div>
+    <div class="patch_version_descryption">분석가용 Graph Visualization</div>
+    <div class="patch_version_version">버전 v0.1(231117)-beta</div>
+    <div class="patch_version_">
+      <!-- <a href="mailto:sachoi1102@itzone.co.kr">후원문의</a> -->
+    </div>
+    <!-- <div><button (click)="patchInfoClose()">확인</button></div> -->
+  </div>
+  <!-- test -->
+  <!-- <div
+      class="test_div"
+      style="
+        z-index: 11;
+        position: fixed;
+        transform: translate(-50%, -50%);
+        left: 50%;
+        top: 50%;
+        border-left: 10px solid black;
+        border-top: 10px solid gray;
+        border-right: 10px solid #fff;
+        border-bottom: 10px solid transparent;
+        border-radius: 100%;
+        width: 100px;
+        height: 100px;
+        animation: load 1.5s infinite;
+      "
+    ></div> -->
+</body>

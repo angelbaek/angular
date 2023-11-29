@@ -1,5 +1,6 @@
 import { Component, Output, EventEmitter } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-session-component',
@@ -9,7 +10,7 @@ import { HttpClient } from '@angular/common/http';
 export class SessionComponentComponent {
   sessionCheck = false;
   inputValue: string = ''; // 사용자 입력을 저장할 변수
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private router: Router) {}
 
   @Output() sessionChange = new EventEmitter<boolean>();
 
@@ -21,7 +22,7 @@ export class SessionComponentComponent {
 
   sendSessionData(value: string) {
     return this.http.post(
-      'http://192.168.32.22:3000/path-to-your-endpoint',
+      'http://112.151.254.17:3000/path-to-your-endpoint',
       { value },
       {
         withCredentials: true,
@@ -30,9 +31,10 @@ export class SessionComponentComponent {
   }
 
   onButtonClick() {
-    this.sendSessionData(this.inputValue).subscribe((data) => {
-      console.log(data);
-      // 필요한 추가 처리...
+    this.sendSessionData(this.inputValue).subscribe((data:any) => {
+      console.log(data);      
+       // 추가 처리 후 리다이렉트
+    this.router.navigateByUrl('/graph2d?keyword=korea');
     });
   }
 }
