@@ -1,0 +1,19 @@
+version: "3.8"
+services:
+  angular:
+    build:
+      context: .
+      dockerfile: Dockerfile-angular
+    image: dev/angular:latest
+    ports:
+      - "4200:80"
+
+  express:
+    build:
+      context: .
+      dockerfile: Dockerfile-express
+    image: dev/express:latest
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./data:/app/save

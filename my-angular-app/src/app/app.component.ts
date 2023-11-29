@@ -4,8 +4,9 @@ import {
   OnInit,
   ViewChild,
   ElementRef,
+  HostListener,
 } from '@angular/core';
-
+import { ClipboardService } from 'ngx-clipboard';
 import { AngularFaviconService } from 'angular-favicon';
 import { HttpClient } from '@angular/common/http';
 import { Router, NavigationEnd } from '@angular/router';
@@ -15,10 +16,12 @@ import { Neo4jConfig } from './neo4jConfig';
 import { Neo4jService } from './neo4j.service';
 import { RealtionshipConfig } from './relationConfig';
 import { ActivatedRoute } from '@angular/router';
+import { forkJoin } from 'rxjs';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
-
+import { serverConfig } from './serverConfig';
 import NeoVis from 'neovis.js';
+import { error, param } from 'jquery';
 
 /**
  * 필터 타입 선언
@@ -82,10 +85,27 @@ interface MenuItem {
  */
 export class AppComponent implements OnInit {
   @ViewChild('fileInput') fileInput!: ElementRef;
+  @ViewChild('jsonSearchfileInput') jsonSearchfileInput!: ElementRef;
+  @HostListener('window:keydown', ['$event'])
+  handleKeyboardEvent(event: KeyboardEvent) {
+    if (event.ctrlKey && event.key === 'z') {
+      // Ctrl + Z가 눌렸을 때 실행할 로직
+      this.backward();
+      // this.doSomething();
+    } else if (event.ctrlKey && event.shiftKey && event.key === 'Z') {
+      this.forward();
+    }
+  }
 
-  angularIp: string = '192.168.32.22'; // 앵귤러 프로젝트 ip
-  backendNodeExpressPort: string = '3000'; // 노드 익스프레스 ip
-  neo4jPort: string = '7687';
+  private _selectedNodeData: any;
+  private _cachedNodeDataArray: any;
+
+  angularIp: string = serverConfig.angularIp; // 앵귤러 프로젝트 ip
+  pythonIp: string = serverConfig.pythonIp; // pyhton API IP
+  pythonPort: string = serverConfig.pythonPort; // python API Port
+  backendNodeExpressPort: string = serverConfig.backendNodeExpressPort; // node express ip
+  neo4jIp: string = serverConfig.neo4jIp; // neo4j ip
+  neo4jPort: string = serverConfig.neo4jPort; // neo4j port
 
   visibility: string = 'hidden'; // 기본값은 hidden으로 설정
   loadingVisibility: string = 'visible'; // 로딩 애니메이션
@@ -121,7 +141,8 @@ export class AppComponent implements OnInit {
     private router: Router,
     private ngxFavicon: AngularFaviconService,
     private neo4jService: Neo4jService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private clipboardService: ClipboardService
   ) {
     this.router.events
       .pipe(filter((event) => event instanceof NavigationEnd))
@@ -147,7 +168,7 @@ export class AppComponent implements OnInit {
             }
           }
           console.log(this.apiData);
-          this.apiRequest(this.apiData);
+          this.apiRequest(this.apiData, false);
         });
       });
   }
@@ -159,10 +180,33 @@ export class AppComponent implements OnInit {
     this.draw();
     this.ngxFavicon.setFavicon('../assets/images/favicon.ico');
     localStorage.clear();
+    this.graphMultiSearch();
   }
   // setupNodeEventListeners() {
   //   // 노드가 추가될 때의 이벤트 핸들러
   // }
+
+  patchVersionDisplay: string = 'none';
+
+  patchInfo() {
+    this.patchVersionDisplay = 'block';
+    this.backgroundVisible = 'block';
+  }
+  patchInfoClose() {
+    this.patchVersionDisplay = 'none';
+    this.backgroundVisible = 'none';
+  }
+
+  clipBoardDisplay: string = 'none';
+
+  clipCopy(text: string) {
+    this.clipboardService.copyFromContent(text);
+    this.clipBoardDisplay = 'block';
+    setTimeout(() => {
+      this.clipBoardDisplay = 'none';
+    }, 2000);
+    // console.log('텍스트가 클립보드에 복사되었습니다.');
+  }
 
   // 챠트 로딩 보이기 객체
   chartLoadingVisibility: string = 'visible';
@@ -257,44 +301,44 @@ export class AppComponent implements OnInit {
               this.chartOptions.xaxis.categories[clickedDataPointIndex];
 
             // 클릭한 데이터 포인트에 세로 줄 주석을 추가합니다.
-            if (this.timeLineGraphverticalLine) {
-              chartContext.updateOptions(
-                {
-                  annotations: {
-                    xaxis: [
-                      {
-                        x: clickedCategory,
-                        borderColor: 'gray',
-                        strokeDashArray: 5,
-                        // label: {
-                        //   text: 'ON',
-                        // },
-                      },
-                    ],
-                  },
-                },
-                false,
-                false
-              ); // 두 번째 인자는 애니메이션 여부, 세 번째 인자는 업데이트 유형을 의미합니다.
-            } else if (!this.timeLineGraphverticalLine) {
-              chartContext.updateOptions(
-                {
-                  annotations: {
-                    xaxis: [
-                      {
-                        x: clickedCategory,
-                        borderColor: 'none',
-                        // label: {
-                        //   text: '선택된 포인트',
-                        // },
-                      },
-                    ],
-                  },
-                },
-                false,
-                false
-              ); // 두 번째 인자는 애니메이션 여부, 세 번째 인자는 업데이트 유형을 의미합니다.
-            }
+            // if (this.timeLineGraphverticalLine) {
+            //   chartContext.updateOptions(
+            //     {
+            //       annotations: {
+            //         xaxis: [
+            //           {
+            //             x: clickedCategory,
+            //             borderColor: 'gray',
+            //             // strokeDashArray: 5,
+            //             // label: {
+            //             //   text: 'ON',
+            //             // },
+            //           },
+            //         ],
+            //       },
+            //     },
+            //     false,
+            //     false
+            //   ); // 두 번째 인자는 애니메이션 여부, 세 번째 인자는 업데이트 유형을 의미합니다.
+            // } else if (!this.timeLineGraphverticalLine) {
+            //   chartContext.updateOptions(
+            //     {
+            //       annotations: {
+            //         xaxis: [
+            //           {
+            //             x: clickedCategory,
+            //             borderColor: 'none',
+            //             // label: {
+            //             //   text: '선택된 포인트',
+            //             // },
+            //           },
+            //         ],
+            //       },
+            //     },
+            //     false,
+            //     false
+            //   ); // 두 번째 인자는 애니메이션 여부, 세 번째 인자는 업데이트 유형을 의미합니다.
+            // }
           },
         },
       },
@@ -328,8 +372,8 @@ export class AppComponent implements OnInit {
             gradient: {
               // colorFrom: '#D8E3F0',
               // colorTo: '#BED1E6',
-              colorFrom: '#143c7f',
-              colorTo: '#597ead',
+              colorFrom: 'black',
+              colorTo: 'black',
               stops: [0, 100],
               // opacityFrom: 0.4,
               // opacityTo: 0.5,
@@ -369,36 +413,6 @@ export class AppComponent implements OnInit {
         },
         // 기타 y축 설정
       },
-      // grid: {
-      //   padding: {
-      //     bottom: -4,
-      //   },
-      //   borderColor: colors.gridBorder,
-      //   xaxis: {
-      //     lines: {
-      //       show: false,
-      //     },
-      //   },
-      //   yaxis: {
-      //     show: false,
-      //     floating: false,
-      //     // min: 6,
-      //     // max: 6,
-      //     lines: {
-      //       show: false,
-      //     },
-      //   },
-      // },
-      // legend: {
-      //   show: true,
-      //   position: 'top',
-      //   horizontalAlign: 'center',
-      //   fontFamily: 'pretendard, sans-serif',
-      //   itemMargin: {
-      //     horizontal: 8,
-      //     vertical: 0,
-      //   },
-      // },
       stroke: {
         width: 0,
       },
@@ -408,12 +422,6 @@ export class AppComponent implements OnInit {
       },
       tooltip: {
         theme: 'light', // 툴팁 테마 설정,
-        // fixed: {
-        //   enabled: false,
-        //   position: 'topRight',
-        //   offsetX: 130,
-        //   offsetY: 22,
-        // },
         y: [
           {
             formatter: function (y: any) {
@@ -433,31 +441,6 @@ export class AppComponent implements OnInit {
           },
         ],
       },
-      // tooltip: {
-      //   theme: 'light',
-      //   custom: function ({
-      //     series,
-      //     seriesIndex,
-      //     dataPointIndex,
-      //     w,
-      //   }: {
-      //     series: any[]; // 여기서 `any` 대신 더 구체적인 타입을 사용하는 것이 좋습니다.
-      //     seriesIndex: number;
-      //     dataPointIndex: number;
-      //     w: any; // `w`의 구체적인 타입을 알고 있다면 `any` 대신 그 타입을 사용하세요.
-      //   }) {
-      //     // 함수 구현...
-      //     return (
-      //       '<div class="arrow_box">' +
-      //       '<span>' +
-      //       series[seriesIndex][dataPointIndex] +
-      //       ' 노드</span>' +
-      //       '</div>'
-      //     );
-      //   },
-      //   followCursor: false,
-      // },
-
       dataLabels: {
         enabled: true, // 데이터 라벨 활성화
         textAnchor: 'middle', // 바의 안쪽에 텍스트 표시
@@ -467,12 +450,6 @@ export class AppComponent implements OnInit {
           fontSize: '12px',
           colors: ['#333333'], // 텍스트 색상 설정 (바의 색상과 대비되게 설정)
         },
-        // dropShadow: {
-        //   enabled: true,
-        //   left: 2,
-        //   top: 2,
-        //   opacity: 0.5,
-        // },
       },
     };
 
@@ -485,6 +462,38 @@ export class AppComponent implements OnInit {
       },
     ];
   }
+
+  customColors: any;
+  onSelect(event: any) {
+    this.customColors = [
+      {
+        name: event.name,
+        value: '#ff0000',
+      },
+    ];
+  }
+
+  // changeBarColor(barIndex: number) {
+  //   // 원래의 시리즈 데이터 복사
+  //   let newSeries = [...this.chartSeries];
+
+  //   // 색상 변경 로직
+  //   // 예: 모든 바를 기본 색상으로 설정하고, 선택된 바만 빨간색으로 변경
+  //   newSeries = newSeries.map((s, index) => {
+  //     return {
+  //       ...s,
+  //       data: s.data.map((d:any, dataIndex:any) => {
+  //         return {
+  //           ...d,
+  //           fillColor: dataIndex === barIndex ? 'red' : '기본 색상' // 기본 색상은 실제 색상 코드로 대체
+  //         };
+  //       })
+  //     };
+  //   });
+
+  //   // 차트 시리즈 업데이트
+  //   this.chartSeries = newSeries;
+  // }
 
   compareCreated: string = '';
   countCreatedClick: number = 0;
@@ -557,7 +566,7 @@ export class AppComponent implements OnInit {
 
       neo4j: {
         ...Neo4jConfig,
-        serverUrl: `bolt://${this.angularIp}:${this.neo4jPort}`,
+        serverUrl: `bolt://${this.neo4jIp}:${this.neo4jPort}`, // local
       },
       labels: {
         ...LabelConfig,
@@ -648,6 +657,9 @@ export class AppComponent implements OnInit {
         // 원본 노드 이미지 변경
         const nodeImageChange =
           this.viz.network.body.data.nodes.get(clickedNodeId);
+        if (nodeImageChange == null) {
+          return;
+        }
         if (nodeImageChange.image && nodeImageChange.image.endsWith('_4.png')) {
           // console.log('노드 이미지 찾음:', nodeImageChange.image);
           const updatedImage = nodeImageChange.image.replace(
@@ -719,7 +731,11 @@ export class AppComponent implements OnInit {
 
         //아이디 문자열 (그룹노드) 일때 예외처리
         if (typeof selectedNodeId !== 'number') {
-          // console.log('그룹노드:::', selectedNodeId);
+          console.log('그룹노드:::', selectedNodeId);
+          console.log(
+            'value:',
+            this.viz.network.body.data.nodes.get(selectedNodeId)
+          );
           return;
         }
 
@@ -733,6 +749,8 @@ export class AppComponent implements OnInit {
 
         // 인접노드 관계정보 가져오기
         this.logAdjacentNodesAndRelationships(selectedNodeId);
+
+        this.malwareInfoAPI(selectedNode);
       });
 
       //노드 선택 해제 시
@@ -742,6 +760,9 @@ export class AppComponent implements OnInit {
 
         // 원본 노드 이미지 변경
         const nodeImageChange = this.viz.network.body.data.nodes.get(nodeId);
+        if (nodeImageChange == null) {
+          return;
+        }
         if (nodeImageChange.image && nodeImageChange.image.endsWith('_3.png')) {
           console.log('노드 이미지 찾음:', nodeImageChange.image);
           const updatedImage = nodeImageChange.image.replace(
@@ -762,6 +783,7 @@ export class AppComponent implements OnInit {
             this.viz.network.body.data.nodes.update(node);
           }
         });
+        this.clickOff = undefined;
       });
 
       // 더블클릭 event
@@ -798,6 +820,13 @@ export class AppComponent implements OnInit {
   }
 
   backward() {
+    if (this.contextMenuVisible) {
+      this.contextMenuVisible = !this.contextMenuVisible;
+    }
+    if (this.searchIndex == 0) {
+      console.log('더이상 탐색X');
+      return;
+    }
     this.searchIndex--;
     console.log('로컬탐색:', this.searchIndex, '맥스값:', this.localIndexNum);
     const testString: any = localStorage.getItem(`${this.searchIndex}`);
@@ -814,6 +843,9 @@ export class AppComponent implements OnInit {
   }
 
   forward() {
+    if (this.contextMenuVisible) {
+      this.contextMenuVisible = !this.contextMenuVisible;
+    }
     if (this.searchIndex + 1 == this.localIndexNum) {
       console.log('더 이상 탐색X');
       return;
@@ -835,6 +867,7 @@ export class AppComponent implements OnInit {
     console.log(clickedNodeIds);
     if (clickedNodeIds[0] == 'keyword') {
       console.log('키워드 더블클릭');
+
       return;
     }
     const clickedNodeEdgesInfo = properties.edges;
@@ -854,6 +887,8 @@ export class AppComponent implements OnInit {
     ) {
       edgeToObj = clickedNodeEdgesInfoDetail[0].to;
       // ... 나머지 코드 ...
+    } else if (clickedNodeIds[0]) {
+      console.log('릴레이션 없는 노드');
     } else {
       console.log('노드를 향해 더블클릭 하시오');
       return;
@@ -885,7 +920,7 @@ export class AppComponent implements OnInit {
           const parentLabel =
             this.viz.network.body.data.edges.get(connectedEdges)[0].from;
           console.log(parentLabel);
-          if (parentLabel == 'keyword') {
+          if (parentLabel == 'keyword' || parentLabel == 'searchKeyword') {
             const connEdgeCount =
               this.viz.network.getConnectedEdges(clickedNodeId);
             console.log(connEdgeCount);
@@ -900,10 +935,16 @@ export class AppComponent implements OnInit {
             });
 
             if (count >= 0 || count >= 10) {
+              // 신규 기능 searchKeyword 추가로 인한 타겟워딩
+              const targetWord =
+                this.viz.network.body.data.nodes.get(parentLabel).word;
               // 보낼 객체 type과 target 보내기
+              // 타입 리 컨펌
+              // clickedNodeId = this.typeRawConfirm(clickedNodeId);
               const reqObj: any = {
                 type: clickedNodeId,
-                word: this.targetWord,
+                // word: this.targetWord,
+                word: targetWord,
                 limit: count,
               };
               console.log('자 count 보낸다', count);
@@ -928,20 +969,9 @@ export class AppComponent implements OnInit {
               }
             });
             console.log('카운트 확인::::::', count);
-            // if (count == 0 || count >= 10) { // 좌측 노드 클릭 후 더블클릭 시 안되 잠시 주석처리
-            //   // 보낼 객체 type과 target 보내기
-            //   const reqObj: any = {
-            //     type: clickedNodeId,
-            //     word: this.targetWord,
-            //     limit: count,
-            //   };
-            //   console.log('자 count 보낸다', count);
-            //   this.apiLowGroupNodeAddFromGroupNode(reqObj, clickedNodeId);
-            // }
             if (count == 0 || count >= 1) {
-              // 좌측 노드 클릭 후 더블클릭 시 안되 잠시 주석처리
-              // 보낼 객체 type과 target 보내기
-
+              // 타입 리 컨펌
+              // clickedNodeId = this.typeRawConfirm(clickedNodeId);
               const reqObj: any = {
                 type: clickedNodeId,
                 word: this.targetWord,
@@ -962,6 +992,8 @@ export class AppComponent implements OnInit {
         const findNode = this.viz.network.body.data.nodes.get(clickedNodeId);
         const findNodeType = findNode.raw.properties.type;
         console.log('타입찾자:', findNode);
+        // 타입 리 컨펌
+        clickedNodeId = this.typeRawConfirm(clickedNodeId);
         const reqObj: any = {
           type: findNodeType,
           id: clickedNodeId,
@@ -975,26 +1007,39 @@ export class AppComponent implements OnInit {
   }
 
   nodeRemove(param: any) {
-    const node = this.viz.network.body.data.nodes.get(param.id);
+    this.closeModal();
+    if (param === undefined) {
+      this.alarmOn('노드를 선택 후 사용하세요');
+      return;
+    }
+    const node = this.viz.network.body.data.nodes.get(
+      param.id ? param.id : param
+    );
     // this.viz.network.body.data.nodes.remove();
-    const connectedNodes = this.viz.network.getConnectedEdges(param.id);
-    this.viz.network.body.data.nodes.remove(param.id);
+    const connectedNodes = this.viz.network.getConnectedEdges(
+      param.id ? param.id : param
+    );
+    this.viz.network.body.data.nodes.remove(param.id ? param.id : param);
     connectedNodes.forEach((element: any) => {
       this.viz.network.body.data.edges.remove(element);
     });
     console.log(node, connectedNodes);
+    this.filtering(true);
   }
 
   extention(param: any) {
+    this.closeModal();
     const req = { nodes: [param.id] };
     this.nodeDoubleClick(req);
   }
 
-  tasdsadqwewqeasds: any;
+  rightClickObj: any;
+  rightClickNodeId: any;
   openNodeInfoModal(nodeId: string) {
+    this.rightClickNodeId = nodeId;
     // nodeId를 사용하여 노드 정보를 가져옵니다.
     const nodeData = this.viz.network.body.data.nodes.get(nodeId);
-    this.tasdsadqwewqeasds = nodeData;
+    this.rightClickObj = nodeData;
     this.contextMenuVisible = true;
   }
 
@@ -1004,10 +1049,7 @@ export class AppComponent implements OnInit {
 
   selectedGroups: string[] = []; // 선택된 그룹들을 저장하는 배열
 
-  /**
-   * canvas 풀스크린 메소드
-   */
-  toggleFullScreen() {
+  realFullScreen() {
     const vizElement = document.getElementById('viz');
 
     if (vizElement) {
@@ -1039,6 +1081,13 @@ export class AppComponent implements OnInit {
         }
       }
     }
+  }
+  /**
+   * canvas 풀스크린 메소드
+   */
+  toggleFullScreen() {
+    // 그래프를 화면에 맞춤
+    this.viz.network.fit({ animation: true });
   }
 
   /**
@@ -1239,105 +1288,149 @@ export class AppComponent implements OnInit {
     }
   }
 
+  malwareAPIResult: any = {};
+
+  malwareInfoAPI(node: any) {
+    console.log(node);
+    let params: any;
+    if (
+      node &&
+      node.raw != undefined &&
+      node.raw.properties != undefined &&
+      node.raw.properties.hash_type != undefined &&
+      node.raw.properties.hash_type == 'MD5'
+    ) {
+      const id = node.id;
+      const name = node.raw.properties.name;
+      params = {
+        id: id,
+        name: name,
+      };
+      console.log(id, name);
+      this.http
+        .post(`http://${this.pythonIp}:${this.pythonPort}/api/malware`, params)
+        .subscribe(
+          (response: any) => {
+            console.log(response);
+            console.log(Object.keys(this.malwareAPIResult));
+            this.malwareAPIResult = response;
+            console.log(Object.keys(this.malwareAPIResult));
+          },
+          (error: any) => {
+            this.alarmOn('서버로 요청이 실패했습니다');
+          }
+        );
+    } else {
+      this.malwareAPIResult = {};
+    }
+  }
+
   /**
    * 키워드 관련 그룹노드 API
    * @param params API에 보낼 객체
    */
   apiKeywordFromGroupNode(params: any) {
+    this.searchLoadingOn();
     this.http
       .post(
         `http://${this.angularIp}:${this.backendNodeExpressPort}/api/hnkgd`,
         params
       )
-      .subscribe((response: any) => {
-        console.log(response);
-        response.forEach((element: any) => {
-          const rawId = element.m.identity.low;
-          const rawName = element.m.properties.name;
-          const rawProperties = element.m.properties;
-          let rawType = this.typeConfirm(element.m.properties.type);
-          const edgeLabel = element.relationshipTypes[0];
-          const nodeId = this.typeConfirm(params.type);
-          // 만약 기존에 이미 노드가 추가되어있을 경우 relation만 추가
-          if (this.viz.network.body.data.nodes.get(rawId)) {
-            //그룹노드와 원본노드 엣지 추가
-            const hasNumber = /\d/.test(nodeId);
+      .subscribe(
+        (response: any) => {
+          console.log(response);
+          response.forEach((element: any) => {
+            const rawId = element.m.identity.low;
+            const rawName = element.m.properties.name;
+            const rawProperties = element.m.properties;
+            let rawType = this.typeConfirm(element.m.properties.type);
+            const edgeLabel = element.relationshipTypes[0];
+            const nodeId = this.typeConfirm(params.type);
+            // 만약 기존에 이미 노드가 추가되어있을 경우 relation만 추가
+            if (this.viz.network.body.data.nodes.get(rawId)) {
+              //그룹노드와 원본노드 엣지 추가
+              const hasNumber = /\d/.test(nodeId);
 
-            if (hasNumber) {
-              // 그리고 relation이 있는지도 확인해야됨
-              console.log('nodeId에 숫자가 포함되어 있습니다.');
-              this.viz.network.body.data.edges.add({
-                label: edgeLabel,
-                id: rawId + '_from_' + nodeId,
-                from: nodeId,
-                to: rawId,
-              });
-            } else {
-              // 원본 그룹 노드
-              console.log('nodeId에 숫자가 포함되어 있지 않습니다.');
-              // 그리고 relation이 있는지도 확인해야됨
-              const findIdRel = rawId + '_from_' + nodeId;
-              if (this.viz.network.body.data.edges.get(findIdRel)) {
-                console.log('있으니 pass');
-              } else {
+              if (hasNumber) {
+                // 그리고 relation이 있는지도 확인해야됨
+                console.log('nodeId에 숫자가 포함되어 있습니다.');
                 this.viz.network.body.data.edges.add({
                   label: edgeLabel,
                   id: rawId + '_from_' + nodeId,
                   from: nodeId,
                   to: rawId,
                 });
+              } else {
+                // 원본 그룹 노드
+                console.log('nodeId에 숫자가 포함되어 있지 않습니다.');
+                // 그리고 relation이 있는지도 확인해야됨
+                const findIdRel = rawId + '_from_' + nodeId;
+                if (this.viz.network.body.data.edges.get(findIdRel)) {
+                  console.log('있으니 pass');
+                } else {
+                  this.viz.network.body.data.edges.add({
+                    label: edgeLabel,
+                    id: rawId + '_from_' + nodeId,
+                    from: nodeId,
+                    to: rawId,
+                  });
+                }
               }
-            }
-          } else {
-            this.viz.network.body.data.nodes.add({
-              id: rawId,
-              label: rawName,
-              title: rawName,
-              group: rawType,
-              // type: rawName,
-              shape: 'image',
-              image: `../assets/images/${rawType}/${rawType}_4.png`,
-              raw: { properties: rawProperties },
-              visConfig: {
-                nodes: {
-                  size: 55,
-                  font: {
-                    color: '#343434',
-                    size: this.nodeFontSize,
-                    face: 'pretendard',
-                    strokeWidth: 2,
+            } else {
+              this.viz.network.body.data.nodes.add({
+                id: rawId,
+                label: this.labelReform(rawName),
+                title: rawName,
+                group: rawType,
+                // type: rawName,
+                shape: 'image',
+                image: `../assets/images/${rawType}/${rawType}_4.png`,
+                raw: { properties: rawProperties },
+                visConfig: {
+                  nodes: {
+                    size: 55,
+                    font: {
+                      color: '#343434',
+                      size: this.nodeFontSize,
+                      face: 'pretendard',
+                      strokeWidth: 2,
+                    },
                   },
-                },
 
-                edges: {
-                  arrows: {
-                    to: { enabled: true },
-                  },
-                  font: {
-                    // background: 'black',
-                    color: '#343434',
-                    size: this.edgeFontSize, // px
-                    face: 'pretendard',
-                    strokeWidth: 2, // px
-                    // strokeColor: "blue",
+                  edges: {
+                    arrows: {
+                      to: { enabled: true },
+                    },
+                    font: {
+                      // background: 'black',
+                      color: '#343434',
+                      size: this.edgeFontSize, // px
+                      face: 'pretendard',
+                      strokeWidth: 2, // px
+                      // strokeColor: "blue",
+                    },
                   },
                 },
-              },
-            });
-            //그룹노드와 원본노드 엣지 추가
-            this.viz.network.body.data.edges.add({
-              label: edgeLabel,
-              id: rawId + '_from_' + nodeId,
-              from: nodeId,
-              to: rawId,
-            });
-            // this.chart();
-            // this.filtering(true);
-          }
-        });
-        this.chart();
-        this.filtering(true);
-      });
+              });
+              //그룹노드와 원본노드 엣지 추가
+              this.viz.network.body.data.edges.add({
+                label: edgeLabel,
+                id: rawId + '_from_' + nodeId,
+                from: nodeId,
+                to: rawId,
+              });
+              // this.chart();
+              // this.filtering(true);
+            }
+          });
+          this.chart();
+          this.filtering(true);
+          this.searchLoadingOff();
+        },
+        (error: any) => {
+          this.alarmOn('서버로 요청이 실패했습니다');
+        }
+      );
   }
 
   typeConfirm(params: any) {
@@ -1351,6 +1444,21 @@ export class AppComponent implements OnInit {
       return 'ipv4-addr';
     } else if (params == 'windows-registry-key') {
       return 'registry';
+    }
+    return params;
+  }
+
+  typeRawConfirm(params: any) {
+    if (params == 'Technique') {
+      return 'attack-pattern';
+    } else if (params == 'Software') {
+      return 'tool';
+    } else if (params == 'Group') {
+      return 'intrusion-set';
+    } else if (params == 'ipv4-addr') {
+      return 'ipv4_addr';
+    } else if (params == 'registry') {
+      return 'windows-registry-key';
     }
     return params;
   }
@@ -1378,7 +1486,7 @@ export class AppComponent implements OnInit {
             } else {
               this.viz.network.body.data.nodes.add({
                 id: groupLabel + '_from_' + rawId,
-                label: groupLabel,
+                label: this.labelReform(groupLabel),
                 title: groupLabel,
                 group: groupLabel,
                 shape: 'image',
@@ -1538,7 +1646,7 @@ export class AppComponent implements OnInit {
             console.log('노드 추가 로직 구현중...', element, params);
             this.viz.network.body.data.nodes.add({
               id: rawId,
-              label: rawName,
+              label: this.labelReform(rawName),
               title: rawName,
               shape: 'image',
               group: rawType,
@@ -1984,6 +2092,10 @@ export class AppComponent implements OnInit {
     updateTargetNodes.update(nodesToUpdate);
   }
 
+  triggerFileInputJson() {
+    this.jsonSearchfileInput.nativeElement.click();
+  }
+
   triggerFileInput() {
     this.fileInput.nativeElement.click();
   }
@@ -2005,7 +2117,7 @@ export class AppComponent implements OnInit {
   }
 
   chartInit() {
-    this.chartOptions = []; // 차트옵션
+    this.chartOptions = undefined; // 차트옵션
     this.chartSeries = []; // 차트시리즈
     // this.timeLineGraphVisibility = 'none';
   }
@@ -2014,19 +2126,17 @@ export class AppComponent implements OnInit {
   onFileSelected(event: any) {
     const file = event.target.files[0];
     if (file) {
-      this.visibility = 'hidden';
-      this.loadingVisibility = 'visible';
+      this.searchLoadingOn();
       const reader = new FileReader();
       reader.onload = (e) => {
         const content = reader.result as string;
         // 여기에서 파일 내용을 처리합니다. 예를 들어 JSON으로 파싱할 수 있습니다.
         try {
           const json = JSON.parse(content);
-          this.chartInit();
-          this.viz.network.setData({ nodes: [], edges: [] });
+
           const nodes = json.nodes;
           const edges = json.edges;
-          this.viz.network.setData({ nodes: nodes, edges: edges });
+
           const keys = Object.keys(json.target)[0];
           const keysValue = json.target[keys];
           if (keys == 'keyword') {
@@ -2036,17 +2146,19 @@ export class AppComponent implements OnInit {
           }
           this.apiData = [];
           this.apiData.push({ key: keys, value: keysValue });
+          this.viz.network.setData({ nodes: [], edges: [] });
+          this.viz.network.setData({ nodes: nodes, edges: edges });
+          this.chartInit();
           this.graphResult(this.apiData);
           this.filtering(true);
           this.chart();
-          setTimeout(() => {
-            this.visibility = 'visible';
-            this.loadingVisibility = 'hidden';
-          }, 3000);
+          // setTimeout(() => {
+          //   this.searchLoadingOff();
+          // }, 3000);
         } catch (err) {
+          this.searchLoadingOff();
+          this.alarmOn('파일 형식과 내용을 확인하세요');
           console.error('파일을 읽는 도중 오류가 발생했습니다.', err);
-          this.visibility = 'visible';
-          this.loadingVisibility = 'hidden';
         }
       };
 
@@ -2077,9 +2189,8 @@ export class AppComponent implements OnInit {
       title: this.selectedGraphFile,
     };
     if (this.selectedGraphFile == '') {
-      this.alarmText = '파일을 선택 후 사용하세요';
       this.modalConfirm();
-      this.alarmOn();
+      this.alarmOn('파일을 선택 후 사용하세요');
       return;
     }
     this.http
@@ -2131,10 +2242,56 @@ export class AppComponent implements OnInit {
         (error) => {
           // 에러가 발생했을 때의 처리를 여기에 추가할 수 있습니다.
           console.error('An error occurred:', error);
-          this.alarmText = '저장 데이터가 없습니다';
-          this.alarmOn();
+          this.alarmOn('저장 데이터가 없습니다');
         }
       );
+  }
+
+  graphSaveRenameDisplay: string = 'none';
+  graphSaveRenameText: string = '';
+
+  graphSaveRenameCancle() {
+    this.graphSaveRenameDisplay = 'none';
+    this.backgroundVisible = 'none';
+  }
+
+  // 다른이름으로 저장
+  graphSaveRename() {
+    this.backgroundVisible = 'block';
+    this.graphSaveRenameDisplay = 'block';
+  }
+
+  graphSaveRenameAPI(param: string) {
+    if (param == '') {
+      this.graphSaveRenameCancle();
+      this.alarmOn('파일명을 기입하세요');
+      return;
+    }
+    console.log(param);
+    const nodes = this.viz.network.body.data.nodes.get();
+    const edges = this.viz.network.body.data.edges.get();
+    const data = { nodes: nodes, edges: edges };
+    const params = {
+      user: this.user,
+      key: { [this.compareQueryString]: this.targetWord },
+      data: data,
+      fileName: param,
+    };
+    this.http
+      .post(
+        `http://${this.angularIp}:${this.backendNodeExpressPort}/api/graph/save/rename`,
+        { data: params },
+        { responseType: 'text' }
+      )
+      .subscribe((response: any) => {
+        if (response == 'Success') {
+          this.graphSaveRenameCancle();
+          this.alarmOn('그래프가 저장되었습니다');
+        } else if (response == 'Failed') {
+          this.graphSaveRenameCancle();
+          this.alarmOn('그래프가 저장에 실패하였습니다');
+        }
+      });
   }
 
   // 그래프 저장
@@ -2154,11 +2311,10 @@ export class AppComponent implements OnInit {
         { responseType: 'text' }
       )
       .subscribe((response: any) => {
-        this.alarmOn();
         if (response == 'Success') {
-          this.alarmText = '그래프가 저장되었습니다';
+          this.alarmOn('그래프가 저장되었습니다');
         } else if (response == 'Failed') {
-          this.alarmText = '그래프가 저장에 실패하였습니다';
+          this.alarmOn('그래프가 저장에 실패하였습니다');
         }
       });
   }
@@ -2173,7 +2329,8 @@ export class AppComponent implements OnInit {
     this.backgroundVisible = 'none';
   }
 
-  alarmOn() {
+  alarmOn(param: string) {
+    this.alarmText = param;
     this.alarmVisible = 'block';
     this.backgroundVisible = 'block';
   }
@@ -2184,37 +2341,83 @@ export class AppComponent implements OnInit {
   }
 
   // 파일 다운
-  fileDown() {
-    // Neovis.js 인스턴스에서 데이터 추출 (가정)
-    const nodes = this.viz.network.body.data.nodes.get();
-    const edges = this.viz.network.body.data.edges.get();
-    const keyobj = this.compareQueryString;
-    const value = this.targetWord;
-    const graphData = {
-      nodes: nodes,
-      edges: edges,
-      target: { [keyobj]: value },
-    };
+  fileDown(file: boolean, doc: boolean) {
+    if (this.contextMenuVisible) {
+      this.contextMenuVisible = !this.contextMenuVisible;
+    }
+    if (file && doc) {
+      // Neovis.js 인스턴스에서 데이터 추출 (가정)
+      const nodes = this.viz.network.body.data.nodes.get();
+      const edges = this.viz.network.body.data.edges.get();
+      const keyobj = this.compareQueryString;
+      const value = this.targetWord;
+      const graphData = {
+        nodes: nodes,
+        edges: edges,
+        target: { [keyobj]: value },
+      };
 
-    // JSON 포맷으로 변환
-    var jsonStr = JSON.stringify(graphData, null, 2);
+      // JSON 포맷으로 변환
+      var jsonStr = JSON.stringify(graphData, null, 2);
 
-    // 파일 생성 및 다운로드
-    var blob = new Blob([jsonStr], { type: 'application/json' });
-    var url = URL.createObjectURL(blob);
+      // 파일 생성 및 다운로드
+      var blob = new Blob([jsonStr], { type: 'application/json' });
+      var url = URL.createObjectURL(blob);
 
-    // a 태그를 만들어 파일 다운로드 링크 생성
-    var a = document.createElement('a');
-    a.download = 'graph-data.json';
-    a.href = url;
-    a.textContent = 'Download graph-data.json';
+      // a 태그를 만들어 파일 다운로드 링크 생성
+      var a = document.createElement('a');
+      a.download = 'graph-data.json';
+      a.href = url;
+      a.textContent = 'Download graph-data.json';
 
-    // a 태그를 클릭하여 다운로드 실행
-    a.click();
+      // a 태그를 클릭하여 다운로드 실행
+      a.click();
 
-    // 생성된 URL 객체 해제
-    URL.revokeObjectURL(url);
-    this.documentFileDown(graphData);
+      // 생성된 URL 객체 해제
+      URL.revokeObjectURL(url);
+      this.documentFileDown(graphData);
+    } else if (file) {
+      // Neovis.js 인스턴스에서 데이터 추출 (가정)
+      const nodes = this.viz.network.body.data.nodes.get();
+      const edges = this.viz.network.body.data.edges.get();
+      const keyobj = this.compareQueryString;
+      const value = this.targetWord;
+      const graphData = {
+        nodes: nodes,
+        edges: edges,
+        target: { [keyobj]: value },
+      };
+
+      // JSON 포맷으로 변환
+      var jsonStr = JSON.stringify(graphData, null, 2);
+
+      // 파일 생성 및 다운로드
+      var blob = new Blob([jsonStr], { type: 'application/json' });
+      var url = URL.createObjectURL(blob);
+
+      // a 태그를 만들어 파일 다운로드 링크 생성
+      var a = document.createElement('a');
+      a.download = 'graph-data.json';
+      a.href = url;
+      a.textContent = 'Download graph-data.json';
+
+      // a 태그를 클릭하여 다운로드 실행
+      a.click();
+
+      // 생성된 URL 객체 해제
+      URL.revokeObjectURL(url);
+    } else if (doc) {
+      const nodes = this.viz.network.body.data.nodes.get();
+      const edges = this.viz.network.body.data.edges.get();
+      const keyobj = this.compareQueryString;
+      const value = this.targetWord;
+      const graphData = {
+        nodes: nodes,
+        edges: edges,
+        target: { [keyobj]: value },
+      };
+      this.documentFileDown(graphData);
+    }
   }
 
   documentFileDown(graphData: any) {
@@ -2310,7 +2513,14 @@ export class AppComponent implements OnInit {
 
     // 만약 filterObj.nodeType의 key값이 file이 존재한다면...
     if (this.filterObj.nodeType['file']) {
-      const fileNodes = nodes.filter((node: any) => node.group === 'file');
+      const fileNodes = nodes.filter(
+        (node: any) =>
+          node.group === 'file' &&
+          node.raw &&
+          node.raw.properties &&
+          (node.raw.properties.file_type !== undefined ||
+            node.raw.properties.hash_type !== undefined)
+      );
 
       // fileNodes의 file_type 속성을 기준으로 카운트를 집계합니다.
       const fileTypeCounts = fileNodes.reduce((acc: any, node: any) => {
@@ -2319,6 +2529,7 @@ export class AppComponent implements OnInit {
             node.raw.properties.file_type || node.raw.properties.hash_type;
           acc[fileType] = (acc[fileType] || 0) + 1;
         }
+
         return acc;
       }, {});
       this.fileTypeCounts = fileTypeCounts;
@@ -2334,6 +2545,13 @@ export class AppComponent implements OnInit {
     if (param) {
       this.localStorageTest();
     }
+  }
+
+  labelReform(label: string) {
+    if (label && label.length > 15) {
+      return label.substring(0, 15) + '...';
+    }
+    return label;
   }
 
   //서로 다른 라벨 노드그룹 만들기
@@ -2355,7 +2573,7 @@ export class AppComponent implements OnInit {
         } else {
           this.viz.network.body.data.nodes.add({
             id: label + '_from_' + rawId,
-            label: label,
+            label: this.labelReform(label),
             title: label,
             shape: 'image',
             group: label,
@@ -2444,7 +2662,7 @@ export class AppComponent implements OnInit {
             // }
             this.viz.network.body.data.nodes.add({
               id: groupLabel + '_from_' + rawId,
-              label: groupLabel,
+              label: this.labelReform(groupLabel),
               title: groupLabel,
               shape: 'image',
               group: groupLabel,
@@ -2494,7 +2712,7 @@ export class AppComponent implements OnInit {
             //서로 다른 노드일때 그룹노드 생성
             this.viz.network.body.data.nodes.add({
               id: lowType + '_from_' + rawId,
-              label: lowType,
+              label: this.labelReform(lowType),
               title: lowType,
               shape: 'image',
               group: lowType,
@@ -2561,7 +2779,7 @@ export class AppComponent implements OnInit {
           if (!this.viz.network.body.data.nodes.get(rawId)) {
             this.viz.network.body.data.nodes.add({
               id: rawId,
-              label: rawName,
+              label: this.labelReform(rawName),
               title: rawName,
               shape: 'image',
               group: rawType,
@@ -2638,41 +2856,57 @@ export class AppComponent implements OnInit {
     this.selectedNodeData = nodeData;
   }
 
-  // 선택된 노드 데이터를 키-값 쌍의 배열로 변환합니다.
   get nodeDataArray() {
-    // `selectedNodeData.raw.properties` 객체를 기준으로 키-값 쌍 배열을 생성합니다.
-    return this.selectedNodeData
-      ? Object.keys(this.selectedNodeData.raw.properties).map((key) => ({
-          key,
-          value: this.selectedNodeData.raw.properties[key],
-        }))
-      : [];
+    // selectedNodeData가 변경된 경우에만 계산
+    if (this._selectedNodeData !== this.selectedNodeData) {
+      this._selectedNodeData = this.selectedNodeData;
+      this._cachedNodeDataArray = this.selectedNodeData
+        ? Object.keys(this.selectedNodeData.raw.properties).map((key) => ({
+            key,
+            value: this.selectedNodeData.raw.properties[key],
+          }))
+        : [];
+    }
+
+    return this._cachedNodeDataArray;
   }
 
   /**
    *
    * 첫 진입시 그래프 생성 api
    */
-  apiRequest(params: any) {
+  apiRequest(params: any, graphSearch: boolean) {
+    this.searchLoadingOn();
     this.http
       .post(
         `http://${this.angularIp}:${this.backendNodeExpressPort}/api/data`,
         params
       )
-      .subscribe((response: any) => {
-        // console.log(response);
-        if (response.label == 'keyword') {
-          this.firstGraphKeyword(response);
-        } else if (response.label == 'name') {
-          this.firstGraphName(response);
+      .subscribe(
+        (response: any) => {
+          if (response.data.length == 0) {
+            this.searchLoadingOff();
+            this.alarmOn('데이터가 없습니다');
+            return;
+          }
+          // console.log(response);
+          if (response.label == 'keyword') {
+            this.firstGraphKeyword(response, graphSearch);
+          } else if (response.label == 'name') {
+            this.firstGraphName(response);
+          }
+          this.loadingVisibility = 'hidden';
+          this.visibility = 'visible';
+          // 우측 그래프 검색결과 추가
+          this.graphResult(params);
+          // this.filtering(true);
+          // this.localStorageTest();
+        },
+        (error: any) => {
+          this.searchLoadingOff();
+          this.alarmOn('서버로 요청이 실패했습니다.');
         }
-        this.loadingVisibility = 'hidden';
-        this.visibility = 'visible';
-        // 우측 그래프 검색결과 추가
-        this.graphResult(params);
-        // this.filtering(true);
-        // this.localStorageTest();
-      });
+      );
   }
 
   data: { [key: string]: any[] } = {
@@ -2747,7 +2981,7 @@ export class AppComponent implements OnInit {
         const type = this.typeConfirm(response[0].n.properties.type);
         this.viz.network.body.data.nodes.add({
           id: id,
-          label: name,
+          label: this.labelReform(name),
           title: name,
           shape: 'image',
           group: type,
@@ -2796,6 +3030,7 @@ export class AppComponent implements OnInit {
   }
 
   graphResult(params: any) {
+    this.searchLoadingOn();
     this.http
       .post(
         `http://${this.angularIp}:${this.backendNodeExpressPort}/api/graphResult`,
@@ -2807,8 +3042,24 @@ export class AppComponent implements OnInit {
           response['registry'] = response['windows-registry-key'];
           delete response['windows-registry-key'];
         }
-        this.data = response;
+        if (Object.keys(this.data).length == 0) {
+          this.data = response;
+        } else if (Object.keys(this.data).length != 0) {
+          // test
+          let key = Object.keys(response);
+          for (let item of key) {
+            if (this.data[item] == undefined) {
+              this.data[item] = response[item];
+            } else if (this.data[item] != undefined) {
+              response[item].forEach((element: any) => {
+                this.data[item].push(element);
+              });
+            }
+          }
+        }
+
         console.log('data:::', this.data);
+        this.searchLoadingOff();
       });
   }
 
@@ -2818,7 +3069,7 @@ export class AppComponent implements OnInit {
     let name = this.typeConfirm(response.data[0].n.labels[0]);
     this.viz.network.body.data.nodes.add({
       id: name,
-      label: name,
+      label: this.labelReform(name),
       title: name,
       shape: 'image',
       group: name,
@@ -2862,7 +3113,7 @@ export class AppComponent implements OnInit {
       // console.log('rawProperties:', rawProperties);
       this.viz.network.body.data.nodes.add({
         id: rawId,
-        label: rawProperties.name,
+        label: this.labelReform(rawProperties.name),
         title: rawProperties.name,
         shape: 'image',
         group: name,
@@ -2910,62 +3161,26 @@ export class AppComponent implements OnInit {
     this.chart();
 
     this.filtering(true);
+    this.searchLoadingOff();
   }
 
-  firstGraphKeyword(response: any) {
-    this.viz.network.setData({ nodes: [], edges: [] });
-    console.log('키워드 노드 생성 및 하위 그룹노드 생성', response);
-    // 키워드 노드
-    this.viz.network.body.data.nodes.add({
-      id: 'keyword',
-      label: 'keyword',
-      shape: 'image',
-      title: 'keyword',
-      group: 'keyword',
-      image: `../assets/images/keyword/keyword_1.png`,
-      visConfig: {
-        nodes: {
-          size: 55,
-          font: {
-            // background: 'black',
-            color: '#343434',
-            size: this.nodeFontSize, // px
-            face: 'pretendard',
-            strokeWidth: 2, // px
-            // strokeColor: "blue",
-          },
-        },
-
-        edges: {
-          arrows: {
-            to: { enabled: true },
-          },
-          font: {
-            // background: 'black',
-            color: '#343434',
-            size: this.edgeFontSize, // px
-            face: 'pretendard',
-            strokeWidth: 2, // px
-            // strokeColor: "blue",
-          },
-        },
-      },
-    });
-
-    // 키워드노드 하위 그룹노드
-    response.data.forEach((element: any) => {
-      console.log(element['n.type'] || element['m.type']);
-      // let type = element['n.type'];
-      let type =
-        this.typeConfirm(element['n.type']) ||
-        this.typeConfirm(element['m.type']);
+  firstGraphKeyword(response: any, graphSearch: boolean) {
+    if (graphSearch) {
+      this.chart();
+      this.filtering(true);
+      this.searchLoadingOff();
+    } else if (!graphSearch) {
+      this.viz.network.setData({ nodes: [], edges: [] });
+      console.log('키워드 노드 생성 및 하위 그룹노드 생성', response);
+      // 키워드 노드
       this.viz.network.body.data.nodes.add({
-        id: type,
-        label: type,
+        id: 'keyword',
+        label: `keyword\n${this.labelReform(this.targetWord)}`,
+        word: this.targetWord,
         shape: 'image',
-        group: type,
-        image: `../assets/images/${type}/${type}_1.png`,
-        title: type,
+        title: 'keyword',
+        group: 'keyword',
+        image: `../assets/images/keyword/keyword_1.png`,
         visConfig: {
           nodes: {
             size: 55,
@@ -2977,7 +3192,6 @@ export class AppComponent implements OnInit {
               strokeWidth: 2, // px
               // strokeColor: "blue",
             },
-            // title: type,
           },
 
           edges: {
@@ -2995,16 +3209,64 @@ export class AppComponent implements OnInit {
           },
         },
       });
-      //엣지 추가
-      this.viz.network.body.data.edges.add({
-        id: type + '_Group',
-        from: 'keyword',
-        to: type,
-      });
-    });
 
+      // 키워드노드 하위 그룹노드
+      response.data.forEach((element: any) => {
+        console.log(element['n.type'] || element['m.type']);
+        // let type = element['n.type'];
+        let type =
+          this.typeConfirm(element['n.type']) ||
+          this.typeConfirm(element['m.type']);
+        if (this.viz.network.body.data.nodes.get(type)) {
+        } else if (!this.viz.network.body.data.nodes.get(type)) {
+          this.viz.network.body.data.nodes.add({
+            id: type,
+            label: this.labelReform(type),
+            shape: 'image',
+            group: type,
+            image: `../assets/images/${type}/${type}_1.png`,
+            title: type,
+            visConfig: {
+              nodes: {
+                size: 55,
+                font: {
+                  // background: 'black',
+                  color: '#343434',
+                  size: this.nodeFontSize, // px
+                  face: 'pretendard',
+                  strokeWidth: 2, // px
+                  // strokeColor: "blue",
+                },
+                // title: type,
+              },
+
+              edges: {
+                arrows: {
+                  to: { enabled: true },
+                },
+                font: {
+                  // background: 'black',
+                  color: '#343434',
+                  size: this.edgeFontSize, // px
+                  face: 'pretendard',
+                  strokeWidth: 2, // px
+                  // strokeColor: "blue",
+                },
+              },
+            },
+          });
+          //엣지 추가
+          this.viz.network.body.data.edges.add({
+            id: type + '_Group',
+            from: 'keyword',
+            to: type,
+          });
+        }
+      });
+    }
     this.chart();
     this.filtering(true);
+    this.searchLoadingOff();
   }
 
   // 좌측 탭 클릭 노드 추가
@@ -3045,7 +3307,7 @@ export class AppComponent implements OnInit {
                 //상위 그룹노드와 하위 그룹노드가 같을때
                 this.viz.network.body.data.nodes.add({
                   id: rawId,
-                  label: rawName,
+                  label: this.labelReform(rawName),
                   title: rawName,
                   group: rawType,
                   shape: 'image',
@@ -3096,7 +3358,7 @@ export class AppComponent implements OnInit {
             this.viz.network.body.data.nodes.add({
               // id: groupLabel + '_from_' + rawId,
               id: word,
-              label: groupLabel,
+              label: this.labelReform(groupLabel),
               shape: 'image',
               title: groupLabel,
               group: groupLabel,
@@ -3144,7 +3406,7 @@ export class AppComponent implements OnInit {
           }
           this.viz.network.body.data.nodes.add({
             id: rawId,
-            label: rawName,
+            label: this.labelReform(rawName),
             title: rawName,
             group: rawType,
             shape: 'image',
@@ -3494,4 +3756,1046 @@ export class AppComponent implements OnInit {
   //     console.error('Error:', error);
   //   }
   // }
+
+  // 노드 검색
+  nodeSearch() {
+    const target = typeof this.clickOff;
+    console.log(target);
+    if (target === 'undefined') {
+      // 없을때
+      this.alarmOn('노드를 선택 후 사용하세요');
+      return;
+    } else if (target === 'string') {
+      this.alarmOn('그룹노드는 탐색할 수 없습니다');
+    } else if (target === 'number') {
+      const node = this.viz.network.body.data.nodes.get(this.clickOff);
+      const name = node.raw.properties.name;
+      console.log(node);
+      this.webSearchText = name;
+      this.webSearch();
+    }
+  }
+
+  // 웹 기반 검색 보여주기
+  webSearchShow() {
+    console.log(this.wikiResult);
+    console.log(this.googleResult);
+    if (this.wikiResult == '' && this.googleResult.length == 0) {
+      this.alarmOn('검색값이 없습니다');
+      return;
+    }
+    this.webSearchVisible = 'visible';
+  }
+
+  webSearchText: string = '';
+  googleResult: any[] = [];
+  wikiResult: string = '';
+  webSearchVisible: string = 'hidden';
+  webSearch() {
+    console.log('웹 서치');
+    if (this.webSearchText == '') {
+      this.alarmOn('검색어를 입력하세요');
+      return;
+    }
+    // this.graphInitializing();
+    // this.targetWord = this.webSearchText;
+    // this.apiData = [];
+    // this.apiData.push({ key: 'keyword', value: this.webSearchText });
+    // this.apiRequest(this.apiData);
+    this.searchLoadingOn();
+    this.performSearch();
+    this.searchCollect(this.webSearchText);
+    // this.googleSearch();
+    // this.wikiSearch();
+  }
+
+  // 파일 대용량 처리(json 넘겨주기)
+  jsonSearch(event: any) {
+    this.searchLoadingOn();
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const content = reader.result as string;
+        // 여기에서 파일 내용을 처리합니다. 예를 들어 JSON으로 파싱할 수 있습니다.
+        try {
+          console.log(content);
+          this.http
+            .post(
+              `http://${this.pythonIp}:${this.pythonPort}/api/jsonsearch`,
+              content
+            )
+            // .post(`http://192.168.32.22:10300/api/google`, params)
+            .subscribe(
+              (response: any) => {
+                this.searchLoadingOff();
+                console.log(response);
+                response.forEach((element: any) => {
+                  element.forEach((target: any) => {
+                    target = JSON.parse(target);
+                    const nodes = target.nodes;
+                    const rel = target.relationships;
+                    // 노드 추가
+                    nodes.forEach((node: any) => {
+                      const rawId = node['<id>'];
+                      const rawName = this.labelReform(node.name);
+                      const rawType = node.type;
+                      let rawProperties: any = {};
+                      const key = Object.keys(node);
+                      key.forEach((element) => {
+                        if (element != '<id>' && element != '<labels>') {
+                          rawProperties[element] = node[element];
+                        }
+                      });
+                      if (this.viz.network.body.data.nodes.get(rawId)) {
+                        // 이미 추가된 노드
+                      } else if (!this.viz.network.body.data.nodes.get(rawId)) {
+                        // 추가된 노드가 아님
+                        this.viz.network.body.data.nodes.add({
+                          id: rawId,
+                          label: this.labelReform(rawName),
+                          title: rawName,
+                          group: rawType,
+                          // type: rawName,
+                          shape: 'image',
+                          image: `../assets/images/${rawType}/${rawType}_4.png`,
+                          raw: { properties: rawProperties },
+                          visConfig: {
+                            nodes: {
+                              size: 55,
+                              font: {
+                                color: '#343434',
+                                size: this.nodeFontSize,
+                                face: 'pretendard',
+                                strokeWidth: 2,
+                              },
+                            },
+
+                            edges: {
+                              arrows: {
+                                to: { enabled: true },
+                              },
+                              font: {
+                                // background: 'black',
+                                color: '#343434',
+                                size: this.edgeFontSize, // px
+                                face: 'pretendard',
+                                strokeWidth: 2, // px
+                                // strokeColor: "blue",
+                              },
+                            },
+                          },
+                        });
+                      }
+                    });
+
+                    //  릴레이션 추가
+                    rel.forEach((element: any) => {
+                      console.log(element);
+                      const id = element['<rel.id>'];
+                      const edgeLabel = element['<rel.type>'];
+                      const start = element['<source.id>'];
+                      const end = element['<target.id>'];
+                      if (this.viz.network.body.data.edges.get(id)) {
+                        // console.log("이미 있는 엣지 ")
+                      } else if (!this.viz.network.body.data.edges.get(id)) {
+                        this.viz.network.body.data.edges.add({
+                          label: edgeLabel,
+                          // id: start + '_from_' + end,
+                          id: id,
+                          from: start,
+                          to: end,
+                        });
+                      }
+                    });
+                  });
+                });
+              },
+              (error: any) => {
+                this.searchLoadingOff();
+                this.alarmOn('서버로 요청이 실패했습니다');
+              }
+            );
+        } catch (err) {
+          this.searchLoadingOff();
+          console.error('파일을 읽는 도중 오류가 발생했습니다.', err);
+        }
+      };
+
+      // event.target.value = '';
+      reader.readAsText(file);
+    }
+  }
+
+  shortPathModalDisplay: string = 'none';
+  shortPathModalTargetValue: string = '';
+
+  shortPathOn() {
+    if (this.contextMenuVisible) {
+      this.contextMenuVisible = !this.contextMenuVisible;
+    }
+    const typeCheck = typeof this.rightClickNodeId;
+    console.log(typeCheck);
+    if (typeCheck == 'string') {
+      this.multiHopModalOff();
+      this.alarmOn('그룹노드에서 검색할 수 없습니다');
+      return;
+    }
+    this.shortPathModalDisplay = 'block';
+    this.backgroundVisible = 'block';
+    this.shortPathModalTargetValue = '';
+  }
+
+  shortPathOff() {
+    this.shortPathModalDisplay = 'none';
+    this.backgroundVisible = 'none';
+  }
+
+  // 최단거리
+  shortPath() {
+    if (this.shortPathModalTargetValue == '') {
+      this.shortPathOff();
+      this.alarmOn('대상을 기입하세요');
+      return;
+    }
+    this.shortPathOff();
+    this.searchLoadingOn();
+    const params = {
+      nid: this.rightClickNodeId,
+      target: this.shortPathModalTargetValue,
+    };
+    console.log(params);
+    this.http
+      .post(`http://${this.pythonIp}:${this.pythonPort}/api/shortpath`, params)
+      // .post(`http://192.168.32.22:10300/api/google`, params)
+      .subscribe(
+        (response: any) => {
+          console.log(response);
+          this.searchLoadingOff();
+          if (response.length == 0) {
+            this.multiHopModalOff();
+            this.searchLoadingOff();
+            this.alarmOn('결과값이 없습니다');
+            console.log(response);
+          } else if (response.length >= 1) {
+            this.multiHopModalOff();
+            this.searchLoadingOff();
+            console.log(response);
+            console.log(JSON.parse(response[0]));
+            response.forEach((element: any) => {
+              const target = JSON.parse(element);
+              // console.log(target);
+              const nodesArray = target.nodes;
+              const edgesArray = target.relationships;
+              console.log(nodesArray, edgesArray);
+              // 노드 반복 추가
+              nodesArray.forEach((node: any) => {
+                const rawId = node['<id>'];
+                const rawName = node.name;
+                const rawType = node.type;
+                // const value = node.values[0];
+                const rawProperties = {
+                  name: rawName,
+                  type: rawType,
+                  // values: value,
+                };
+                if (this.viz.network.body.data.nodes.get(rawId)) {
+                  // console.log('이미 있는 노드');
+                  // this.focusNode(rawId);
+                } else if (!this.viz.network.body.data.nodes.get(rawId)) {
+                  this.viz.network.body.data.nodes.add({
+                    id: rawId,
+                    label: this.labelReform(rawName),
+                    title: rawName,
+                    group: rawType,
+                    // type: rawName,
+                    shape: 'image',
+                    image: `../assets/images/${rawType}/${rawType}_4.png`,
+                    raw: { properties: rawProperties },
+                    visConfig: {
+                      nodes: {
+                        size: 55,
+                        font: {
+                          color: '#343434',
+                          size: this.nodeFontSize,
+                          face: 'pretendard',
+                          strokeWidth: 2,
+                        },
+                      },
+
+                      edges: {
+                        arrows: {
+                          to: { enabled: true },
+                        },
+                        font: {
+                          // background: 'black',
+                          color: '#343434',
+                          size: this.edgeFontSize, // px
+                          face: 'pretendard',
+                          strokeWidth: 2, // px
+                          // strokeColor: "blue",
+                        },
+                      },
+                    },
+                  });
+                }
+              });
+              // 엣지 반복 추가
+              edgesArray.forEach((element: any) => {
+                const id = element['<rel.id>'];
+                const edgeLabel = element['<rel.type>'];
+                const start = element['<source.id>'];
+                const end = element['<target.id>'];
+                if (this.viz.network.body.data.edges.get(id)) {
+                  // console.log("이미 있는 엣지 ")
+                } else if (!this.viz.network.body.data.edges.get(id)) {
+                  this.viz.network.body.data.edges.add({
+                    label: edgeLabel,
+                    // id: start + '_from_' + end,
+                    id: id,
+                    from: start,
+                    to: end,
+                  });
+                }
+              });
+            });
+          }
+        },
+        (error: any) => {
+          // 에러 발생시 로직
+          this.alarmOn('서버로 요청이 실패했습니다');
+          this.searchLoadingOff();
+          // 에러 처리 관련 로직 추가
+        }
+      );
+  }
+
+  multiHopModalDisplay: string = 'none';
+  multiHopModalHoplValue: number = 0;
+  multiHopModalLabelValue: string = '';
+  multiHopModalTargetValue: string = '';
+
+  isNumber(value: any): boolean {
+    return typeof value === 'number';
+  }
+
+  multiHopModalOn() {
+    if (this.contextMenuVisible) {
+      this.contextMenuVisible = !this.contextMenuVisible;
+    }
+    const typeCheck = typeof this.rightClickNodeId;
+    console.log(typeCheck);
+    if (typeCheck == 'string') {
+      this.multiHopModalOff();
+      this.alarmOn('그룹노드에서 검색할 수 없습니다');
+      return;
+    }
+    this.multiHopModalTargetValue = '';
+    this.multiHopModalDisplay = 'block';
+    this.backgroundVisible = 'block';
+  }
+  multiHopModalOff() {
+    this.multiHopModalDisplay = 'none';
+    this.backgroundVisible = 'none';
+  }
+
+  multiHopSearch() {
+    this.multiHopModalOff();
+    this.searchLoadingOn();
+    console.log(
+      this.rightClickNodeId,
+      this.multiHopModalHoplValue,
+      this.multiHopModalLabelValue,
+      this.multiHopModalTargetValue
+    );
+    const params = {
+      nid: this.rightClickNodeId,
+      hop: this.multiHopModalHoplValue,
+      label: this.multiHopModalLabelValue,
+      target: this.multiHopModalTargetValue,
+    };
+    this.http
+      .post(`http://${this.pythonIp}:${this.pythonPort}/api/multihop`, params)
+      // .post(`http://192.168.32.22:10300/api/google`, params)
+      .subscribe(
+        (response: any) => {
+          if (response.length == 0) {
+            this.multiHopModalOff();
+            this.searchLoadingOff();
+            this.alarmOn('결과값이 없습니다');
+            console.log(response);
+          } else if (response.length >= 1) {
+            this.multiHopModalOff();
+            this.searchLoadingOff();
+            console.log(response);
+            console.log(JSON.parse(response[0]));
+            response.forEach((element: any) => {
+              const target = JSON.parse(element);
+              // console.log(target);
+              const nodesArray = target.nodes;
+              const edgesArray = target.relationships;
+              console.log(nodesArray, edgesArray);
+              // 노드 반복 추가
+              nodesArray.forEach((node: any) => {
+                const rawId = node['<id>'];
+                const rawName = node.name;
+                const rawType = node.type;
+                // const value = node.values[0];
+                const rawProperties = {
+                  name: rawName,
+                  type: rawType,
+                  // values: value,
+                };
+                if (this.viz.network.body.data.nodes.get(rawId)) {
+                  // console.log('이미 있는 노드');
+                  // this.focusNode(rawId);
+                } else if (!this.viz.network.body.data.nodes.get(rawId)) {
+                  this.viz.network.body.data.nodes.add({
+                    id: rawId,
+                    label: this.labelReform(rawName),
+                    title: rawName,
+                    group: rawType,
+                    // type: rawName,
+                    shape: 'image',
+                    image: `../assets/images/${rawType}/${rawType}_4.png`,
+                    raw: { properties: rawProperties },
+                    visConfig: {
+                      nodes: {
+                        size: 55,
+                        font: {
+                          color: '#343434',
+                          size: this.nodeFontSize,
+                          face: 'pretendard',
+                          strokeWidth: 2,
+                        },
+                      },
+
+                      edges: {
+                        arrows: {
+                          to: { enabled: true },
+                        },
+                        font: {
+                          // background: 'black',
+                          color: '#343434',
+                          size: this.edgeFontSize, // px
+                          face: 'pretendard',
+                          strokeWidth: 2, // px
+                          // strokeColor: "blue",
+                        },
+                      },
+                    },
+                  });
+                }
+              });
+              // 엣지 반복 추가
+              edgesArray.forEach((element: any) => {
+                const id = element['<rel.id>'];
+                const edgeLabel = element['<rel.type>'];
+                const start = element['<source.id>'];
+                const end = element['<target.id>'];
+                if (this.viz.network.body.data.edges.get(id)) {
+                  // console.log("이미 있는 엣지 ")
+                } else if (!this.viz.network.body.data.edges.get(id)) {
+                  this.viz.network.body.data.edges.add({
+                    label: edgeLabel,
+                    // id: start + '_from_' + end,
+                    id: id,
+                    from: start,
+                    to: end,
+                  });
+                }
+              });
+            });
+          }
+        },
+        (error) => {
+          // 에러 발생시 로직
+          this.multiHopModalOff();
+          this.alarmOn('서버로 요청이 실패했습니다');
+          this.searchLoadingOff();
+          // 에러 처리 관련 로직 추가
+        }
+      );
+  }
+
+  performSearch() {
+    const googleSearch$ = this.http.post<any[]>(
+      `http://${this.pythonIp}:${this.pythonPort}/api/google`,
+      { keyword: this.webSearchText }
+    );
+    const wikiSearch$ = this.http.post<string>(
+      `http://${this.pythonIp}:${this.pythonPort}/api/wiki`,
+      { keyword: this.webSearchText }
+    );
+
+    forkJoin([googleSearch$, wikiSearch$]).subscribe(
+      (results) => {
+        // 두 요청 모두 성공했을 때의 로직
+        const googleResponse = results[0];
+        const wikiResponse = results[1];
+
+        // 구글 검색 결과 처리
+        console.log(googleResponse);
+        this.googleResult = googleResponse;
+
+        // 위키 검색 결과 처리
+        this.wikiResult = wikiResponse == '' ? '결과 없음' : wikiResponse;
+        this.webSearchVisible = 'visible';
+
+        // 두 검색이 모두 완료된 후 실행할 함수
+        this.afterBothSearches();
+      },
+      (error) => {
+        // 하나라도 실패했을 때의 에러 처리
+        this.alarmOn('서버로의 요청이 실패했습니다');
+        this.searchLoadingOff();
+      }
+    );
+  }
+
+  afterBothSearches() {
+    // 여기에 두 검색이 모두 성공했을 때 실행할 로직을 추가합니다
+    // this.graphInitializing();
+    this.targetWord = this.webSearchText;
+    this.apiData = [];
+    this.apiData.push({ key: 'keyword', value: this.webSearchText });
+    this.apiRequest(this.apiData, true);
+    // this.searchLoadingOff();
+  }
+
+  aiResultClick(node: any) {
+    console.log(node);
+    const rawId = node['<id>'];
+    const rawName = this.labelReform(node.name);
+    const rawType = node.type;
+    const targetKey = Object.keys(node);
+    let rawProperties: any = {};
+    targetKey.forEach((element) => {
+      const key = element;
+      if (element != '<id>' && element != '<labels>') {
+        const value = node[key];
+        rawProperties[key] = value;
+      }
+    });
+    let deleteArrayResult = this.aiSearchResultArray.filter(
+      (element) => element != node
+    );
+
+    this.aiSearchResultArray = deleteArrayResult;
+    console.log(deleteArrayResult.length);
+    if (this.viz.network.body.data.nodes.get(rawId)) {
+      this.focusNode(rawId);
+    } else if (!this.viz.network.body.data.nodes.get(rawId)) {
+      this.viz.network.body.data.nodes.add({
+        id: rawId,
+        label: this.labelReform(rawName),
+        title: rawName,
+        group: rawType,
+        // type: rawName,
+        shape: 'image',
+        image: `../assets/images/${rawType}/${rawType}_4.png`,
+        raw: { properties: rawProperties },
+        visConfig: {
+          nodes: {
+            size: 55,
+            font: {
+              color: '#343434',
+              size: this.nodeFontSize,
+              face: 'pretendard',
+              strokeWidth: 2,
+            },
+          },
+
+          edges: {
+            arrows: {
+              to: { enabled: true },
+            },
+            font: {
+              // background: 'black',
+              color: '#343434',
+              size: this.edgeFontSize, // px
+              face: 'pretendard',
+              strokeWidth: 2, // px
+              // strokeColor: "blue",
+            },
+          },
+        },
+      });
+    }
+  }
+
+  aiSearchValue: string = '';
+  aiSearchResultArray: any[] = [];
+  aiSearch() {
+    this.searchLoadingOn();
+
+    const params = {
+      keyword: this.aiSearchValue,
+      reportData: this.targetWord,
+    };
+    this.http
+      .post(`http://${this.pythonIp}:${this.pythonPort}/api/aisearch`, params)
+      // .post(`http://192.168.32.22:10300/api/google`, params)
+      .subscribe(
+        (response: any) => {
+          // 요청 성공시 로직
+          this.aiSearchResultArray = [];
+          console.log(response);
+          response.forEach((element: any) => {
+            this.aiSearchResultArray.push(JSON.parse(element).n);
+          });
+          // this.googleResult = response;
+          this.searchLoadingOff();
+        },
+        (error) => {
+          // 에러 발생시 로직
+          this.searchLoadingOff();
+          this.alarmOn('검색 결과가 없습니다.');
+          // 에러 처리 관련 로직 추가
+        }
+      );
+  }
+
+  graphSearchValue: string = '';
+  graphSearch() {
+    // this.searchLoadingOn();
+    // this.graphInitializing();
+    this.searchCollect(this.graphSearchValue);
+    this.targetWord = this.graphSearchValue;
+    this.apiData = [];
+    this.apiData.push({ key: 'keyword', value: this.graphSearchValue });
+    this.apiRequest(this.apiData, true);
+    // this.searchLoadingOff();
+    // this.graphSearchValue = '';
+  }
+
+  // 검색어 수집 API
+  searchCollect(text: string) {
+    const params = { keyword: text, user: this.user };
+    this.http
+      .post(
+        `http://${this.pythonIp}:${this.pythonPort}/api/search_stat`,
+        params
+      )
+      // .post(`http://192.168.32.22:10300/api/google`, params)
+      .subscribe(
+        (response: any) => {},
+        (error) => {
+          // 에러 발생시 로직
+          this.alarmOn('검색어 수집 API Failed');
+        }
+      );
+  }
+
+  searchDisplay: string = 'none';
+
+  searchLoadingOn() {
+    this.searchDisplay = 'block';
+    this.backgroundVisible = 'block';
+  }
+  searchLoadingOff() {
+    this.searchDisplay = 'none';
+    this.backgroundVisible = 'none';
+  }
+
+  // 웹 기반 검색 (구글)
+  googleSearch() {
+    const params = { keyword: this.webSearchText };
+    this.http
+      .post(`http://${this.pythonIp}:${this.pythonPort}/api/google`, params)
+      // .post(`http://192.168.32.22:10300/api/google`, params)
+      .subscribe(
+        (response: any) => {
+          // 요청 성공시 로직
+          console.log(response);
+          this.googleResult = response;
+          this.searchLoadingOff();
+        },
+        (error) => {
+          // 에러 발생시 로직
+          this.alarmOn('서버로 요청이 실패했습니다');
+          this.searchLoadingOff();
+          // 에러 처리 관련 로직 추가
+        }
+      );
+  }
+  // 웹 기반 검색 (위키)
+  wikiSearch() {
+    const params = { keyword: this.webSearchText };
+    this.http
+      .post(`http://${this.pythonIp}:${this.pythonPort}/api/wiki`, params)
+      // .post(`http://192.168.32.22:10300/api/wiki`, params)
+      .subscribe(
+        (response: any) => {
+          // console.log(response);
+          if (response == '') {
+            this.wikiResult = '결과 없음';
+          } else {
+            this.wikiResult = response;
+          }
+          this.webSearchVisible = 'visible';
+        },
+        (error) => {
+          // 에러 발생시 로직
+          this.alarmOn('서버로 요청이 실패했습니다');
+          this.searchLoadingOff();
+          // 에러 처리 관련 로직 추가
+        }
+      );
+  }
+
+  toggleWebSearch() {
+    this.webSearchVisible = 'hidden';
+  }
+
+  graphMultiFilterObj: any = {
+    firstNode: { resultArray: [], selectVal: '', inputText: '' },
+    firstRel: { resultArray: [], selectVal: '', inputText: '' },
+    secondNode: { resultArray: [], selectVal: '', inputText: '' },
+    secondRel: { resultArray: [], selectVal: '', inputText: '' },
+    thirdNode: { resultArray: [], selectVal: '', inputText: '' },
+    thirdRel: { resultArray: [], selectVal: '', inputText: '' },
+    fourthNode: { resultArray: [], selectVal: '', inputText: '' },
+  };
+
+  // 그래프 다중검색
+  graphMultiSearch() {
+    console.log('다중검색');
+    this.http
+      .get(
+        `http://${this.angularIp}:${this.backendNodeExpressPort}/api/graph/multi`
+      )
+      .subscribe((response: any) => {
+        // console.log(response);
+        this.graphMultiFilterObj.firstNode.resultArray = [];
+        response.forEach((element: any) => {
+          this.graphMultiFilterObj.firstNode.resultArray.push(
+            element._fields[0]
+          );
+        });
+        console.log(this.graphMultiFilterObj.firstNode.resultArray);
+      });
+  }
+
+  graphMultiAddOrSearch(param: string) {
+    // 객체의 모든 키를 배열로 가져옵니다.
+    const keys = Object.keys(this.graphMultiFilterObj);
+    console.log(this.graphMultiFilterObj.firstNode);
+
+    let queryString = '';
+    let queryWhere = '';
+    let depthCount = 0;
+    // 각 키를 반복하여 출력합니다.
+    keys.forEach((key) => {
+      console.log(key, this.graphMultiFilterObj[key].selectVal);
+      if (
+        this.graphMultiFilterObj[key].selectVal &&
+        (key == 'firstNode' ||
+          key == 'secondNode' ||
+          key == 'thirdNode' ||
+          key == 'fourthNode')
+      ) {
+        if (
+          this.graphMultiFilterObj[key].inputText &&
+          this.graphMultiFilterObj[key].selectVal
+        ) {
+          depthCount++;
+          if (key == 'firstNode') {
+            queryString += `(${key}:${this.graphMultiFilterObj[key].selectVal})`;
+            queryWhere += ` where ${key}.name contains "${this.graphMultiFilterObj[key].inputText}"`;
+          } else {
+            queryString += `-(${key}:${this.graphMultiFilterObj[key].selectVal})`;
+            if (queryWhere == '') {
+              queryWhere += ` where ${key}.name contains "${this.graphMultiFilterObj[key].inputText}"`;
+            } else if (queryWhere != '') {
+              queryWhere += ` and ${key}.name contains "${this.graphMultiFilterObj[key].inputText}"`;
+            }
+          }
+        } else if (this.graphMultiFilterObj[key].selectVal) {
+          depthCount++;
+          if (key == 'firstNode') {
+            queryString += `(${key}:${this.graphMultiFilterObj[key].selectVal})`;
+          } else {
+            queryString += `-(${key}:${this.graphMultiFilterObj[key].selectVal})`;
+          }
+        }
+      } else {
+        if (
+          this.graphMultiFilterObj[key].inputText &&
+          this.graphMultiFilterObj[key].selectVal
+        ) {
+          depthCount++;
+
+          queryString += `-[${key}:${this.graphMultiFilterObj[key].selectVal}]`;
+          queryWhere += ` and ${key}.name="${this.graphMultiFilterObj[key].inputText}"`;
+        } else if (this.graphMultiFilterObj[key].selectVal) {
+          depthCount++;
+
+          queryString += `-[${key}:${this.graphMultiFilterObj[key].selectVal}]`;
+        }
+      }
+    });
+
+    if (depthCount == 0) {
+      this.alarmOn('쿼리 완성 후 검색하시오');
+      return;
+    }
+
+    console.log(queryString, '//', queryWhere, '총 카운트::', depthCount);
+    let query = '';
+
+    if (param == 'search' && (depthCount % 2 == 0 || depthCount == 1)) {
+      this.alarmOn('쿼리 완성 후 검색하시오');
+      return;
+    }
+
+    if (param == 'add') {
+      if (depthCount % 2 == 0) {
+        //짝수
+        queryString = queryString + '-(target)';
+        query =
+          queryString +
+          queryWhere +
+          ' RETURN DISTINCT target.type as labelType';
+      } else {
+        // 홀수
+        queryString = queryString + '-[target]-()';
+        query =
+          queryString +
+          queryWhere +
+          ' RETURN DISTINCT type(target) as relationshipType';
+      }
+      const reqObj = {
+        depth: depthCount,
+        query: query,
+      };
+
+      this.grapMultiAddApiReq(reqObj);
+    } else if (param == 'search') {
+      if (depthCount % 2 == 0) {
+        //짝수
+        queryString = queryString;
+        query =
+          'path=' + queryString + '-()' + queryWhere + ' RETURN path limit 20';
+      } else {
+        // 홀수
+        queryString = queryString;
+        query = 'path=' + queryString + queryWhere + ' RETURN path limit 20';
+      }
+      const reqObj = {
+        depth: depthCount,
+        query: query,
+      };
+
+      console.log(query);
+      this.grapMultiSearchApiReq(reqObj);
+    }
+  }
+
+  grapMultiSearchApiReqResultClick(param: number) {
+    console.log(this.graphMultiResult[param]);
+
+    const findResult = this.graphMultiResult[param].segments;
+    for (let i = 0; i < findResult.length; i++) {
+      if (i == findResult.length - 1) {
+        console.log(findResult[i]);
+        const key = Object.keys(findResult[i]);
+        for (let k of key) {
+          if (k != 'relationship') {
+            const rawId = findResult[i][k].identity.low;
+            const rawName = findResult[i][k].properties.name;
+            const rawType = findResult[i][k].properties.type;
+            const rawProperties = findResult[i][k].properties;
+            if (this.viz.network.body.data.nodes.get(rawId) && k == 'end') {
+              this.focusNode(rawId);
+              continue;
+            } else if (this.viz.network.body.data.nodes.get(rawId)) {
+              console.log('이미 있는 노드');
+              // this.focusNode(rawId);
+              continue;
+            }
+            this.viz.network.body.data.nodes.add({
+              id: rawId,
+              label: this.labelReform(rawName),
+              title: rawName,
+              group: rawType,
+              // type: rawName,
+              shape: 'image',
+              image: `../assets/images/${rawType}/${rawType}_4.png`,
+              raw: { properties: rawProperties },
+              visConfig: {
+                nodes: {
+                  size: 55,
+                  font: {
+                    color: '#343434',
+                    size: this.nodeFontSize,
+                    face: 'pretendard',
+                    strokeWidth: 2,
+                  },
+                },
+
+                edges: {
+                  arrows: {
+                    to: { enabled: true },
+                  },
+                  font: {
+                    // background: 'black',
+                    color: '#343434',
+                    size: this.edgeFontSize, // px
+                    face: 'pretendard',
+                    strokeWidth: 2, // px
+                    // strokeColor: "blue",
+                  },
+                },
+              },
+            });
+          } else if (k == 'relationship') {
+            const edgeLabel = findResult[i][k].type;
+            const start = findResult[i][k].start.low;
+            const end = findResult[i][k].end.low;
+            if (this.viz.network.body.data.edges.get(start + '_from_' + end)) {
+              console.log('이미 있는 edge');
+              continue;
+            }
+            //그룹노드와 원본노드 엣지 추가
+            this.viz.network.body.data.edges.add({
+              label: edgeLabel,
+              id: start + '_from_' + end,
+              from: start,
+              to: end,
+            });
+          }
+        }
+      }
+    }
+  }
+
+  grapMultiSearchApiReqResult: any[] = [];
+
+  grapMultiSearchApiReq(params: any) {
+    const depth = params.depth;
+    this.searchLoadingOn();
+    this.http
+      .post(
+        `http://${this.angularIp}:${this.backendNodeExpressPort}/api/graph/multi/search`,
+        params
+      )
+      .subscribe((response: any) => {
+        if (response.length == 0) {
+          this.searchLoadingOff();
+          this.alarmOn('검색 결과가 없습니다');
+          return;
+        }
+        this.graphMultiResult = [];
+        response.forEach((element: any) => {
+          this.graphMultiResult.push(element._fields[0]);
+        });
+
+        this.graphMultiResultLength = this.graphMultiResult.length;
+        console.log(this.graphMultiResult);
+        this.searchLoadingOff();
+      });
+  }
+  graphMultiResult: any[] = [];
+  graphMultiResultLength: number = 0;
+
+  depth: number = 0;
+
+  graphMultiDel() {
+    if (this.depth == 0) {
+      this.alarmOn('조건을 완성하시오');
+      return;
+    } else if (this.depth == 6) {
+      this.graphMultiFilterObj.fourthNode = {
+        resultArray: [],
+        selectVal: '',
+        inputText: '',
+      };
+    } else if (this.depth == 5) {
+      this.graphMultiFilterObj.thirdRel = {
+        resultArray: [],
+        selectVal: '',
+        inputText: '',
+      };
+    } else if (this.depth == 4) {
+      this.graphMultiFilterObj.thirdNode = {
+        resultArray: [],
+        selectVal: '',
+        inputText: '',
+      };
+    } else if (this.depth == 3) {
+      this.graphMultiFilterObj.secondRel = {
+        resultArray: [],
+        selectVal: '',
+        inputText: '',
+      };
+    } else if (this.depth == 2) {
+      this.graphMultiFilterObj.secondNode = {
+        resultArray: [],
+        selectVal: '',
+        inputText: '',
+      };
+    } else if (this.depth == 1) {
+      this.graphMultiFilterObj.firstRel = {
+        resultArray: [],
+        selectVal: '',
+        inputText: '',
+      };
+    }
+    this.depth--;
+  }
+
+  graphMultiInit() {
+    this.graphMultiFilterObj = {
+      firstNode: {
+        resultArray: this.graphMultiFilterObj.firstNode.resultArray,
+        selectVal: '',
+        inputText: '',
+      },
+      firstRel: { resultArray: [], selectVal: '', inputText: '' },
+      secondNode: { resultArray: [], selectVal: '', inputText: '' },
+      secondRel: { resultArray: [], selectVal: '', inputText: '' },
+      thirdNode: { resultArray: [], selectVal: '', inputText: '' },
+      thirdRel: { resultArray: [], selectVal: '', inputText: '' },
+      fourthNode: { resultArray: [], selectVal: '', inputText: '' },
+    };
+    this.depth = 0;
+  }
+
+  grapMultiAddApiReq(params: any) {
+    const depth = params.depth;
+    this.searchLoadingOn();
+    this.http
+      .post(
+        `http://${this.angularIp}:${this.backendNodeExpressPort}/api/graph/multi/add`,
+        params
+      )
+      .subscribe((response: any) => {
+        console.log(response);
+        if (response.length == 0) {
+          this.searchLoadingOff();
+          this.alarmOn('결과가 없습니다');
+          return;
+        }
+        this.depth++;
+        const resultArray: any = [];
+        response.forEach((element: any) => {
+          resultArray.push(element._fields[0]);
+        });
+        if (depth == 1) {
+          this.graphMultiFilterObj.firstRel.resultArray = resultArray;
+        } else if (depth == 2) {
+          this.graphMultiFilterObj.secondNode.resultArray = resultArray;
+        } else if (depth == 3) {
+          this.graphMultiFilterObj.secondRel.resultArray = resultArray;
+        } else if (depth == 4) {
+          this.graphMultiFilterObj.thirdNode.resultArray = resultArray;
+        } else if (depth == 5) {
+          this.graphMultiFilterObj.thirdRel.resultArray = resultArray;
+        } else if (depth == 6) {
+          this.graphMultiFilterObj.fourthNode.resultArray = resultArray;
+        }
+        this.searchLoadingOff();
+      });
+  }
 }

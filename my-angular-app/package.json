@@ -27,6 +27,7 @@
     "neo4j-driver": "^5.13.0",
     "neovis.js": "^2.1.0",
     "ngx-apexcharts": "^0.3.3",
+    "ngx-clipboard": "^16.0.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.13.0"

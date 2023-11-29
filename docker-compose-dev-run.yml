@@ -1,0 +1,13 @@
+version: "3.8"
+services:
+  angular:
+    image: dev/angular:latest
+    ports:
+      - "4200:80"
+
+  express:
+    image: dev/express:latest
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./data:/app/save

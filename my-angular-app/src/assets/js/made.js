@@ -41,6 +41,10 @@ $(document).ready(function () {
           $(`.sub-${j}`).removeClass("d-flex");
         }
       }
+
+      $(`.sub-${targetNumber} ul li`).click(function () {
+        $(`.sub-${targetNumber}`).removeClass("d-flex");
+      });
     });
   }
   /**
@@ -510,23 +514,38 @@ $(document).ready(function () {
     $(".left-tab-1").addClass("tab-basic-bg");
   });
 
+  $(".left-tab-3").click(function () {
+    $(".left-tab-3").addClass("left-bg");
+    $(".left-tab-3").removeClass("tab-basic-bg");
+  });
+
   //우측탭메뉴/
 
   $(".right-tab-1").click(function () {
     $(".right-tab-1").addClass("check-on");
     $(".right-tab-2").removeClass("check-on");
     $(".right-tab-3").removeClass("check-on");
+    $(".right-tab-4").removeClass("check-on");
   });
 
   $(".right-tab-2").click(function () {
     $(".right-tab-2").addClass("check-on");
     $(".right-tab-1").removeClass("check-on");
     $(".right-tab-3").removeClass("check-on");
+    $(".right-tab-4").removeClass("check-on");
   });
   $(".right-tab-3").click(function () {
     $(".right-tab-3").addClass("check-on");
     $(".right-tab-1").removeClass("check-on");
     $(".right-tab-2").removeClass("check-on");
+    $(".right-tab-4").removeClass("check-on");
+  });
+
+  $(".right-tab-4").click(function () {
+    $(".right-tab-4").addClass("check-on");
+    $(".right-tab-1").removeClass("check-on");
+    $(".right-tab-2").removeClass("check-on");
+    $(".right-tab-3").removeClass("check-on");
   });
 
   //좌측 하단 검색/
@@ -554,7 +573,7 @@ $(document).ready(function () {
 // 우측 사이드 /
 
 $(function () {
-  var duration = 0;
+  var duration = 50;
   var $bnav = $(".find-body");
   var $side = $(".right-box-space");
   var $side2 = $(".right-box");
@@ -593,21 +612,21 @@ $(function () {
 });
 
 //좌측 두번째 /
-$(function () {
-  console.log("클릭 됨");
-  var duration = 0;
-  var $bnav = $(".find-body");
-  var $side = $(".side-box");
-  var $sidebtn = $bnav.find(".side-btn").on("click", function () {
-    $side.toggleClass("open");
+// $(function () {
+//   console.log("클릭 됨");
+//   var duration = 0;
+//   var $bnav = $(".find-body");
+//   var $side = $(".side-box");
+//   var $sidebtn = $bnav.find(".side-btn").on("click", function () {
+//     $side.toggleClass("open");
 
-    if ($side.hasClass("open")) {
-      $side.stop(true).animate({ left: "0" }, duration);
-    } else {
-      $side.stop(true).animate({ left: "-300px" }, duration);
-    }
-  });
-});
+//     if ($side.hasClass("open")) {
+//       $side.stop(true).animate({ left: "0" }, duration);
+//     } else {
+//       $side.stop(true).animate({ left: "-300px" }, duration);
+//     }
+//   });
+// });
 
 //그래프 박스 /
 // $(function () {

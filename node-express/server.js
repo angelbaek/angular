@@ -6,21 +6,79 @@ const neo4j = require("neo4j-driver");
 const fs = require("fs");
 const path = require("path");
 const app = express();
-
-const specificIp = "192.168.32.22";
-const neo4jIp = "192.168.32.22";
-const port = 3000;
+const serverConfig = require("./serverConfig.js");
+const specificIp = serverConfig.specificIp;
+const neo4jIp = serverConfig.neo4jIp;
+const port = serverConfig.port;
+const id = serverConfig.neo4jId;
+const pwd = serverConfig.neo4jPwd;
 
 //neo4j
-const driver = neo4j.driver(
-  `bolt://${neo4jIp}`,
-  neo4j.auth.basic("neo4j", "root")
-);
+const driver = neo4j.driver(`bolt://${neo4jIp}`, neo4j.auth.basic(id, pwd));
 
 // CORS 미들웨어 사용
 app.use(cors());
 // JSON 요청 본문 파싱
 app.use(bodyParser.json());
+
+// 다중 검색
+app.post("/api/graph/multi/search", async (req, res) => {
+  console.log(req.body);
+
+  // const depth = req.body.depth;
+  const query = req.body.query;
+
+  const session = driver.session();
+  try {
+    const result = await session.run(`
+      MATCH ${query}
+      `);
+    res.json(result.records);
+  } catch (error) {
+    res
+      .status(500)
+      .send({ error: "An error occurred while fetching data from Neo4j." });
+  }
+});
+
+// 그래프 다중검색 추가 버튼 API
+app.post("/api/graph/multi/add", async (req, res) => {
+  console.log(req.body);
+
+  const depth = req.body.depth;
+  const query = req.body.query;
+
+  const session = driver.session();
+  try {
+    const result = await session.run(`
+      MATCH ${query}
+      `);
+    res.json(result.records);
+  } catch (error) {
+    res
+      .status(500)
+      .send({ error: "An error occurred while fetching data from Neo4j." });
+  }
+});
+
+// 그래프 다중검색 첫 label 가져오기
+app.get("/api/graph/multi", async (req, res) => {
+  console.log("다중진입");
+  const session = driver.session();
+  try {
+    const result = await session.run(`
+    MATCH (n)
+UNWIND labels(n) AS label
+RETURN DISTINCT label
+    `);
+
+    res.json(result.records);
+  } catch (error) {
+    res
+      .status(500)
+      .send({ error: "An error occurred while fetching data from Neo4j." });
+  }
+});
 
 // 저장된 그래프파일 가져오기
 app.post("/api/graph/load", async (req, res) => {
@@ -29,7 +87,7 @@ app.post("/api/graph/load", async (req, res) => {
   console.log(userId, title);
 
   // 경로 구성
-  const filePath = path.join(__dirname, "save", userId, `${title}.json`);
+  const filePath = path.join("/app/save", userId, `${title}.json`);
 
   // 파일 존재 여부 확인
   if (fs.existsSync(filePath)) {
@@ -59,7 +117,7 @@ app.post("/api/graph/list/load", async (req, res) => {
   const userId = req.body.user;
   console.log(userId);
 
-  const userDirectoryPath = path.join(__dirname, "save", userId);
+  const userDirectoryPath = path.join("/app/save", userId);
 
   // 존재하는지
   if (!fs.existsSync(userDirectoryPath)) {
@@ -86,6 +144,59 @@ app.post("/api/graph/list/load", async (req, res) => {
   });
 });
 
+// 그래프 다른이름으로 저장
+app.post("/api/graph/save/rename", async (req, res) => {
+  // console.log(req.body.data);
+  const userId = req.body.data.user;
+  const targetKey = Object.keys(req.body.data.key);
+  const targetValue = req.body.data.key[targetKey];
+  const data = { data: req.body.data.data, key: { [targetKey]: targetValue } };
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = (now.getMonth() + 1).toString().padStart(2, "0");
+  const day = now.getDate().toString().padStart(2, "0");
+  const hours = now.getHours().toString().padStart(2, "0");
+  const minutes = now.getMinutes().toString().padStart(2, "0");
+  const seconds = now.getSeconds().toString().padStart(2, "0");
+  // 추출한 부분을 원하는 형식의 문자열로 조합합니다.
+  const formattedDate = `${year}년 ${month}월 ${day}일 ${hours}시 ${minutes}분 ${seconds}초`;
+  // console.log("파일 저장 객체", userId, targetKey, targetValue);
+  // 파일 이름을 요청에서 추출
+  const fileName = req.body.data.fileName;
+
+  // 객체 저장
+  // JSON으로 변환
+  const jsonContent = JSON.stringify(data, null, 2);
+
+  // 상대 경로를 사용하여 특정 폴더(예: 'data' 폴더)에 저장 - 최상위 루트 폴더
+  // const rootDirectoryPath = path.join(__dirname, "save");
+  const rootDirectoryPath = "/app/save";
+
+  // 'data' 디렉토리가 없으면 생성
+  if (!fs.existsSync(rootDirectoryPath)) {
+    fs.mkdirSync(rootDirectoryPath, { recursive: true });
+  }
+
+  // 유저별 경로 설정
+  const userDirectoryPath = path.join(rootDirectoryPath, userId);
+  if (!fs.existsSync(userDirectoryPath)) {
+    fs.mkdirSync(userDirectoryPath, { recursive: true });
+  }
+
+  const filePath = path.join(userDirectoryPath, `${fileName}.json`);
+
+  // 파일에 쓰기
+  fs.writeFile(filePath, jsonContent, "utf8", (err) => {
+    if (err) {
+      console.log("An error occured while writing JSON Object to File.");
+      res.send("Failed");
+      return console.log(err);
+    }
+    console.log("JSON file has been saved.");
+  });
+  res.send("Success");
+});
+
 // 그래프 저장
 app.post("/api/graph/save", async (req, res) => {
   // console.log(req.body.data);
@@ -109,7 +220,8 @@ app.post("/api/graph/save", async (req, res) => {
   const jsonContent = JSON.stringify(data, null, 2);
 
   // 상대 경로를 사용하여 특정 폴더(예: 'data' 폴더)에 저장 - 최상위 루트 폴더
-  const rootDirectoryPath = path.join(__dirname, "save");
+  // const rootDirectoryPath = path.join(__dirname, "save");
+  const rootDirectoryPath = "/app/save";
 
   // 'data' 디렉토리가 없으면 생성
   if (!fs.existsSync(rootDirectoryPath)) {
@@ -199,37 +311,58 @@ app.post("/api/hnkgd", async (req, res) => {
   const word = req.body.word;
   let limitValue = Number(req.body.limit);
   if (isNaN(limitValue)) {
-    limitValue = 0; // or any default value you want
+    limitValue = 0; // 기본값 설정
   }
 
   let limit = parseInt(limitValue + 10);
   let skip = parseInt(limitValue);
   const session = driver.session();
-  try {
-    const result = await session.run(
-      // "MATCH (n)-[r]-(m) WHERE m.name CONTAINS $findWord AND m.type=$findType WITH m, COLLECT(DISTINCT type(r)) AS relationshipTypes RETURN m, relationshipTypes SKIP $findSkip LIMIT $findLimit",
-      "MATCH (n)-[r]-(m) WHERE m.name CONTAINS $findWord AND m.type=$findType WITH m, COLLECT(DISTINCT type(r)) AS relationshipTypes RETURN m, relationshipTypes SKIP $findSkip LIMIT 10",
-      {
-        findType: type,
-        findWord: word,
-        findSkip: neo4j.int(skip),
-        // findLimit: neo4j.int(limit),
-      }
-    );
-    console.log(
-      // "MATCH (n)-[r]-(m) WHERE m.name CONTAINS $findWord AND m.type=$findType WITH m, COLLECT(DISTINCT type(r)) AS relationshipTypes RETURN m, relationshipTypes SKIP $findSkip LIMIT $findLimit",
-      "MATCH (n)-[r]-(m) WHERE m.name CONTAINS $findWord AND m.type=$findType WITH m, COLLECT(DISTINCT type(r)) AS relationshipTypes RETURN m, relationshipTypes SKIP $findSkip LIMIT 10",
-      {
-        findType: type,
-        findWord: word,
-        findSkip: neo4j.int(skip),
-        // findLimit: neo4j.int(limit),
-      }
-    );
-    const records = result.records.map((record) => record.toObject());
 
+  try {
+    let retry = true;
+    let records = [];
+    let one = 0;
+    while (retry || one == 1) {
+      const result = await session.run(
+        "MATCH (n)-[r]-(m) WHERE m.name CONTAINS $findWord AND m.type=$findType WITH m, COLLECT(DISTINCT type(r)) AS relationshipTypes RETURN m, relationshipTypes SKIP $findSkip LIMIT 10",
+        {
+          findType: type,
+          findWord: word,
+          findSkip: neo4j.int(skip),
+        }
+      );
+      console.log(
+        "MATCH (n)-[r]-(m) WHERE m.name CONTAINS $findWord AND m.type=$findType WITH m, COLLECT(DISTINCT type(r)) AS relationshipTypes RETURN m, relationshipTypes SKIP $findSkip LIMIT 10",
+        {
+          findType: type,
+          findWord: word,
+          findSkip: neo4j.int(skip),
+        }
+      );
+      records = result.records.map((record) => record.toObject());
+
+      if (records.length == 0 && retry) {
+        console.log(records, records.length, retry);
+        one++;
+        if (type == "Technique") {
+          type = "attack-pattern";
+        } else if (type == "Software") {
+          type = "tool";
+        } else if (type == "Group") {
+          type = "Group";
+        } else if (type == "ipv4_addr") {
+          type = "intrusion-set";
+        } else if (type == "registry") {
+          type = "windows-registry-key";
+        }
+        console.log("No records found, retrying once...");
+        retry = false; // 재시도 플래그 해제
+        // 필요하다면 skip 값을 조정하거나 다른 로직을 적용하세요.
+      } else {
+        break; // 결과가 있거나 이미 재시도한 경우 반복문 탈출
+      }
+    }
     console.log("상위 노드가 keyword인 그룹노드 API response");
-    // console.log(records);
     res.json(records);
   } catch (error) {
     console.error(error); // 에러 로그 출력
@@ -238,6 +371,56 @@ app.post("/api/hnkgd", async (req, res) => {
     session.close();
   }
 });
+// app.post("/api/hnkgd", async (req, res) => {
+//   console.log("상위 노드가 keyword인 그룹노드 API req");
+//   let type = req.body.type;
+
+//   if (type == "registry") {
+//     type = "windows-registry-key";
+//   }
+
+//   const word = req.body.word;
+//   let limitValue = Number(req.body.limit);
+//   if (isNaN(limitValue)) {
+//     limitValue = 0; // or any default value you want
+//   }
+
+//   let limit = parseInt(limitValue + 10);
+//   let skip = parseInt(limitValue);
+//   const session = driver.session();
+//   try {
+//     const result = await session.run(
+//       // "MATCH (n)-[r]-(m) WHERE m.name CONTAINS $findWord AND m.type=$findType WITH m, COLLECT(DISTINCT type(r)) AS relationshipTypes RETURN m, relationshipTypes SKIP $findSkip LIMIT $findLimit",
+//       "MATCH (n)-[r]-(m) WHERE m.name CONTAINS $findWord AND m.type=$findType WITH m, COLLECT(DISTINCT type(r)) AS relationshipTypes RETURN m, relationshipTypes SKIP $findSkip LIMIT 10",
+//       {
+//         findType: type,
+//         findWord: word,
+//         findSkip: neo4j.int(skip),
+//         // findLimit: neo4j.int(limit),
+//       }
+//     );
+//     console.log(
+//       // "MATCH (n)-[r]-(m) WHERE m.name CONTAINS $findWord AND m.type=$findType WITH m, COLLECT(DISTINCT type(r)) AS relationshipTypes RETURN m, relationshipTypes SKIP $findSkip LIMIT $findLimit",
+//       "MATCH (n)-[r]-(m) WHERE m.name CONTAINS $findWord AND m.type=$findType WITH m, COLLECT(DISTINCT type(r)) AS relationshipTypes RETURN m, relationshipTypes SKIP $findSkip LIMIT 10",
+//       {
+//         findType: type,
+//         findWord: word,
+//         findSkip: neo4j.int(skip),
+//         // findLimit: neo4j.int(limit),
+//       }
+//     );
+//     const records = result.records.map((record) => record.toObject());
+//     console.log(records.length);
+//     console.log("상위 노드가 keyword인 그룹노드 API response");
+//     // console.log(records);
+//     res.json(records);
+//   } catch (error) {
+//     console.error(error); // 에러 로그 출력
+//     res.status(500).send(error.message);
+//   } finally {
+//     session.close();
+//   }
+// });
 
 //api/other/ng
 app.post("/api/other/ng", async (req, res) => {
@@ -440,7 +623,7 @@ app.post("/api/lgnafgn", async (req, res) => {
   // console.log("새로운 기능 테스트중", limit, skip);
 
   if (type.includes("_from_")) {
-    console.log("'_from_' is included in the input.");
+    // console.log("'_from_' is included in the input.");
     let parts = type.split("_from_");
 
     let typePart = parts[0]; // "Software"
@@ -490,7 +673,7 @@ app.post("/api/lgnafgn", async (req, res) => {
         // { findType: typePart, findID: idPart, content: word }
       );
       const records = result.records.map((record) => record.toObject());
-      console.log(records);
+      // console.log(records);
 
       res.json(records);
       // let typeLength=[];
@@ -758,7 +941,7 @@ app.post("/api/graphResult", async (req, res) => {
 // 첫 그래프 진입 쿼리스트링 받아서 neo4j 접근
 app.post("/api/data", async (req, res) => {
   const session = driver.session();
-  // console.log(req.body);
+  console.log(req.body);
   // res.json({ message: "Data received!" });
   // main_name or keyword 탐색
   let targetQuery;
@@ -799,6 +982,7 @@ app.post("/api/data", async (req, res) => {
         label: "name",
         data: records,
       };
+      console.log(response);
       res.json(response);
     } catch (error) {
       console.error(error); // 에러 로그 출력
@@ -815,12 +999,15 @@ app.post("/api/data", async (req, res) => {
         { keyword: targetQuery }
       );
       const records = result.records.map((record) => record.toObject());
-      // console.log(records);
-
+      console.log(
+        "MATCH (n) WHERE n.name CONTAINS $keyword RETURN DISTINCT n.type",
+        { keyword: targetQuery }
+      );
       const response = {
         label: "keyword",
         data: records,
       };
+      console.log(response);
       res.json(response);
     } catch (error) {
       console.error(error); // 에러 로그 출력

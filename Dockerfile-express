@@ -1,0 +1,44 @@
+# Dockerfile-express
+
+# FROM node:18.18.1
+
+# WORKDIR /app
+
+# # node-express 폴더에서 package.json 파일들을 복사
+# COPY ./node-express/package*.json ./
+# RUN npm install
+
+# # node-express 폴더에서 Express 애플리케이션의 나머지 파일들을 복사
+# COPY ./node-express .
+
+# EXPOSE 3000
+
+# CMD ["node", "server.js"]
+
+# 신규 도커파일
+# 단계 1: 의존성 설치 및 빌드
+FROM node:18.18.1-alpine AS builder
+
+WORKDIR /app
+
+# package.json과 package-lock.json을 복사
+COPY ./node-express/package*.json ./
+
+# npm을 사용하여 필요한 패키지를 설치
+RUN npm install
+
+# Express 애플리케이션의 나머지 파일들을 복사
+COPY ./node-express .
+
+# 단계 2: 실행 이미지 생성
+FROM node:18.18.1-alpine
+
+WORKDIR /app
+
+# 빌더 단계에서 필요한 파일들만 복사
+COPY --from=builder /app ./
+
+# 포트 3000을 열고 서버를 실행
+EXPOSE 3000
+
+CMD ["node", "server.js"]

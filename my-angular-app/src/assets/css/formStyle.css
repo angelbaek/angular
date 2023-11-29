@@ -143,10 +143,13 @@ a:hover {
   width: 24px;
   height: 24px;
   background-color: transparent;
-  box-shadow: inset 0px 0px 0px 2px #a0c9e0;
+  /* box-shadow: inset 0px 0px 0px 2px #a0c9e0; */
+  box-shadow: inset 0px 0px 0px 2px #68c8ff;
   border-radius: 50%;
   position: relative;
   margin: 38px auto; /* Not necessary- its only for layouting*/
+  scale: 4;
+  z-index: 10;
 }
 .timer:after,
 .timer:before {

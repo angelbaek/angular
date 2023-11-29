@@ -1,0 +1,2237 @@
+{
+  "data": {
+    "nodes": [
+      {
+        "id": "keyword",
+        "label": "keyword",
+        "shape": "image",
+        "title": "keyword",
+        "group": "keyword",
+        "image": "../assets/images/keyword/keyword_1.png",
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        },
+        "hidden": false
+      },
+      {
+        "id": "file",
+        "label": "file",
+        "shape": "image",
+        "group": "file",
+        "image": "../assets/images/file/file_2.png",
+        "title": "file",
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        },
+        "hidden": false
+      },
+      {
+        "id": "malware",
+        "label": "malware",
+        "shape": "image",
+        "group": "malware",
+        "image": "../assets/images/malware/malware_1.png",
+        "title": "malware",
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        },
+        "hidden": false
+      },
+      {
+        "id": "malware-analysis",
+        "label": "malware-analysis",
+        "shape": "image",
+        "group": "malware-analysis",
+        "image": "../assets/images/malware-analysis/malware-analysis_1.png",
+        "title": "malware-analysis",
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        },
+        "hidden": false
+      },
+      {
+        "id": "registry",
+        "label": "registry",
+        "shape": "image",
+        "group": "registry",
+        "image": "../assets/images/registry/registry_1.png",
+        "title": "registry",
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        },
+        "hidden": false
+      },
+      {
+        "id": "process",
+        "label": "process",
+        "shape": "image",
+        "group": "process",
+        "image": "../assets/images/process/process_2.png",
+        "title": "process",
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        },
+        "hidden": false
+      },
+      {
+        "id": 1061772,
+        "label": "65c6deded268392e0f5c0003479d1999",
+        "title": "65c6deded268392e0f5c0003479d1999",
+        "group": "file",
+        "shape": "image",
+        "image": "../assets/images/file/file_4.png",
+        "raw": {
+          "properties": {
+            "name": "65c6deded268392e0f5c0003479d1999",
+            "type": "file",
+            "hash_type": "MD5"
+          }
+        },
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        },
+        "hidden": false
+      },
+      {
+        "id": 1061771,
+        "label": "C:\\Documents and Settings\\sys\\Application Data\\freenet\\76c7deded279392e0f6c0003489d1999_9d9ddc9b900ea901e823c19f2b49be076b99f9f878dfbca0d2caeb0f693e1ddb.exe",
+        "title": "C:\\Documents and Settings\\sys\\Application Data\\freenet\\76c7deded279392e0f6c0003489d1999_9d9ddc9b900ea901e823c19f2b49be076b99f9f878dfbca0d2caeb0f693e1ddb.exe",
+        "shape": "image",
+        "group": "file",
+        "image": "../assets/images/file/file_4.png",
+        "raw": {
+          "properties": {
+            "size": {
+              "low": 485888,
+              "high": 0
+            },
+            "created": "2015-11-27",
+            "name": "C:\\Documents and Settings\\sys\\Application Data\\freenet\\76c7deded279392e0f6c0003489d1999_9d9ddc9b900ea901e823c19f2b49be076b99f9f878dfbca0d2caeb0f693e1ddb.exe",
+            "modified": "2021-04-17",
+            "id": "file--29e18e54-d22e-5b87-9890-49aa0fda90d3",
+            "type": "file"
+          }
+        },
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        },
+        "hidden": false
+      },
+      {
+        "id": 1061792,
+        "label": "C:\\WINDOWS\\Temp\\sample\\65c6deded268392e0f5c0003479d1999_8d9ddc8b900ea901e723c19f2b48be065b88f8f767dfbca0d2caeb0f593e1ddb.exe",
+        "title": "C:\\WINDOWS\\Temp\\sample\\65c6deded268392e0f5c0003479d1999_8d9ddc8b900ea901e723c19f2b48be065b88f8f767dfbca0d2caeb0f593e1ddb.exe",
+        "group": "process",
+        "shape": "image",
+        "image": "../assets/images/process/process_4.png",
+        "raw": {
+          "properties": {
+            "name": "C:\\WINDOWS\\Temp\\sample\\65c6deded268392e0f5c0003479d1999_8d9ddc8b900ea901e723c19f2b48be065b88f8f767dfbca0d2caeb0f593e1ddb.exe",
+            "id": "process--40449daa-bd5c-48b4-9790-653e1aa9d188",
+            "type": "process"
+          }
+        },
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        },
+        "hidden": false
+      },
+      {
+        "id": "malware-analysis_from_1061792",
+        "label": "malware-analysis",
+        "title": "malware-analysis",
+        "shape": "image",
+        "group": "malware-analysis",
+        "image": "../assets/images/malware-analysis/malware-analysis_1.png",
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        },
+        "hidden": false
+      },
+      {
+        "id": "malware_from_1061771",
+        "label": "malware",
+        "title": "malware",
+        "group": "malware",
+        "shape": "image",
+        "image": "../assets/images/malware/malware_2.png",
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        },
+        "hidden": false
+      },
+      {
+        "id": "file_from_1061771",
+        "label": "file",
+        "title": "file",
+        "group": "file",
+        "shape": "image",
+        "image": "../assets/images/file/file_1.png",
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        },
+        "hidden": false
+      },
+      {
+        "id": 1061773,
+        "label": "65c6deded268392e0f5c0003479d1999",
+        "title": "65c6deded268392e0f5c0003479d1999",
+        "shape": "image",
+        "group": "malware",
+        "image": "../assets/images/malware/malware_4.png",
+        "raw": {
+          "properties": {
+            "first_submition": "2018-06-11",
+            "malware_types": [
+              "trojan"
+            ],
+            "name": "65c6deded268392e0f5c0003479d1999",
+            "last_submition": "2018-06-11",
+            "id": "malware--14477b58-cf46-4cbf-ba9f-17f4b04b62cd",
+            "type": "malware",
+            "uuid": "malware--9d2e2e52-154a-11ee-98eb-901b0eb4beb1",
+            "malware_aliases": [
+              "zusy"
+            ],
+            "hash_type": "MD5"
+          }
+        },
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        },
+        "hidden": false
+      },
+      {
+        "id": "report_from_1061773",
+        "label": "report",
+        "title": "report",
+        "group": "report",
+        "shape": "image",
+        "image": "../assets/images/report/report_1.png",
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        },
+        "hidden": false
+      },
+      {
+        "id": "file_from_1061773",
+        "label": "file",
+        "title": "file",
+        "group": "file",
+        "shape": "image",
+        "image": "../assets/images/file/file_1.png",
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        },
+        "hidden": false
+      },
+      {
+        "id": "tag_from_1061773",
+        "label": "tag",
+        "title": "tag",
+        "group": "tag",
+        "shape": "image",
+        "image": "../assets/images/tag/tag_1.png",
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        },
+        "hidden": false
+      },
+      {
+        "id": "malware-analysis_from_1061773",
+        "label": "malware-analysis",
+        "title": "malware-analysis",
+        "group": "malware-analysis",
+        "shape": "image",
+        "image": "../assets/images/malware-analysis/malware-analysis_1.png",
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        },
+        "hidden": false
+      },
+      {
+        "id": "ipv4-addr_from_1061773",
+        "label": "ipv4-addr",
+        "title": "ipv4-addr",
+        "group": "ipv4-addr",
+        "shape": "image",
+        "image": "../assets/images/ipv4-addr/ipv4-addr_2.png",
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        },
+        "hidden": false
+      },
+      {
+        "id": "url_from_1061773",
+        "label": "url",
+        "title": "url",
+        "group": "url",
+        "shape": "image",
+        "image": "../assets/images/url/url_2.png",
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        },
+        "hidden": false
+      },
+      {
+        "id": "domain-name_from_1061773",
+        "label": "domain-name",
+        "title": "domain-name",
+        "group": "domain-name",
+        "shape": "image",
+        "image": "../assets/images/domain-name/domain-name_1.png",
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        },
+        "hidden": false
+      },
+      {
+        "id": 1061774,
+        "label": "https://144.48.51.8/tt0002/analyst0-2d1671_w512600.f8c44cd1c73d378c268384390f77534a/5/spk/",
+        "title": "https://144.48.51.8/tt0002/analyst0-2d1671_w512600.f8c44cd1c73d378c268384390f77534a/5/spk/",
+        "shape": "image",
+        "group": "url",
+        "image": "../assets/images/url/url_4.png",
+        "raw": {
+          "properties": {
+            "name": "https://144.48.51.8/tt0002/analyst0-2d1671_w512600.f8c44cd1c73d378c268384390f77534a/5/spk/",
+            "detection": {
+              "low": 6,
+              "high": 0
+            },
+            "id": "url--32c8cdbb-2d40-5203-bc5d-a4eaed87ce2d",
+            "type": "url"
+          }
+        },
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        },
+        "hidden": false
+      },
+      {
+        "id": 674609,
+        "label": "http://myexternalip.com/raw",
+        "title": "http://myexternalip.com/raw",
+        "shape": "image",
+        "group": "url",
+        "image": "../assets/images/url/url_4.png",
+        "raw": {
+          "properties": {
+            "name": "http://myexternalip.com/raw",
+            "detection": {
+              "low": 1,
+              "high": 0
+            },
+            "id": "url--79503493-f9e7-5ea8-af69-f49fd014e047",
+            "type": "url"
+          }
+        },
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        },
+        "hidden": false
+      },
+      {
+        "id": 1061775,
+        "label": "https://68.227.31.46:449/tt0002/analyst0-2d1671_w512600.f8c44cd1c73d378c268384390f77534a/5/spk/",
+        "title": "https://68.227.31.46:449/tt0002/analyst0-2d1671_w512600.f8c44cd1c73d378c268384390f77534a/5/spk/",
+        "shape": "image",
+        "group": "url",
+        "image": "../assets/images/url/url_4.png",
+        "raw": {
+          "properties": {
+            "name": "https://68.227.31.46:449/tt0002/analyst0-2d1671_w512600.f8c44cd1c73d378c268384390f77534a/5/spk/",
+            "detection": {
+              "low": 5,
+              "high": 0
+            },
+            "id": "url--e0bf4c91-2a4d-5114-b0a8-5caf9a7d0cd2",
+            "type": "url"
+          }
+        },
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        },
+        "hidden": false
+      },
+      {
+        "id": 674630,
+        "label": "http://wtfismyip.com/text",
+        "title": "http://wtfismyip.com/text",
+        "shape": "image",
+        "group": "url",
+        "image": "../assets/images/url/url_4.png",
+        "raw": {
+          "properties": {
+            "name": "http://wtfismyip.com/text",
+            "id": "url--da332f06-2bf9-53f6-8340-6f42fdfa4fb8",
+            "type": "url"
+          }
+        },
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        },
+        "hidden": false
+      },
+      {
+        "id": 674646,
+        "label": "http://ip.anysrc.net/plain/clientip",
+        "title": "http://ip.anysrc.net/plain/clientip",
+        "shape": "image",
+        "group": "url",
+        "image": "../assets/images/url/url_4.png",
+        "raw": {
+          "properties": {
+            "name": "http://ip.anysrc.net/plain/clientip",
+            "detection": {
+              "low": 1,
+              "high": 0
+            },
+            "id": "url--c09f3bdd-cf52-5d30-8ee3-00492bfb0573",
+            "type": "url"
+          }
+        },
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        },
+        "hidden": false
+      },
+      {
+        "id": 1061776,
+        "label": "https://80.53.57.146/tt0002/analyst0-2d1671_w512600.f8c44cd1c73d378c268384390f77534a/5/spk/",
+        "title": "https://80.53.57.146/tt0002/analyst0-2d1671_w512600.f8c44cd1c73d378c268384390f77534a/5/spk/",
+        "shape": "image",
+        "group": "url",
+        "image": "../assets/images/url/url_4.png",
+        "raw": {
+          "properties": {
+            "name": "https://80.53.57.146/tt0002/analyst0-2d1671_w512600.f8c44cd1c73d378c268384390f77534a/5/spk/",
+            "detection": {
+              "low": 6,
+              "high": 0
+            },
+            "id": "url--e0630437-644c-5be7-a922-836fc37d1ef5",
+            "type": "url"
+          }
+        },
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        },
+        "hidden": false
+      },
+      {
+        "id": 1061777,
+        "label": "https://185.174.174.83/tt0002/analyst0-2d1671_w512600.f8c44cd1c73d378c268384390f77534a/5/spk/",
+        "title": "https://185.174.174.83/tt0002/analyst0-2d1671_w512600.f8c44cd1c73d378c268384390f77534a/5/spk/",
+        "shape": "image",
+        "group": "url",
+        "image": "../assets/images/url/url_4.png",
+        "raw": {
+          "properties": {
+            "name": "https://185.174.174.83/tt0002/analyst0-2d1671_w512600.f8c44cd1c73d378c268384390f77534a/5/spk/",
+            "detection": {
+              "low": 4,
+              "high": 0
+            },
+            "id": "url--e4618497-1266-51c0-b549-b37e194cc373",
+            "type": "url"
+          }
+        },
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        },
+        "hidden": false
+      },
+      {
+        "id": 1061778,
+        "label": "https://68.96.73.154:449/tt0002/analyst0-2d1671_w512600.f8c44cd1c73d378c268384390f77534a/5/spk/",
+        "title": "https://68.96.73.154:449/tt0002/analyst0-2d1671_w512600.f8c44cd1c73d378c268384390f77534a/5/spk/",
+        "shape": "image",
+        "group": "url",
+        "image": "../assets/images/url/url_4.png",
+        "raw": {
+          "properties": {
+            "name": "https://68.96.73.154:449/tt0002/analyst0-2d1671_w512600.f8c44cd1c73d378c268384390f77534a/5/spk/",
+            "detection": {
+              "low": 5,
+              "high": 0
+            },
+            "id": "url--1aaad64d-d0e2-541d-b5ec-45ecc354647f",
+            "type": "url"
+          }
+        },
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        },
+        "hidden": false
+      },
+      {
+        "id": 1061779,
+        "label": "https://92.55.251.211:449/tt0002/analyst0-2d1671_w512600.f8c44cd1c73d378c268384390f77534a/5/spk/",
+        "title": "https://92.55.251.211:449/tt0002/analyst0-2d1671_w512600.f8c44cd1c73d378c268384390f77534a/5/spk/",
+        "shape": "image",
+        "group": "url",
+        "image": "../assets/images/url/url_4.png",
+        "raw": {
+          "properties": {
+            "name": "https://92.55.251.211:449/tt0002/analyst0-2d1671_w512600.f8c44cd1c73d378c268384390f77534a/5/spk/",
+            "detection": {
+              "low": 5,
+              "high": 0
+            },
+            "id": "url--c9187a44-5a5c-5366-926e-7a37af79ce75",
+            "type": "url"
+          }
+        },
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        },
+        "hidden": false
+      },
+      {
+        "id": 673559,
+        "label": "http://www.download.windowsupdate.com/msdownload/update/v3/static/trustedr/en/authrootstl.cab",
+        "title": "http://www.download.windowsupdate.com/msdownload/update/v3/static/trustedr/en/authrootstl.cab",
+        "shape": "image",
+        "group": "url",
+        "image": "../assets/images/url/url_4.png",
+        "raw": {
+          "properties": {
+            "name": "http://www.download.windowsupdate.com/msdownload/update/v3/static/trustedr/en/authrootstl.cab",
+            "id": "url--9e0fb667-d77a-53c9-9d67-376f07fc84cb",
+            "type": "url"
+          }
+        },
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        },
+        "hidden": false
+      },
+      {
+        "id": "malware_from_1061774",
+        "label": "malware",
+        "title": "malware",
+        "shape": "image",
+        "group": "malware",
+        "image": "../assets/images/malware/malware_1.png",
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        },
+        "hidden": false
+      },
+      {
+        "id": "malware_from_674646",
+        "label": "malware",
+        "title": "malware",
+        "shape": "image",
+        "group": "malware",
+        "image": "../assets/images/malware/malware_2.png",
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        },
+        "hidden": false
+      },
+      {
+        "id": 751102,
+        "label": "1d75a74f750e1f2daa35fb317ed80162",
+        "title": "1d75a74f750e1f2daa35fb317ed80162",
+        "shape": "image",
+        "group": "malware",
+        "image": "../assets/images/malware/malware_4.png",
+        "raw": {
+          "properties": {
+            "first_submition": "2018-03-17",
+            "malware_types": [
+              "trojan"
+            ],
+            "name": "1d75a74f750e1f2daa35fb317ed80162",
+            "last_submition": "2018-03-17",
+            "id": "malware--9e300e2e-4e2e-4449-9272-a02017cdc465",
+            "type": "malware",
+            "malware_aliases": [
+              "symmi"
+            ]
+          }
+        },
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        },
+        "hidden": false
+      },
+      {
+        "id": 1078146,
+        "label": "89d6aa3503c7ea29268000790f570399",
+        "title": "89d6aa3503c7ea29268000790f570399",
+        "shape": "image",
+        "group": "malware",
+        "image": "../assets/images/malware/malware_4.png",
+        "raw": {
+          "properties": {
+            "first_submition": "2018-02-14",
+            "malware_types": [
+              "trojan"
+            ],
+            "name": "89d6aa3503c7ea29268000790f570399",
+            "last_submition": "2018-02-14",
+            "id": "malware--3a17359a-1146-40da-9d27-84606bf184b9",
+            "type": "malware",
+            "malware_aliases": [
+              "mansabo"
+            ]
+          }
+        },
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        },
+        "hidden": false
+      },
+      {
+        "id": 1076211,
+        "label": "58cefde4322e70e74f275e948201fa3c",
+        "title": "58cefde4322e70e74f275e948201fa3c",
+        "shape": "image",
+        "group": "malware",
+        "image": "../assets/images/malware/malware_4.png",
+        "raw": {
+          "properties": {
+            "first_submition": "2018-06-04",
+            "malware_types": [
+              "trojan"
+            ],
+            "name": "58cefde4322e70e74f275e948201fa3c",
+            "last_submition": "2018-06-04",
+            "id": "malware--8a9c9991-6a3d-413d-b513-e521182015b2",
+            "type": "malware",
+            "malware_aliases": [
+              "zusy"
+            ]
+          }
+        },
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        },
+        "hidden": false
+      },
+      {
+        "id": 1075421,
+        "label": "3dcbbfa9b1f7115e6cf16e6bf92576fe",
+        "title": "3dcbbfa9b1f7115e6cf16e6bf92576fe",
+        "shape": "image",
+        "group": "malware",
+        "image": "../assets/images/malware/malware_4.png",
+        "raw": {
+          "properties": {
+            "first_submition": "2018-02-14",
+            "malware_types": [
+              "trojan"
+            ],
+            "name": "3dcbbfa9b1f7115e6cf16e6bf92576fe",
+            "last_submition": "2018-02-18",
+            "id": "malware--539c1bca-887f-4131-8d5d-8ebcdd69771e",
+            "type": "malware",
+            "malware_aliases": [
+              "mansabo"
+            ]
+          }
+        },
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        },
+        "hidden": false
+      },
+      {
+        "id": 1074691,
+        "label": "bf0d7709e144f77424dd79ba183b56a9",
+        "title": "bf0d7709e144f77424dd79ba183b56a9",
+        "shape": "image",
+        "group": "malware",
+        "image": "../assets/images/malware/malware_4.png",
+        "raw": {
+          "properties": {
+            "first_submition": "2018-03-18",
+            "malware_types": [
+              "trojan"
+            ],
+            "name": "bf0d7709e144f77424dd79ba183b56a9",
+            "last_submition": "2018-03-18",
+            "id": "malware--c9e3ad42-0efa-4d22-9421-9949768c57c2",
+            "type": "malware",
+            "malware_aliases": [
+              "symmi"
+            ]
+          }
+        },
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        },
+        "hidden": false
+      },
+      {
+        "id": 1074272,
+        "label": "83dd6e8e00e57a5bfd6cfd3ad313ac59",
+        "title": "83dd6e8e00e57a5bfd6cfd3ad313ac59",
+        "shape": "image",
+        "group": "malware",
+        "image": "../assets/images/malware/malware_4.png",
+        "raw": {
+          "properties": {
+            "first_submition": "2018-03-18",
+            "malware_types": [
+              "trojan"
+            ],
+            "name": "83dd6e8e00e57a5bfd6cfd3ad313ac59",
+            "last_submition": "2018-03-18",
+            "id": "malware--73dcb233-9399-499d-8211-86c9b9c75578",
+            "type": "malware",
+            "malware_aliases": [
+              "symmi"
+            ]
+          }
+        },
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        },
+        "hidden": false
+      },
+      {
+        "id": 1071819,
+        "label": "4d72ef0001ea1fa08f012dda549d6fe7",
+        "title": "4d72ef0001ea1fa08f012dda549d6fe7",
+        "shape": "image",
+        "group": "malware",
+        "image": "../assets/images/malware/malware_4.png",
+        "raw": {
+          "properties": {
+            "first_submition": "2018-05-03",
+            "malware_types": [
+              "spyware",
+              "trojan"
+            ],
+            "name": "4d72ef0001ea1fa08f012dda549d6fe7",
+            "last_submition": "2018-05-25",
+            "id": "malware--dc347a5f-5206-4514-b1de-9d266da35736",
+            "type": "malware",
+            "malware_aliases": [
+              "fugrafa"
+            ]
+          }
+        },
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        },
+        "hidden": false
+      },
+      {
+        "id": 1071335,
+        "label": "a575ab1f61c132235304de65ff81e287",
+        "title": "a575ab1f61c132235304de65ff81e287",
+        "shape": "image",
+        "group": "malware",
+        "image": "../assets/images/malware/malware_4.png",
+        "raw": {
+          "properties": {
+            "first_submition": "2018-06-18",
+            "malware_types": [
+              "trojan"
+            ],
+            "name": "a575ab1f61c132235304de65ff81e287",
+            "last_submition": "2018-06-18",
+            "id": "malware--2065b680-b3c2-412d-8930-3ab82e96265f",
+            "type": "malware",
+            "malware_aliases": [
+              "zusy"
+            ]
+          }
+        },
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        },
+        "hidden": false
+      },
+      {
+        "id": 1071035,
+        "label": "614706c2b87b4f541f37f055f6869b6b",
+        "title": "614706c2b87b4f541f37f055f6869b6b",
+        "shape": "image",
+        "group": "malware",
+        "image": "../assets/images/malware/malware_4.png",
+        "raw": {
+          "properties": {
+            "first_submition": "2018-02-15",
+            "malware_types": [
+              "trojan"
+            ],
+            "name": "614706c2b87b4f541f37f055f6869b6b",
+            "last_submition": "2018-02-18",
+            "id": "malware--368ada40-038f-4daa-b0be-12c5642693e8",
+            "type": "malware",
+            "malware_aliases": [
+              "ursu"
+            ]
+          }
+        },
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        },
+        "hidden": false
+      },
+      {
+        "id": 1070661,
+        "label": "a621e198f9bb81f46b192f1e77096dcc",
+        "title": "a621e198f9bb81f46b192f1e77096dcc",
+        "shape": "image",
+        "group": "malware",
+        "image": "../assets/images/malware/malware_4.png",
+        "raw": {
+          "properties": {
+            "first_submition": "2018-02-14",
+            "malware_types": [
+              "trojan"
+            ],
+            "name": "a621e198f9bb81f46b192f1e77096dcc",
+            "last_submition": "2018-02-14",
+            "id": "malware--d57f9757-6d79-44ec-bf69-4c1016fa4290",
+            "type": "malware",
+            "malware_aliases": [
+              "mansabo"
+            ]
+          }
+        },
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        },
+        "hidden": false
+      },
+      {
+        "id": "malware_from_1061778",
+        "label": "malware",
+        "title": "malware",
+        "shape": "image",
+        "group": "malware",
+        "image": "../assets/images/malware/malware_2.png",
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        }
+      },
+      {
+        "id": 1119638,
+        "label": "185.42.192.194",
+        "title": "185.42.192.194",
+        "shape": "image",
+        "group": "ipv4-addr",
+        "image": "../assets/images/ipv4-addr/ipv4-addr_4.png",
+        "raw": {
+          "properties": {
+            "name": "185.42.192.194",
+            "type": "ipv4-addr"
+          }
+        },
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        }
+      },
+      {
+        "id": 1119699,
+        "label": "66.232.212.59",
+        "title": "66.232.212.59",
+        "shape": "image",
+        "group": "ipv4-addr",
+        "image": "../assets/images/ipv4-addr/ipv4-addr_4.png",
+        "raw": {
+          "properties": {
+            "name": "66.232.212.59",
+            "type": "ipv4-addr"
+          }
+        },
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        }
+      },
+      {
+        "id": 1123238,
+        "label": "216.239.34.21",
+        "title": "216.239.34.21",
+        "shape": "image",
+        "group": "ipv4-addr",
+        "image": "../assets/images/ipv4-addr/ipv4-addr_4.png",
+        "raw": {
+          "properties": {
+            "name": "216.239.34.21",
+            "type": "ipv4-addr"
+          }
+        },
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        }
+      },
+      {
+        "id": 1123242,
+        "label": "216.239.38.21",
+        "title": "216.239.38.21",
+        "shape": "image",
+        "group": "ipv4-addr",
+        "image": "../assets/images/ipv4-addr/ipv4-addr_4.png",
+        "raw": {
+          "properties": {
+            "name": "216.239.38.21",
+            "type": "ipv4-addr"
+          }
+        },
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        }
+      },
+      {
+        "id": 1126231,
+        "label": "127.0.0.4",
+        "title": "127.0.0.4",
+        "shape": "image",
+        "group": "ipv4-addr",
+        "image": "../assets/images/ipv4-addr/ipv4-addr_4.png",
+        "raw": {
+          "properties": {
+            "name": "127.0.0.4",
+            "type": "ipv4-addr"
+          }
+        },
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        }
+      },
+      {
+        "id": "malware_from_1123238",
+        "label": "malware",
+        "title": "malware",
+        "shape": "image",
+        "group": "malware",
+        "image": "../assets/images/malware/malware_1.png",
+        "visConfig": {
+          "nodes": {
+            "size": 55,
+            "font": {
+              "color": "#343434",
+              "size": 25,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          },
+          "edges": {
+            "arrows": {
+              "to": {
+                "enabled": true
+              }
+            },
+            "font": {
+              "color": "#343434",
+              "size": 15,
+              "face": "pretendard",
+              "strokeWidth": 2
+            }
+          }
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "file_Group",
+        "from": "keyword",
+        "to": "file"
+      },
+      {
+        "id": "malware_Group",
+        "from": "keyword",
+        "to": "malware"
+      },
+      {
+        "id": "malware-analysis_Group",
+        "from": "keyword",
+        "to": "malware-analysis"
+      },
+      {
+        "id": "registry_Group",
+        "from": "keyword",
+        "to": "registry"
+      },
+      {
+        "id": "process_Group",
+        "from": "keyword",
+        "to": "process"
+      },
+      {
+        "label": "relate",
+        "from": "file",
+        "to": 1061772,
+        "id": "667a45ea-e251-49c6-8e5a-c8f644be4720"
+      },
+      {
+        "label": "relate",
+        "from": 1061772,
+        "to": 1061771,
+        "id": "120e8ba4-b672-409b-bae1-df11c54712d7"
+      },
+      {
+        "label": "analysis_sco_refs",
+        "from": "process",
+        "to": 1061792,
+        "id": "407cf54e-4169-4eb9-9770-cd8dcfb2becd"
+      },
+      {
+        "label": "analysis_sco_refs",
+        "from": 1061792,
+        "to": "malware-analysis_from_1061792",
+        "id": "2fbaffe7-98ed-4d79-9e3e-dbdbf942b03b"
+      },
+      {
+        "label": "sample_refs",
+        "from": 1061771,
+        "to": "malware_from_1061771",
+        "id": "d9fc2175-840c-4571-9a65-3862e7d7a1f3"
+      },
+      {
+        "label": "relate",
+        "from": 1061771,
+        "to": "file_from_1061771",
+        "id": "003568a1-fc9a-4b21-9273-c2547d513eb8"
+      },
+      {
+        "label": "sample_refs",
+        "from": "malware_from_1061771",
+        "to": 1061773,
+        "id": "a5d810ee-84ef-4990-bced-20b9f980c010"
+      },
+      {
+        "label": "refers_to",
+        "from": 1061773,
+        "to": "report_from_1061773",
+        "id": "25b45b0f-ba42-4828-a091-5d05a5227bc1"
+      },
+      {
+        "label": "sample_refs",
+        "from": 1061773,
+        "to": "file_from_1061773",
+        "id": "4ccf1460-687c-46aa-918c-59f220e89bee"
+      },
+      {
+        "label": "related-to",
+        "from": 1061773,
+        "to": "tag_from_1061773",
+        "id": "f1f1d21d-d788-4da1-b8df-1d352d580500"
+      },
+      {
+        "label": "dynamic-analysis-of",
+        "from": 1061773,
+        "to": "malware-analysis_from_1061773",
+        "id": "ceaf155a-3444-462d-a1a7-b2caaea9d38f"
+      },
+      {
+        "label": "communicates-with",
+        "from": 1061773,
+        "to": "ipv4-addr_from_1061773",
+        "id": "5b1a11e7-f19b-48fd-87d7-79f98982b359"
+      },
+      {
+        "label": "communicates-with",
+        "from": 1061773,
+        "to": "url_from_1061773",
+        "id": "1cb62dce-a480-4d7e-9079-eb0e6119360f"
+      },
+      {
+        "label": "communicates-with",
+        "from": 1061773,
+        "to": "domain-name_from_1061773",
+        "id": "26d98f85-a9e1-4a18-916c-e0483b1f33c4"
+      },
+      {
+        "label": "communicates-with",
+        "from": "url_from_1061773",
+        "to": 1061774,
+        "id": "84a2eed3-aecb-4f0f-9ee0-7311359f3fe4"
+      },
+      {
+        "label": "communicates-with",
+        "from": "url_from_1061773",
+        "to": 674609,
+        "id": "c4bcff09-3179-471b-afaa-6a958431e678"
+      },
+      {
+        "label": "communicates-with",
+        "from": "url_from_1061773",
+        "to": 1061775,
+        "id": "51a05460-a6d6-430f-8f7f-90d18690c6ef"
+      },
+      {
+        "label": "communicates-with",
+        "from": "url_from_1061773",
+        "to": 674630,
+        "id": "16fe17ae-a2d0-4333-8c9f-3cd7da6c68d4"
+      },
+      {
+        "label": "communicates-with",
+        "from": "url_from_1061773",
+        "to": 674646,
+        "id": "fa15adae-a0ec-47bd-8a00-ba32d871d3e4"
+      },
+      {
+        "label": "communicates-with",
+        "from": "url_from_1061773",
+        "to": 1061776,
+        "id": "efab5adf-6b0c-47b6-92d3-c9f2f238f9cd"
+      },
+      {
+        "label": "communicates-with",
+        "from": "url_from_1061773",
+        "to": 1061777,
+        "id": "6130b406-dc90-43f3-8ef5-a79fa40cddcd"
+      },
+      {
+        "label": "communicates-with",
+        "from": "url_from_1061773",
+        "to": 1061778,
+        "id": "4717115d-2878-4985-9d31-2ae0f9e44efb"
+      },
+      {
+        "label": "communicates-with",
+        "from": "url_from_1061773",
+        "to": 1061779,
+        "id": "0631869b-fd06-493a-aef7-05788ef727bf"
+      },
+      {
+        "label": "communicates-with",
+        "from": "url_from_1061773",
+        "to": 673559,
+        "id": "c7f1386b-1455-49be-bda4-506b8cd261a9"
+      },
+      {
+        "label": "communicates-with",
+        "from": 1061774,
+        "to": "malware_from_1061774",
+        "id": "829034e1-d9bd-4a3a-85a2-8481b0409fbb"
+      },
+      {
+        "label": "communicates-with",
+        "from": 674646,
+        "to": "malware_from_674646",
+        "id": "b2c8532a-8f25-4292-8ec3-b256c72b8cb6"
+      },
+      {
+        "label": "communicates-with",
+        "from": "malware_from_674646",
+        "to": 751102,
+        "id": "757b85ef-670f-466d-bc82-73b0183ca998"
+      },
+      {
+        "label": "communicates-with",
+        "from": "malware_from_674646",
+        "to": 1078146,
+        "id": "605d4536-1607-4033-ad01-2fbbd0141bae"
+      },
+      {
+        "label": "communicates-with",
+        "from": "malware_from_674646",
+        "to": 1076211,
+        "id": "af39b95b-4e68-4337-92fe-c23a6d005d4c"
+      },
+      {
+        "label": "communicates-with",
+        "from": "malware_from_674646",
+        "to": 1075421,
+        "id": "4ef67376-50cc-466d-b42c-3e039f4ef508"
+      },
+      {
+        "label": "communicates-with",
+        "from": "malware_from_674646",
+        "to": 1074691,
+        "id": "5ad401a1-6e3d-46f5-a11a-ae93d3319e9d"
+      },
+      {
+        "label": "communicates-with",
+        "from": "malware_from_674646",
+        "to": 1074272,
+        "id": "0fd5909a-92bf-4967-8b79-fd1b851069fa"
+      },
+      {
+        "label": "communicates-with",
+        "from": "malware_from_674646",
+        "to": 1071819,
+        "id": "4a19d9d7-3cfa-4c41-8da7-aafb78fac43d"
+      },
+      {
+        "label": "communicates-with",
+        "from": "malware_from_674646",
+        "to": 1071335,
+        "id": "27f60d79-98da-487c-b3c5-77d054e841d9"
+      },
+      {
+        "label": "communicates-with",
+        "from": "malware_from_674646",
+        "to": 1071035,
+        "id": "6651ca25-ac38-4491-97d4-595fc9cc2036"
+      },
+      {
+        "label": "communicates-with",
+        "from": "malware_from_674646",
+        "to": 1070661,
+        "id": "ac47ba70-63d9-4ae1-a360-91ed5208ed92"
+      },
+      {
+        "label": "communicates-with",
+        "from": 1061778,
+        "to": "malware_from_1061778",
+        "id": "188f5651-b385-41bf-945c-888e5ac6afe2"
+      },
+      {
+        "label": "communicates-with",
+        "id": "1061773frommalware_from_1061778",
+        "from": "malware_from_1061778",
+        "to": 1061773
+      },
+      {
+        "label": "communicates-with",
+        "id": "1119638_from_ipv4-addr_from_1061773",
+        "from": "ipv4-addr_from_1061773",
+        "to": 1119638
+      },
+      {
+        "label": "communicates-with",
+        "id": "1119699_from_ipv4-addr_from_1061773",
+        "from": "ipv4-addr_from_1061773",
+        "to": 1119699
+      },
+      {
+        "label": "communicates-with",
+        "id": "1123238_from_ipv4-addr_from_1061773",
+        "from": "ipv4-addr_from_1061773",
+        "to": 1123238
+      },
+      {
+        "label": "communicates-with",
+        "id": "1123242_from_ipv4-addr_from_1061773",
+        "from": "ipv4-addr_from_1061773",
+        "to": 1123242
+      },
+      {
+        "label": "communicates-with",
+        "id": "1126231_from_ipv4-addr_from_1061773",
+        "from": "ipv4-addr_from_1061773",
+        "to": 1126231
+      },
+      {
+        "label": "communicates-with",
+        "from": 1123238,
+        "to": "malware_from_1123238",
+        "id": "a7e7f394-4955-40c2-b1e2-9a637f557c72"
+      }
+    ]
+  },
+  "key": {
+    "keyword": "65c6deded268392e0f5c0003479d1999"
+  }
+}
