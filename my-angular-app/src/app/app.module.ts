@@ -5,9 +5,10 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HttpClientModule } from '@angular/common/http';
 import { NgxApexchartsModule } from 'ngx-apexcharts';
+import { SessionComponentComponent } from './session-component/session-component.component';
 
 @NgModule({
-  declarations: [AppComponent],
+  declarations: [AppComponent, SessionComponentComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,

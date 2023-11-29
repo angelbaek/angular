@@ -1,4 +1,9 @@
-<body class="h-full find-body app-container" (click)="closeModal()">
+<app-session-component [style.display]="session"></app-session-component>
+<body
+  class="h-full find-body app-container"
+  (click)="closeModal()"
+  [style.display]="session"
+>
   <!--상단-->
   <!--헤드-->
   <section class="head-wrap">
@@ -113,53 +118,53 @@
           </div>
 
           <!-- <div class="sub-nav sub-5">
-              <ul class="top-sub-menu">
-                <li>Menu list one</li>
-                <li>Menu list one</li>
-                <li>Menu list one</li>
-              </ul>
-            </div> -->
+                <ul class="top-sub-menu">
+                  <li>Menu list one</li>
+                  <li>Menu list one</li>
+                  <li>Menu list one</li>
+                </ul>
+              </div> -->
 
           <!-- <div class="item mm-7" data-head-menu="7">
-            <a>저장</a><br />
-            <div class="sub-nav sub-7">
-              <ul class="top-sub-menu">
-                <li>Menu list one</li>
-                <li>Menu list one</li>
-                <li>Menu list one</li>
-              </ul>
+              <a>저장</a><br />
+              <div class="sub-nav sub-7">
+                <ul class="top-sub-menu">
+                  <li>Menu list one</li>
+                  <li>Menu list one</li>
+                  <li>Menu list one</li>
+                </ul>
+              </div>
             </div>
-          </div>
-          <div class="item mm-8" data-head-menu="8">
-            <a>불러오기</a><br />
-            <div class="sub-nav sub-8">
-              <ul class="top-sub-menu">
-                <li>Menu list one</li>
-                <li>Menu list one</li>
-                <li>Menu list one</li>
-              </ul>
-            </div>
-          </div> -->
+            <div class="item mm-8" data-head-menu="8">
+              <a>불러오기</a><br />
+              <div class="sub-nav sub-8">
+                <ul class="top-sub-menu">
+                  <li>Menu list one</li>
+                  <li>Menu list one</li>
+                  <li>Menu list one</li>
+                </ul>
+              </div>
+            </div> -->
           <!-- <div class="item mm-9" data-head-menu="9">
-            <a>파일조회</a><br />
-            <div class="sub-nav sub-9">
-              <ul class="top-sub-menu">
-                <li>Menu list one</li>
-                <li>Menu list one</li>
-                <li>Menu list one</li>
-              </ul>
+              <a>파일조회</a><br />
+              <div class="sub-nav sub-9">
+                <ul class="top-sub-menu">
+                  <li>Menu list one</li>
+                  <li>Menu list one</li>
+                  <li>Menu list one</li>
+                </ul>
+              </div>
             </div>
-          </div>
-          <div class="item mm-10" data-head-menu="10">
-            <a>업로드</a><br />
-            <div class="sub-nav sub-10">
-              <ul class="top-sub-menu">
-                <li>Menu list one</li>
-                <li>Menu list one</li>
-                <li>Menu list one</li>
-              </ul>
-            </div>
-          </div> -->
+            <div class="item mm-10" data-head-menu="10">
+              <a>업로드</a><br />
+              <div class="sub-nav sub-10">
+                <ul class="top-sub-menu">
+                  <li>Menu list one</li>
+                  <li>Menu list one</li>
+                  <li>Menu list one</li>
+                </ul>
+              </div>
+            </div> -->
         </div>
       </div>
       <div class="head-nav-right">
@@ -455,10 +460,10 @@
         <div class="con-top-box">
           <div class="btn-no-bg pl-10">
             <!-- <button
-              class="right-btn color-1 ai-search left-search-btn-ai pr-30 ptb-8"
-            >
-              Graph serach
-            </button> -->
+                class="right-btn color-1 ai-search left-search-btn-ai pr-30 ptb-8"
+              >
+                Graph serach
+              </button> -->
             <button
               class="color-1 ai-search left-search-btn-ai ptb-8"
               id="web-search"
@@ -513,17 +518,17 @@
               <span class="material-symbols-outlined"> remove </span>
             </div>
             <!-- <div class="btn-no-bg pl-10">              
-              <button
-                class="right-btn color-1 ai-search left-search-btn-ai ptb-8"
-                id="graph-search"
-              >
-                그래프 검색
-                <i
-                  class="fa-solid fa-arrow-right"
-                  style="padding-left: 10px"
-                ></i>
-              </button>
-            </div> -->
+                <button
+                  class="right-btn color-1 ai-search left-search-btn-ai ptb-8"
+                  id="graph-search"
+                >
+                  그래프 검색
+                  <i
+                    class="fa-solid fa-arrow-right"
+                    style="padding-left: 10px"
+                  ></i>
+                </button>
+              </div> -->
           </div>
         </div>
         <!--컨텐츠 상다 검색및 버튼 영역 끝-->
@@ -551,14 +556,14 @@
         [style.display]="timeLineGraphVisibility"
       >
         <!-- <div *ngIf="chartOptions">
-          apexcharts 컴포넌트
-          <apx-chart
-            [series]="chartSeries"
-            [chart]="chartOptions.chart"
-            [xaxis]="chartOptions.xaxis"
-            (click)="onBarClick($event)"
-          ></apx-chart>
-        </div> -->
+            apexcharts 컴포넌트
+            <apx-chart
+              [series]="chartSeries"
+              [chart]="chartOptions.chart"
+              [xaxis]="chartOptions.xaxis"
+              (click)="onBarClick($event)"
+            ></apx-chart>
+          </div> -->
 
         <div class="graph-prev">
           <span class="material-symbols-outlined d-none">arrow_back_ios</span>
@@ -621,35 +626,35 @@
           <!--체크박스 검색결과-->
           <div class="box-check-result">
             <!-- <div class="result-sort">
-              <select name="" id="">
-                <option value="">Result Sort</option>
-                <option value="">Result Sort</option>
-              </select>
-            </div> -->
+                <select name="" id="">
+                  <option value="">Result Sort</option>
+                  <option value="">Result Sort</option>
+                </select>
+              </div> -->
             <!-- <div class="check-result-con">
-              <div class="check-result-con-text">
-                Take the CyberTrap challenge
-              </div>
-              <div class="check-result-con-check checkbox-wrapper-2">
-                <input type="checkbox" class="ikxBAC p-0" />
-              </div>
-            </div> -->
+                <div class="check-result-con-text">
+                  Take the CyberTrap challenge
+                </div>
+                <div class="check-result-con-check checkbox-wrapper-2">
+                  <input type="checkbox" class="ikxBAC p-0" />
+                </div>
+              </div> -->
             <!-- <div class="check-result-con check-on">
-              <div class="check-result-con-text">
-                Take the CyberTrap challenge
+                <div class="check-result-con-text">
+                  Take the CyberTrap challenge
+                </div>
+                <div class="check-result-con-check checkbox-wrapper-2">
+                  <input type="checkbox" class="ikxBAC p-0" checked="on" />
+                </div>
               </div>
-              <div class="check-result-con-check checkbox-wrapper-2">
-                <input type="checkbox" class="ikxBAC p-0" checked="on" />
-              </div>
-            </div>
-            <div class="check-result-con">
-              <div class="check-result-con-text">
-                Take the CyberTrap challenge - Stop data theft Stop data theft
-              </div>
-              <div class="check-result-con-check checkbox-wrapper-2">
-                <input type="checkbox" class="ikxBAC p-0" />
-              </div>
-            </div> -->
+              <div class="check-result-con">
+                <div class="check-result-con-text">
+                  Take the CyberTrap challenge - Stop data theft Stop data theft
+                </div>
+                <div class="check-result-con-check checkbox-wrapper-2">
+                  <input type="checkbox" class="ikxBAC p-0" />
+                </div>
+              </div> -->
           </div>
           <!--체크박스 검색결과-->
 
@@ -689,8 +694,8 @@
                 </li>
               </ul>
               <!-- <div class="result-btn">
-                <button class="color-1">더보기</button>
-              </div> -->
+                  <button class="color-1">더보기</button>
+                </div> -->
             </div>
           </div>
         </div>
@@ -869,38 +874,38 @@
 
             <!--박스 탭-->
             <!-- <div class="box-tab right-bb mt-20">
-              <div class="tab-one right-bg chk-on">Basic Result</div>
-            </div> -->
+                <div class="tab-one right-bg chk-on">Basic Result</div>
+              </div> -->
 
             <!--기본 검색결과-->
             <!-- <div class="box-basic-result">
-              <div class="basic-result-con">
-                <ul class="basic-resul-list">
-                  <li>Searching ofr hacking softwqar</li>
-                  <li>
-                    Searching ofr hacking softwqar leads to vuinerable leads to
-                    vuinerable
-                  </li>
-                  <li>Searching ofr hacking softwqar leads to</li>
-                  <li class="check-on">Searching ofr hacking</li>
-                  <li class="detail">
-                    <div class="detail-con">
-                      <div class="title">Celebrity hacker to piead quilty</div>
-                      <div class="con">
-                        설명 - 납 또는 연은 화학 원소로, 기호는 PD이고 흰자
-                        번호는 82이다. 무겁고, 가단성의 특성이 있는 전이후
-                        금속으로, 자르고 난 단면은 푸르스름한 빛을 떠나
-                        공기중에서 변색이 되어 흐릿한 회색이 된다 - 위키백과 -
+                <div class="basic-result-con">
+                  <ul class="basic-resul-list">
+                    <li>Searching ofr hacking softwqar</li>
+                    <li>
+                      Searching ofr hacking softwqar leads to vuinerable leads to
+                      vuinerable
+                    </li>
+                    <li>Searching ofr hacking softwqar leads to</li>
+                    <li class="check-on">Searching ofr hacking</li>
+                    <li class="detail">
+                      <div class="detail-con">
+                        <div class="title">Celebrity hacker to piead quilty</div>
+                        <div class="con">
+                          설명 - 납 또는 연은 화학 원소로, 기호는 PD이고 흰자
+                          번호는 82이다. 무겁고, 가단성의 특성이 있는 전이후
+                          금속으로, 자르고 난 단면은 푸르스름한 빛을 떠나
+                          공기중에서 변색이 되어 흐릿한 회색이 된다 - 위키백과 -
+                        </div>
                       </div>
-                    </div>
-                  </li>
-                  <li>Searching ofr hacking softwqar</li>
-                </ul>
-                <div class="result-btn">
-                  <button class="color-2">MORE</button>
+                    </li>
+                    <li>Searching ofr hacking softwqar</li>
+                  </ul>
+                  <div class="result-btn">
+                    <button class="color-2">MORE</button>
+                  </div>
                 </div>
-              </div>
-            </div> -->
+              </div> -->
           </div>
           <!--두번째 탭-->
           <div class="tab-pane pade" id="con-04">
@@ -1124,16 +1129,16 @@
                   </div>
                   <!--타입선택-->
                   <!-- <div
-                    class="graph-type"
-                    *ngIf="graphMultiFilterObj.fourthRel.resultArray"
-                  >
-                    <div class="">
-                      <select name="" id="" class="m-0">
-                        <option value="">r typo</option>
-                        <option value="">type</option>
-                      </select>
-                    </div>
-                  </div> -->
+                      class="graph-type"
+                      *ngIf="graphMultiFilterObj.fourthRel.resultArray"
+                    >
+                      <div class="">
+                        <select name="" id="" class="m-0">
+                          <option value="">r typo</option>
+                          <option value="">type</option>
+                        </select>
+                      </div>
+                    </div> -->
                 </div>
               </div>
             </div>
@@ -1189,8 +1194,8 @@
                     </li>
                   </ul>
                   <!-- <div class="result-btn">
-                    <button class="color-2">MORE</button>
-                  </div> -->
+                      <button class="color-2">MORE</button>
+                    </div> -->
                 </div>
               </div>
             </div>
@@ -1300,7 +1305,9 @@
                 [style.display]="visibleFileType"
                 *ngFor="let item of fileTypeCounts | keyvalue"
               >
-                <div class="name">{{ item.key + "(" + item.value + ")" }}</div>
+                <div class="name">
+                  {{ item.key + "(" + item.value + ")" }}
+                </div>
                 <div class="choice">
                   <div class="not">
                     <button
@@ -1344,21 +1351,21 @@
                 </div>
               </div>
               <!-- <div class="graph-filter-list">
-                <div class="name">Group(3)</div>
-                <div class="choice">
-                  <div class="not"><button>not</button></div>
-                  <div class="and"><button>and</button></div>
-                  <div class="or"><button>or</button></div>
+                  <div class="name">Group(3)</div>
+                  <div class="choice">
+                    <div class="not"><button>not</button></div>
+                    <div class="and"><button>and</button></div>
+                    <div class="or"><button>or</button></div>
+                  </div>
                 </div>
-              </div>
-              <div class="graph-filter-list">
-                <div class="name">Url(3)</div>
-                <div class="choice">
-                  <div class="not"><button>not</button></div>
-                  <div class="and"><button>and</button></div>
-                  <div class="or"><button class="choice">or</button></div>
-                </div>
-              </div> -->
+                <div class="graph-filter-list">
+                  <div class="name">Url(3)</div>
+                  <div class="choice">
+                    <div class="not"><button>not</button></div>
+                    <div class="and"><button>and</button></div>
+                    <div class="or"><button class="choice">or</button></div>
+                  </div>
+                </div> -->
             </div>
           </div>
           <!--세번째 탭-->
@@ -1396,8 +1403,8 @@
                   </li>
                 </ul>
                 <!-- <div class="result-btn">
-                  <button class="color-2">MORE</button>
-                </div> -->
+                    <button class="color-2">MORE</button>
+                  </div> -->
               </div>
             </div>
           </div>
@@ -1650,9 +1657,9 @@
         </div>
         <div class="mo-content">
           <!-- <div class="mo-con-oneline">
-            <div class="con-title">제목</div>
-            <div class="con-from"><input type="text" /></div>
-          </div> -->
+              <div class="con-title">제목</div>
+              <div class="con-from"><input type="text" /></div>
+            </div> -->
           <div class="mo-con-oneline" *ngIf="modalGraphLoadList">
             <div class="con-title">그래프 파일명</div>
             <div class="con-from">
@@ -1664,14 +1671,14 @@
             </div>
           </div>
           <!-- <div class="mo-con-oneline">
-            <div class="con-title">제목</div>
-            <div class="con-from"><input type="text" /></div>
-            <div class="con-btn"><button class="color-1">확인</button></div>
-          </div> -->
+              <div class="con-title">제목</div>
+              <div class="con-from"><input type="text" /></div>
+              <div class="con-btn"><button class="color-1">확인</button></div>
+            </div> -->
           <!-- <div class="mo-con-oneline">
-            <div class="con-title">제목</div>
-            <div class="con-from"><input type="text" /></div>
-          </div> -->
+              <div class="con-title">제목</div>
+              <div class="con-from"><input type="text" /></div>
+            </div> -->
           <div class="mo-con-oneline b-0">
             <div class="con-btn-foot">
               <button class="color-2" (click)="modalConfirm()">취소</button>
@@ -1863,21 +1870,21 @@
   </div>
   <!-- test -->
   <!-- <div
-    class="test_div"
-    style="
-      z-index: 11;
-      position: fixed;
-      transform: translate(-50%, -50%);
-      left: 50%;
-      top: 50%;
-      border-left: 10px solid black;
-      border-top: 10px solid gray;
-      border-right: 10px solid #fff;
-      border-bottom: 10px solid transparent;
-      border-radius: 100%;
-      width: 100px;
-      height: 100px;
-      animation: load 1.5s infinite;
-    "
-  ></div> -->
+      class="test_div"
+      style="
+        z-index: 11;
+        position: fixed;
+        transform: translate(-50%, -50%);
+        left: 50%;
+        top: 50%;
+        border-left: 10px solid black;
+        border-top: 10px solid gray;
+        border-right: 10px solid #fff;
+        border-bottom: 10px solid transparent;
+        border-radius: 100%;
+        width: 100px;
+        height: 100px;
+        animation: load 1.5s infinite;
+      "
+    ></div> -->
 </body>

@@ -2,12 +2,12 @@ export const serverConfig = {
   /**
    * localTest Config
    */
-  // angularIp: '192.168.32.22',
-  // pythonIp: '192.168.32.120',
-  // pythonPort: '10300',
-  // neo4jIp: '192.168.32.22',
-  // neo4jPort: '7687',
-  // backendNodeExpressPort: '3000',
+  angularIp: '192.168.32.22',
+  pythonIp: '192.168.32.120',
+  pythonPort: '10300',
+  neo4jIp: '192.168.32.22',
+  neo4jPort: '7687',
+  backendNodeExpressPort: '3000',
   /**
    * 118 Config
    */
@@ -35,10 +35,10 @@ export const serverConfig = {
   // neo4jIp: '192.168.146.19',
   // neo4jPort: '7687',
   // backendNodeExpressPort: '3000',
-  angularIp: '192.168.32.122',
-  pythonIp: '192.168.32.122',
-  pythonPort: '10300',
-  neo4jIp: '192.168.32.122',
-  neo4jPort: '7687',
-  backendNodeExpressPort: '3000',
+  // angularIp: '192.168.32.122',
+  // pythonIp: '192.168.32.122',
+  // pythonPort: '10300',
+  // neo4jIp: '192.168.32.122',
+  // neo4jPort: '7687',
+  // backendNodeExpressPort: '3000',
 };

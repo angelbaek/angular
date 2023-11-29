@@ -1,5 +1,6 @@
 // server.js
 const express = require("express");
+const session = require("express-session");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const neo4j = require("neo4j-driver");
@@ -17,9 +18,43 @@ const pwd = serverConfig.neo4jPwd;
 const driver = neo4j.driver(`bolt://${neo4jIp}`, neo4j.auth.basic(id, pwd));
 
 // CORS 미들웨어 사용
-app.use(cors());
+// app.use(cors());
+app.use(
+  cors({
+    origin: `http://${neo4jIp}:4200`, // Angular 애플리케이션의 URL
+    credentials: true, // 쿠키를 통한 인증을 허용
+  })
+);
 // JSON 요청 본문 파싱
 app.use(bodyParser.json());
+// 세션 설정
+app.use(
+  session({
+    secret: "qwet4qweeqweasASDqwesadGWEWQdfsSDFzdvGHFJERwekasdRTWEWERGFDGk", // 세션 암호화 키
+    resave: false, // 세션을 항상 저장할 지 여부
+    saveUninitialized: true, // 초기화되지 않은 세션을 저장할지 여부
+    cookie: {
+      secure: false, // HTTPS를 사용하는 경우 true로 설정
+      maxAge: 1000 * 60 * 60 * 24, // 쿠키 유효 시간 (예: 1일)
+    },
+  })
+);
+
+// 세션 요청
+app.get("/get-session-data", (req, res) => {
+  if (req.session.userInput) {
+    console.log(req.session.userInput);
+    res.json({ storedSessionData: req.session.userInput });
+  } else {
+    res.status(404).json({ message: "세션 데이터가 없습니다." });
+  }
+});
+
+// 세션 생성
+app.post("/path-to-your-endpoint", (req, res) => {
+  req.session.userInput = req.body.value; // 클라이언트에서 전송된 값을 세션에 저장
+  res.json({ message: "세션 저장 성공", sessionData: req.session.userInput });
+});
 
 // 다중 검색
 app.post("/api/graph/multi/search", async (req, res) => {

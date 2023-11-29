@@ -128,6 +128,8 @@ export class AppComponent implements OnInit {
   public chartOptions: any; // 차트옵션
   public chartSeries: any[] = []; // 차트시리즈
 
+  session: boolean = true; // 이 부분을 추가
+
   /**
    * 생성자
    * @param http http클라이언트
@@ -149,6 +151,32 @@ export class AppComponent implements OnInit {
       .subscribe(() => {
         this.route.queryParams.subscribe((params) => {
           this.user = params['user'];
+
+          // 'user' 파라미터가 없는 경우 세션 컴포넌트로 이동
+          if (!this.user) {
+            this.http
+              .get('http://192.168.32.22:3000/get-session-data', {
+                withCredentials: true,
+              })
+              .subscribe(
+                (response: any) => {
+                  this.session = 'block';
+                  this.user = response.storedSessionData;
+                  params['user'] = response.storedSessionData;
+                  console.log(response.storedSessionData);
+                },
+                (error: any) => {
+                  console.log(error);
+                  this.session = 'none';
+                  this.router.navigate(['/login']); // 'session-component-path'를 세션 컴포넌트의 라우트 경로로 교체
+                  return;
+                }
+              );
+
+            return;
+          } else if (this.user) {
+            this.session = true;
+          }
           // ... 기타 코드
           for (let key in params) {
             console.log(key);

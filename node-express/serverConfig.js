@@ -6,10 +6,10 @@ const serverConfig = {
   /**
    * local Config
    */
-  // neo4jIp: "192.168.32.22",
-  // port: 3000,
-  // neo4jId: "neo4j",
-  // neo4jPwd: "root",
+  neo4jIp: "192.168.32.22",
+  port: 3000,
+  neo4jId: "neo4j",
+  neo4jPwd: "root",
   /**
    * 118 Config
    */
@@ -24,9 +24,9 @@ const serverConfig = {
   // port: 3000,
   // neo4jId: "neo4j",
   // neo4jPwd: "root",
-  neo4jIp: "192.168.32.122",
-  port: 3000,
-  neo4jId: "neo4j",
-  neo4jPwd: "root",
+  // neo4jIp: "192.168.32.122",
+  // port: 3000,
+  // neo4jId: "neo4j",
+  // neo4jPwd: "root",
 };
 module.exports = serverConfig;
