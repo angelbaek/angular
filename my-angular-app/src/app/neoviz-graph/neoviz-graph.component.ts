@@ -13,7 +13,6 @@ import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { LabelConfig } from './labelConfig';
 import { Neo4jConfig } from './neo4jConfig';
-import { Neo4jService } from './neo4j.service';
 import { RealtionshipConfig } from './relationConfig';
 import { ActivatedRoute } from '@angular/router';
 import { forkJoin } from 'rxjs';
@@ -22,6 +21,8 @@ import html2canvas from 'html2canvas';
 import { serverConfig } from '../serverConfig';
 import NeoVis from 'neovis.js';
 import { error, param } from 'jquery';
+import { DataService } from '../data.service';
+import { Subscription } from 'rxjs'; // Subscription을 추가로 가져옵니다.
 
 /**
  * 필터 타입 선언
@@ -77,7 +78,7 @@ declare function initializeSomething(): void;
 @Component({
   selector: 'app-neoviz-graph',
   templateUrl: './neoviz-graph.component.html',
-  styleUrls: ['./neoviz-graph.component.css']
+  styleUrls: ['./neoviz-graph.component.css'],
 })
 export class NeovizGraphComponent implements OnInit, AfterViewInit {
   @ViewChild('fileInput') fileInput!: ElementRef;
@@ -123,8 +124,8 @@ export class NeovizGraphComponent implements OnInit, AfterViewInit {
   isRelatedNodeClicked: boolean = false; // 연관된 노드 클릭객체
   public chartOptions: any; // 차트옵션
   public chartSeries: any[] = []; // 차트시리즈
-
   sessionCheck: boolean = true;
+  userSubscription!: Subscription; // 구독을 관리하기 위한 Subscription 변수
   /**
    * 생성자
    * @param http http클라이언트
@@ -136,74 +137,62 @@ export class NeovizGraphComponent implements OnInit, AfterViewInit {
   constructor(
     private http: HttpClient,
     private router: Router,
-    private ngxFavicon: AngularFaviconService,
-    private neo4jService: Neo4jService,
     private route: ActivatedRoute,
-    private clipboardService: ClipboardService
+    private clipboardService: ClipboardService,
+    private dataService: DataService
   ) {
-    this.router.events
-      .pipe(filter((event:any) => event instanceof NavigationEnd))
-      .subscribe(() => {
-        this.route.queryParams.subscribe((params:any) => {
-          this.user = params['user'];
-
-          // 'user' 파라미터가 없는 경우 세션 컴포넌트로 이동
-          if (!this.user) {
-            this.http
-              .get('http://112.151.254.17:3000/get-session-data', {
-                withCredentials: true,
-              })
-              .subscribe(
-                (response: any) => {
-                  this.sessionCheck = true;
-                  this.user = response.storedSessionData;
-                  params['user'] = response.storedSessionData;
-                  console.log(response.storedSessionData);
-                },
-                (error: any) => {
-                  console.log(error);
-                  this.sessionCheck = false;
-                  this.router.navigate(['/login']); // 'session-component-path'를 세션 컴포넌트의 라우트 경로로 교체
-                  return;
-                }
-              );
-
-            return;
-          } else if (this.user) {
-            this.sessionCheck = true;
-          }
-          // ... 기타 코드
-          for (let key in params) {
-            console.log(key);
-            // keyword or main_name 타겟워드 대입
-            if (key == 'keyword') {
-              this.targetWord = params[key];
-              this.compareQueryString = 'keyword';
-              console.log('타겟워드:', this.targetWord);
-            } else if (key == 'main_name') {
-              this.targetWord = params[key];
-              this.compareQueryString = 'main_name';
-              console.log('타겟워드:', this.targetWord);
-            }
-
-            if (params.hasOwnProperty(key)) {
-              this.apiData.push({ key: key, value: params[key] });
-            }
-          }
-          console.log(this.apiData);
-          this.apiRequest(this.apiData, false);
-        });
-      });
+    // this.router.events
+    //   .pipe(filter((event: any) => event instanceof NavigationEnd))
+    //   .subscribe(() => {
+    //     this.route.queryParams.subscribe((params: any) => {
+    //       console.log('출력 되나?');
+    //       this.user = params['user'];
+    //       for (let key in params) {
+    //         console.log(key);
+    //         // keyword or main_name 타겟워드 대입
+    //         if (key == 'keyword') {
+    //           this.targetWord = params[key];
+    //           this.compareQueryString = 'keyword';
+    //           console.log('타겟워드:', this.targetWord);
+    //         } else if (key == 'main_name') {
+    //           this.targetWord = params[key];
+    //           this.compareQueryString = 'main_name';
+    //           console.log('타겟워드:', this.targetWord);
+    //         }
+    //         if (params.hasOwnProperty(key)) {
+    //           this.apiData.push({ key: key, value: params[key] });
+    //         }
+    //       }
+    //       console.log(this.apiData);
+    //       this.apiRequest(this.apiData, false);
+    //     });
+    //   });
   }
 
   /**
    * 초기화
    */
   ngOnInit(): void {
-    this.draw();
-    this.ngxFavicon.setFavicon('../assets/images/favicon.ico');
-    localStorage.clear();
-    this.graphMultiSearch();
+    this.userSubscription = this.dataService
+      .getUser()
+      .subscribe((userData: string) => {
+        this.user = userData;
+      });
+    if (this.targetWord == '') {
+      this.draw();
+      this.apiGetWeb();
+      localStorage.clear();
+      this.graphMultiSearch();
+    } else if (this.targetWord != '') {
+      this.draw();
+      this.apiGetWeb();
+      localStorage.clear();
+      this.graphMultiSearch();
+    }
+    // this.draw();
+    // this.apiGetWeb();
+    // localStorage.clear();
+    // this.graphMultiSearch();
   }
   // setupNodeEventListeners() {
   //   // 노드가 추가될 때의 이벤트 핸들러
@@ -211,8 +200,56 @@ export class NeovizGraphComponent implements OnInit, AfterViewInit {
   ngAfterViewInit() {
     initializeSomething();
   }
-  
+
   patchVersionDisplay: string = 'none';
+
+  // webInputFoucus($event:any){
+  //   this.webSearch()
+  // }
+
+  webSearchOnEnterPress() {
+    // Enter 키가 눌렸을 때 실행할 코드 (예: 검색 함수 호출)
+    this.webSearch();
+  }
+
+  graphSearchOnEnterPress() {
+    // Enter 키가 눌렸을 때 실행할 코드 (예: 검색 함수 호출)
+    this.graphSearch();
+  }
+
+  apiGetWeb() {
+    this.http
+      .get(
+        `http://${serverConfig.angularIp}:${serverConfig.backendNodeExpressPort}/get-session-data`,
+        { withCredentials: true }
+      )
+      .subscribe(
+        (response: any) => {
+          // console.log('세션:::', response);
+          this.user = response.storedSessionData;
+        },
+        (error: any) => {
+          // this.alarmOn('서버로 요청이 실패했습니다');
+        }
+      );
+    // this.dataService.user.subscribe((user) => (this.user = user));
+    this.dataService.targetWord.subscribe((word) => (this.targetWord = word));
+    this.dataService.compareQueryString.subscribe(
+      (query) => (this.compareQueryString = query)
+    );
+    // if (this.compareQueryString == 'keyword') {
+    //   this.router.navigateByUrl(
+    //     `/graph2d?keyword=${this.compareQueryString}&user=${this.user}`
+    //   );
+    // } else if (this.compareQueryString == 'main_name') {
+    //   this.router.navigateByUrl(
+    //     `/graph2d?main_name=${this.compareQueryString}&user=${this.user}`
+    //   );
+    // }
+    if (this.targetWord == '') return;
+    this.dataService.apiData.subscribe((data) => (this.apiData = data));
+    this.apiRequest(this.apiData, false, '');
+  }
 
   patchInfo() {
     this.patchVersionDisplay = 'block';
@@ -643,7 +680,7 @@ export class NeovizGraphComponent implements OnInit, AfterViewInit {
       relationships: {
         ...RealtionshipConfig,
       },
-      initialCypher: 'MATCH (n) RETURN * LIMIT 1',
+      initialCypher: 'MATCH (n) RETURN * LIMIT 0',
     };
 
     this.viz = new NeoVis(config);
@@ -946,7 +983,11 @@ export class NeovizGraphComponent implements OnInit, AfterViewInit {
           const parentLabel =
             this.viz.network.body.data.edges.get(connectedEdges)[0].from;
           console.log(parentLabel);
-          if (parentLabel == 'keyword' || parentLabel == 'searchKeyword') {
+          if (
+            typeof parentLabel === 'string' &&
+            (parentLabel.includes('keyword') ||
+              parentLabel.includes('searchKeyword'))
+          ) {
             const connEdgeCount =
               this.viz.network.getConnectedEdges(clickedNodeId);
             console.log(connEdgeCount);
@@ -1357,6 +1398,7 @@ export class NeovizGraphComponent implements OnInit, AfterViewInit {
    */
   apiKeywordFromGroupNode(params: any) {
     this.searchLoadingOn();
+    params.type = this.typeRawConfirm(params.type);
     this.http
       .post(
         `http://${this.angularIp}:${this.backendNodeExpressPort}/api/hnkgd`,
@@ -1460,31 +1502,57 @@ export class NeovizGraphComponent implements OnInit, AfterViewInit {
   }
 
   typeConfirm(params: any) {
+    // if (params == 'attack-pattern') {
+    //   return 'Technique';
+    // } else if (params == 'tool') {
+    //   return 'Software';
+    // } else if (params == 'intrusion-set') {
+    //   return 'Group';
+    // } else if (params == 'ipv4_addr') {
+    //   return 'ipv4-addr';
+    // } else if (params == 'windows-registry-key') {
+    //   return 'registry';
+    // } else if (params == 'email') {
+    //   return 'Email';
+    // }
     if (params == 'attack-pattern') {
       return 'Technique';
     } else if (params == 'tool') {
       return 'Software';
     } else if (params == 'intrusion-set') {
       return 'Group';
-    } else if (params == 'ipv4_addr') {
-      return 'ipv4-addr';
     } else if (params == 'windows-registry-key') {
       return 'registry';
+    } else if (params == 'email') {
+      return 'Email';
     }
     return params;
   }
 
   typeRawConfirm(params: any) {
+    // if (params == 'Technique') {
+    //   return 'attack-pattern';
+    // } else if (params == 'Software') {
+    //   return 'tool';
+    // } else if (params == 'Group') {
+    //   return 'intrusion-set';
+    // } else if (params == 'ipv4-addr') {
+    //   return 'ipv4_addr';
+    // } else if (params == 'registry') {
+    //   return 'windows-registry-key';
+    // } else if (params == 'Email') {
+    //   return 'email';
+    // }
     if (params == 'Technique') {
       return 'attack-pattern';
     } else if (params == 'Software') {
       return 'tool';
     } else if (params == 'Group') {
       return 'intrusion-set';
-    } else if (params == 'ipv4-addr') {
-      return 'ipv4_addr';
     } else if (params == 'registry') {
       return 'windows-registry-key';
+    } else if (params == 'Email') {
+      return 'email';
     }
     return params;
   }
@@ -2265,7 +2333,7 @@ export class NeovizGraphComponent implements OnInit, AfterViewInit {
           this.modalGraphLoadList = response;
           this.modalOn();
         },
-        (error:any) => {
+        (error: any) => {
           // 에러가 발생했을 때의 처리를 여기에 추가할 수 있습니다.
           console.error('An error occurred:', error);
           this.alarmOn('저장 데이터가 없습니다');
@@ -2793,83 +2861,165 @@ export class NeovizGraphComponent implements OnInit, AfterViewInit {
       )
       .subscribe((response: any) => {
         console.log(response);
-        response.forEach((element: any) => {
-          console.log('1068 찾아보자', element);
-          const rawId = element.m.identity.low;
-          const rawName = element.m.properties.name;
-          const rawType = this.typeConfirm(element.m.properties.type);
-          const rawProperties = element.m.properties;
-          const edgeLabel = element.rels[0].type;
+        if (response.data) {
+          // response 객체 내에 data 프로퍼티가 있는 경우
+          response.data.forEach((element: any) => {
+            console.log('1068 찾아보자', element);
+            const rawId = element.n.identity.low;
+            const rawName = element.n.properties.name;
+            const rawType = this.typeConfirm(element.n.properties.type);
+            const rawProperties = element.n.properties;
+            const edgeLabel = element.rels[0].type;
 
-          // ID가 이미 존재하는지 확인
-          if (!this.viz.network.body.data.nodes.get(rawId)) {
-            this.viz.network.body.data.nodes.add({
-              id: rawId,
-              label: this.labelReform(rawName),
-              title: rawName,
-              shape: 'image',
-              group: rawType,
-              image: `../assets/images/${rawType}/${rawType}_4.png`,
-              raw: { properties: rawProperties },
-              visConfig: {
-                nodes: {
-                  size: 55,
-                  font: {
-                    // background: 'black',
-                    color: '#343434',
-                    size: this.nodeFontSize, // px
-                    face: 'pretendard',
-                    strokeWidth: 2, // px
-                    // strokeColor: "blue",
+            // ID가 이미 존재하는지 확인
+            if (!this.viz.network.body.data.nodes.get(rawId)) {
+              this.viz.network.body.data.nodes.add({
+                id: rawId,
+                label: this.labelReform(rawName),
+                title: rawName,
+                shape: 'image',
+                group: rawType,
+                image: `../assets/images/${rawType}/${rawType}_4.png`,
+                raw: { properties: rawProperties },
+                visConfig: {
+                  nodes: {
+                    size: 55,
+                    font: {
+                      // background: 'black',
+                      color: '#343434',
+                      size: this.nodeFontSize, // px
+                      face: 'pretendard',
+                      strokeWidth: 2, // px
+                      // strokeColor: "blue",
+                    },
+                  },
+
+                  edges: {
+                    arrows: {
+                      to: { enabled: true },
+                    },
+                    font: {
+                      // background: 'black',
+                      color: '#343434',
+                      size: this.edgeFontSize, // px
+                      face: 'pretendard',
+                      strokeWidth: 2, // px
+                      // strokeColor: "blue",
+                    },
                   },
                 },
-
-                edges: {
-                  arrows: {
-                    to: { enabled: true },
-                  },
-                  font: {
-                    // background: 'black',
-                    color: '#343434',
-                    size: this.edgeFontSize, // px
-                    face: 'pretendard',
-                    strokeWidth: 2, // px
-                    // strokeColor: "blue",
-                  },
-                },
-              },
-            });
-            //그룹노드와 원본노드 엣지 추가
-            this.viz.network.body.data.edges.add({
-              label: edgeLabel,
-              id: rawId + '_from_' + nodeId,
-              from: nodeId,
-              to: rawId,
-            });
-          } else {
-            console.log(`Node with ID ${rawId} already exists!`);
-
-            //만약 이미 추가된 엣지인지 확인
-            const targetEdges = this.viz.network.body.data.edges.get({
-              filter: function (edge: any) {
-                return edge.to === rawId && edge.from === nodeId;
-              },
-            });
-            if (targetEdges.length >= 1) {
-              console.log('이미 추가된 edge 생략', targetEdges); // 일치하는 엣지들의 배열을 출력
-            } else {
+              });
               //그룹노드와 원본노드 엣지 추가
               this.viz.network.body.data.edges.add({
                 label: edgeLabel,
-                id: rawId + 'from' + nodeId,
+                id: rawId + '_from_' + nodeId,
                 from: nodeId,
                 to: rawId,
-                // from: rawId,
-                // to: nodeId,
               });
+            } else {
+              console.log(`Node with ID ${rawId} already exists!`);
+
+              //만약 이미 추가된 엣지인지 확인
+              const targetEdges = this.viz.network.body.data.edges.get({
+                filter: function (edge: any) {
+                  return edge.to === rawId && edge.from === nodeId;
+                },
+              });
+              if (targetEdges.length >= 1) {
+                console.log('이미 추가된 edge 생략', targetEdges); // 일치하는 엣지들의 배열을 출력
+              } else {
+                //그룹노드와 원본노드 엣지 추가
+                this.viz.network.body.data.edges.add({
+                  label: edgeLabel,
+                  id: rawId + 'from' + nodeId,
+                  from: nodeId,
+                  to: rawId,
+                  // from: rawId,
+                  // to: nodeId,
+                });
+              }
             }
-          }
-        });
+          });
+        } else {
+          // response 객체 내에 data 프로퍼티가 없는 경우
+          response.forEach((element: any) => {
+            console.log('1068 찾아보자', element);
+            const rawId = element.m.identity.low;
+            const rawName = element.m.properties.name;
+            const rawType = this.typeConfirm(element.m.properties.type);
+            const rawProperties = element.m.properties;
+            const edgeLabel = element.rels[0].type;
+
+            // ID가 이미 존재하는지 확인
+            if (!this.viz.network.body.data.nodes.get(rawId)) {
+              this.viz.network.body.data.nodes.add({
+                id: rawId,
+                label: this.labelReform(rawName),
+                title: rawName,
+                shape: 'image',
+                group: rawType,
+                image: `../assets/images/${rawType}/${rawType}_4.png`,
+                raw: { properties: rawProperties },
+                visConfig: {
+                  nodes: {
+                    size: 55,
+                    font: {
+                      // background: 'black',
+                      color: '#343434',
+                      size: this.nodeFontSize, // px
+                      face: 'pretendard',
+                      strokeWidth: 2, // px
+                      // strokeColor: "blue",
+                    },
+                  },
+
+                  edges: {
+                    arrows: {
+                      to: { enabled: true },
+                    },
+                    font: {
+                      // background: 'black',
+                      color: '#343434',
+                      size: this.edgeFontSize, // px
+                      face: 'pretendard',
+                      strokeWidth: 2, // px
+                      // strokeColor: "blue",
+                    },
+                  },
+                },
+              });
+              //그룹노드와 원본노드 엣지 추가
+              this.viz.network.body.data.edges.add({
+                label: edgeLabel,
+                id: rawId + '_from_' + nodeId,
+                from: nodeId,
+                to: rawId,
+              });
+            } else {
+              console.log(`Node with ID ${rawId} already exists!`);
+
+              //만약 이미 추가된 엣지인지 확인
+              const targetEdges = this.viz.network.body.data.edges.get({
+                filter: function (edge: any) {
+                  return edge.to === rawId && edge.from === nodeId;
+                },
+              });
+              if (targetEdges.length >= 1) {
+                console.log('이미 추가된 edge 생략', targetEdges); // 일치하는 엣지들의 배열을 출력
+              } else {
+                //그룹노드와 원본노드 엣지 추가
+                this.viz.network.body.data.edges.add({
+                  label: edgeLabel,
+                  id: rawId + 'from' + nodeId,
+                  from: nodeId,
+                  to: rawId,
+                  // from: rawId,
+                  // to: nodeId,
+                });
+              }
+            }
+          });
+        }
         this.chart();
         this.filtering(true);
       });
@@ -2901,7 +3051,7 @@ export class NeovizGraphComponent implements OnInit, AfterViewInit {
    *
    * 첫 진입시 그래프 생성 api
    */
-  apiRequest(params: any, graphSearch: boolean) {
+  apiRequest(params: any, graphSearch: boolean, type: string) {
     this.searchLoadingOn();
     this.http
       .post(
@@ -2917,7 +3067,7 @@ export class NeovizGraphComponent implements OnInit, AfterViewInit {
           }
           // console.log(response);
           if (response.label == 'keyword') {
-            this.firstGraphKeyword(response, graphSearch);
+            this.firstGraphKeyword(response, graphSearch, type);
           } else if (response.label == 'name') {
             this.firstGraphName(response);
           }
@@ -3190,8 +3340,109 @@ export class NeovizGraphComponent implements OnInit, AfterViewInit {
     this.searchLoadingOff();
   }
 
-  firstGraphKeyword(response: any, graphSearch: boolean) {
-    if (graphSearch) {
+  firstGraphKeyword(response: any, graphSearch: boolean, type: string) {
+    if (graphSearch && type == 'web') {
+      // 웹 기반 검색 임시 추가
+      // 키워드 노드
+      if (
+        this.viz.network.body.data.nodes.get(
+          'searchKeyword_' + this.webSearchText
+        )
+      ) {
+        this.alarmOn('웹기반 검색 키워드가 존재합니다');
+        return;
+      }
+      this.viz.network.body.data.nodes.add({
+        id: 'searchKeyword_' + this.webSearchText,
+        label: `keyword\n${this.labelReform(this.targetWord)}`,
+        word: this.targetWord,
+        shape: 'image',
+        title: 'keyword',
+        group: 'keyword',
+        image: `../assets/images/keyword/keyword_1.png`,
+        visConfig: {
+          nodes: {
+            size: 55,
+            font: {
+              // background: 'black',
+              color: '#343434',
+              size: this.nodeFontSize, // px
+              face: 'pretendard',
+              strokeWidth: 2, // px
+              // strokeColor: "blue",
+            },
+          },
+
+          edges: {
+            arrows: {
+              to: { enabled: true },
+            },
+            font: {
+              // background: 'black',
+              color: '#343434',
+              size: this.edgeFontSize, // px
+              face: 'pretendard',
+              strokeWidth: 2, // px
+              // strokeColor: "blue",
+            },
+          },
+        },
+      });
+
+      // 키워드노드 하위 그룹노드
+      response.data.forEach((element: any) => {
+        console.log(element['n.type'] || element['m.type']);
+        // let type = element['n.type'];
+        let type =
+          this.typeConfirm(element['n.type']) ||
+          this.typeConfirm(element['m.type']);
+        type = this.typeConfirm(type);
+        if (this.viz.network.body.data.nodes.get(type)) {
+        } else if (!this.viz.network.body.data.nodes.get(type)) {
+          this.viz.network.body.data.nodes.add({
+            id: type,
+            label: this.labelReform(type),
+            shape: 'image',
+            group: type,
+            image: `../assets/images/${type}/${type}_1.png`,
+            title: type,
+            visConfig: {
+              nodes: {
+                size: 55,
+                font: {
+                  // background: 'black',
+                  color: '#343434',
+                  size: this.nodeFontSize, // px
+                  face: 'pretendard',
+                  strokeWidth: 2, // px
+                  // strokeColor: "blue",
+                },
+                // title: type,
+              },
+
+              edges: {
+                arrows: {
+                  to: { enabled: true },
+                },
+                font: {
+                  // background: 'black',
+                  color: '#343434',
+                  size: this.edgeFontSize, // px
+                  face: 'pretendard',
+                  strokeWidth: 2, // px
+                  // strokeColor: "blue",
+                },
+              },
+            },
+          });
+          //엣지 추가
+          this.viz.network.body.data.edges.add({
+            id: type + '_Group',
+            from: 'searchKeyword_' + this.webSearchText,
+            to: type,
+          });
+        }
+      });
       this.chart();
       this.filtering(true);
       this.searchLoadingOff();
@@ -3823,6 +4074,7 @@ export class NeovizGraphComponent implements OnInit, AfterViewInit {
       this.alarmOn('검색어를 입력하세요');
       return;
     }
+    this.webSearchText = this.webSearchText.toLowerCase();
     // this.graphInitializing();
     // this.targetWord = this.webSearchText;
     // this.apiData = [];
@@ -4134,6 +4386,10 @@ export class NeovizGraphComponent implements OnInit, AfterViewInit {
       this.multiHopModalLabelValue,
       this.multiHopModalTargetValue
     );
+    // ipv4-addr처리
+    if (this.multiHopModalLabelValue == 'ipv4-addr') {
+      this.multiHopModalLabelValue = 'ipv4_addr';
+    }
     const params = {
       nid: this.rightClickNodeId,
       hop: this.multiHopModalHoplValue,
@@ -4234,7 +4490,7 @@ export class NeovizGraphComponent implements OnInit, AfterViewInit {
             });
           }
         },
-        (error:any) => {
+        (error: any) => {
           // 에러 발생시 로직
           this.multiHopModalOff();
           this.alarmOn('서버로 요청이 실패했습니다');
@@ -4255,7 +4511,7 @@ export class NeovizGraphComponent implements OnInit, AfterViewInit {
     );
 
     forkJoin([googleSearch$, wikiSearch$]).subscribe(
-      (results:any) => {
+      (results: any) => {
         // 두 요청 모두 성공했을 때의 로직
         const googleResponse = results[0];
         const wikiResponse = results[1];
@@ -4271,10 +4527,13 @@ export class NeovizGraphComponent implements OnInit, AfterViewInit {
         // 두 검색이 모두 완료된 후 실행할 함수
         this.afterBothSearches();
       },
-      (error:any) => {
+      (error: any) => {
         // 하나라도 실패했을 때의 에러 처리
         this.alarmOn('서버로의 요청이 실패했습니다');
         this.searchLoadingOff();
+
+        // 잠시 test
+        this.afterBothSearches();
       }
     );
   }
@@ -4285,7 +4544,7 @@ export class NeovizGraphComponent implements OnInit, AfterViewInit {
     this.targetWord = this.webSearchText;
     this.apiData = [];
     this.apiData.push({ key: 'keyword', value: this.webSearchText });
-    this.apiRequest(this.apiData, true);
+    this.apiRequest(this.apiData, true, 'web');
     // this.searchLoadingOff();
   }
 
@@ -4373,7 +4632,7 @@ export class NeovizGraphComponent implements OnInit, AfterViewInit {
           // this.googleResult = response;
           this.searchLoadingOff();
         },
-        (error:any) => {
+        (error: any) => {
           // 에러 발생시 로직
           this.searchLoadingOff();
           this.alarmOn('검색 결과가 없습니다.');
@@ -4390,7 +4649,7 @@ export class NeovizGraphComponent implements OnInit, AfterViewInit {
     this.targetWord = this.graphSearchValue;
     this.apiData = [];
     this.apiData.push({ key: 'keyword', value: this.graphSearchValue });
-    this.apiRequest(this.apiData, true);
+    this.apiRequest(this.apiData, true, 'graph');
     // this.searchLoadingOff();
     // this.graphSearchValue = '';
   }
@@ -4406,8 +4665,9 @@ export class NeovizGraphComponent implements OnInit, AfterViewInit {
       // .post(`http://192.168.32.22:10300/api/google`, params)
       .subscribe(
         (response: any) => {},
-        (error:any) => {
+        (error: any) => {
           // 에러 발생시 로직
+          this.searchLoadingOff();
           this.alarmOn('검색어 수집 API Failed');
         }
       );
@@ -4437,7 +4697,7 @@ export class NeovizGraphComponent implements OnInit, AfterViewInit {
           this.googleResult = response;
           this.searchLoadingOff();
         },
-        (error:any) => {
+        (error: any) => {
           // 에러 발생시 로직
           this.alarmOn('서버로 요청이 실패했습니다');
           this.searchLoadingOff();
@@ -4461,7 +4721,7 @@ export class NeovizGraphComponent implements OnInit, AfterViewInit {
           }
           this.webSearchVisible = 'visible';
         },
-        (error:any) => {
+        (error: any) => {
           // 에러 발생시 로직
           this.alarmOn('서버로 요청이 실패했습니다');
           this.searchLoadingOff();
@@ -4596,6 +4856,7 @@ export class NeovizGraphComponent implements OnInit, AfterViewInit {
         query: query,
       };
 
+      console.log(query);
       this.grapMultiAddApiReq(reqObj);
     } else if (param == 'search') {
       if (depthCount % 2 == 0) {
@@ -4806,6 +5067,9 @@ export class NeovizGraphComponent implements OnInit, AfterViewInit {
         this.depth++;
         const resultArray: any = [];
         response.forEach((element: any) => {
+          if (element._fields[0] == 'ipv4-addr') {
+            element._fields[0] = 'ipv4_addr';
+          }
           resultArray.push(element._fields[0]);
         });
         if (depth == 1) {

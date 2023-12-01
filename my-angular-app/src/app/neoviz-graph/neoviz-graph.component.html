@@ -1,7 +1,4 @@
-<body
-  class="h-full find-body app-container"
-  (click)="closeModal()"  
->
+<body class="h-full find-body app-container" (click)="closeModal()">
   <!--상단-->
   <!--헤드-->
   <section class="head-wrap">
@@ -498,6 +495,7 @@
                 [(ngModel)]="webSearchText"
                 placeholder="웹 기반 검색"
                 id="web-search-input"
+                (keyup.enter)="webSearchOnEnterPress()"
               />
             </div>
             <div class="con-search-btn" (click)="webSearch()">
@@ -770,6 +768,7 @@
                   type="text"
                   [(ngModel)]="graphSearchValue"
                   placeholder="그래프 검색"
+                  (keyup.enter)="graphSearchOnEnterPress()"
                 />
               </div>
               <div class="con-search-btn" (click)="graphSearch()">

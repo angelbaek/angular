@@ -10,14 +10,27 @@ const routes: Routes = [
   {
     path: '',
     component: AppComponent,
-    canActivate: [SessionGuard],
+    // canActivate: [SessionGuard],
     children: [
-      { path: 'graph2d', component: NeovizGraphComponent, canActivate: [SessionGuard] },
-      { path: 'moira', component: NeovizGraphComponent, canActivate: [SessionGuard] },
+      {
+        path: 'graph2d',
+        component: NeovizGraphComponent,
+        // canActivate: [SessionGuard],
+      },
+      {
+        path: 'moira',
+        component: NeovizGraphComponent,
+        // canActivate: [SessionGuard],
+      },
+      {
+        path: '',
+        component: NeovizGraphComponent,
+        // canActivate: [SessionGuard],
+      },
       // ... 기타 라우트
-    ]
-  },  
-  { path: '**', redirectTo: 'localhost:4200/login' } // 알 수 없는 경로 처리
+    ],
+  },
+  { path: '**', redirectTo: 'localhost:4200/#/login' }, // 알 수 없는 경로 처리
 ];
 
 @NgModule({

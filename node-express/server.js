@@ -21,7 +21,8 @@ const driver = neo4j.driver(`bolt://${neo4jIp}`, neo4j.auth.basic(id, pwd));
 // app.use(cors());
 app.use(
   cors({
-    origin: `http://${neo4jIp}:4200`, // Angular 애플리케이션의 URL
+    // origin: `http://192.168.32.22:4200`, // Angular 애플리케이션의 URL
+    origin: `http://192.168.34.118:4200`, // Angular 애플리케이션의 URL
     credentials: true, // 쿠키를 통한 인증을 허용
   })
 );
@@ -35,7 +36,7 @@ app.use(
     saveUninitialized: true, // 초기화되지 않은 세션을 저장할지 여부
     cookie: {
       secure: false, // HTTPS를 사용하는 경우 true로 설정
-      maxAge: 1000 * 60 * 60 * 24, // 쿠키 유효 시간 (예: 1일)
+      maxAge: 1000 * 60 * 60 * 2, // 쿠키 유효 시간
     },
   })
 );
@@ -51,7 +52,7 @@ app.get("/get-session-data", (req, res) => {
 });
 
 // 세션 생성
-app.post("/path-to-your-endpoint", (req, res) => {
+app.post("/api/session/val", (req, res) => {
   req.session.userInput = req.body.value; // 클라이언트에서 전송된 값을 세션에 저장
   res.json({ message: "세션 저장 성공", sessionData: req.session.userInput });
 });
@@ -1030,12 +1031,12 @@ app.post("/api/data", async (req, res) => {
     console.log("keyword로 검색...");
     try {
       const result = await session.run(
-        "MATCH (n) WHERE n.name CONTAINS $keyword RETURN DISTINCT n.type",
+        "MATCH (n) WHERE n.name CONTAINS tolower($keyword) RETURN DISTINCT n.type",
         { keyword: targetQuery }
       );
       const records = result.records.map((record) => record.toObject());
       console.log(
-        "MATCH (n) WHERE n.name CONTAINS $keyword RETURN DISTINCT n.type",
+        "MATCH (n) WHERE n.name CONTAINS tolower($keyword) RETURN DISTINCT n.type",
         { keyword: targetQuery }
       );
       const response = {
