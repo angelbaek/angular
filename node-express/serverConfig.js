@@ -7,7 +7,7 @@ const serverConfig = {
    * local Config
    */
   // neo4jIp: "192.168.32.22",
-  // neo4jIp: "192.168.34.117",
+  // // neo4jIp: "192.168.34.117",
   // port: 3000,
   // neo4jId: "neo4j",
   // neo4jPwd: "root",

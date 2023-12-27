@@ -5,8 +5,8 @@ export const serverConfig = {
   // angularIp: '192.168.32.22',
   // pythonIp: '192.168.32.120',
   // pythonPort: '10300',
-  // // neo4jIp: '192.168.32.22',
-  // neo4jIp: '192.168.34.117',
+  // neo4jIp: '192.168.32.22',
+  // // neo4jIp: '192.168.34.117',
   // neo4jPort: '7687',
   // backendNodeExpressPort: '3000',
   /**

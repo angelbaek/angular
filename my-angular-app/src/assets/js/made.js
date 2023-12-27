@@ -552,15 +552,23 @@ function initializeSomething() {
 
     //좌측 하단 검색/
 
-    $(".left-search-btn-ai").click(function () {
-      $(".left-foot-search-ai").removeClass("wrap-h-0");
-      $(".left-foot-search-wiki").addClass("wrap-h-0");
-    });
+    // $(".left-search-btn-ai").click(function () {
+    //   $(".left-foot-search-ai").removeClass("wrap-h-0");
+    //   $(".left-foot-search-wiki").addClass("wrap-h-0");
+    // });
 
-    $(".left-search-btn-wiki").click(function () {
-      $(".left-foot-search-wiki").removeClass("wrap-h-0");
-      $(".left-foot-search-ai").addClass("wrap-h-0");
-    });
+    // $(".left-search-btn-wiki").click(function () {
+    //   $(".left-foot-search-wiki").removeClass("wrap-h-0");
+    //   $(".left-foot-search-ai").addClass("wrap-h-0");
+    // });
+
+    // $(".left-search-btn-ai .wrap-h-0").click(function () {
+    //   $(".left-foot-search-ai").removeClass("wrap-h-0");
+    // });
+
+    // $(".left-search-btn-wiki .wrap-h-0").click(function () {
+    //   $(".left-foot-search-wiki").removeClass("wrap-h-0");
+    // });
 
     //그래픽 필터 내용
     // $(".space-plus").click(function () {
@@ -600,6 +608,32 @@ function initializeSomething() {
     });
   });
 
+  // $(function () {
+  //   var duration = 50;
+  //   var $bnav = $(".find-body");
+  //   var $side = $(".left-box-space");
+  //   var $side2 = $(".left-box");
+  //   var $sidebtn = $bnav.find(".left-btn").on("click", function () {
+  //     $side.toggleClass("open");
+  //     console.log("좌측 클릭", $side);
+  //     if ($side.hasClass("open")) {
+  //       $(".left-box-space").addClass("wrap-w-0");
+  //       $side2.stop(true).animate({ right: "-400px" }, duration);
+  //       $(this)
+  //         .find("i")
+  //         .removeClass("fa-arrow-left")
+  //         .addClass("fa-arrow-right");
+  //     } else {
+  //       $(".left-box-space").removeClass("wrap-w-0");
+  //       $side2.stop(true).animate({ right: "0%" }, duration);
+  //       $(this)
+  //         .find("i")
+  //         .removeClass("fa-arrow-right")
+  //         .addClass("fa-arrow-left");
+  //     }
+  //   });
+  // });
+
   //좌측 기본/
   $(function () {
     var duration = 0;
@@ -612,9 +646,23 @@ function initializeSomething() {
       if ($side.hasClass("open")) {
         $(".left-box-space").addClass("wrap-w-0");
         $side2.stop(true).animate({ left: "-370px" }, duration);
+        // $(this)
+        //   .find("i")
+        //   .removeClass("fa-arrow-left")
+        //   .addClass("fa-arrow-right");
+        $(".graph-info-tab-button")
+          .removeClass("fa-arrow-left")
+          .addClass("fa-arrow-right");
       } else {
         $(".left-box-space").removeClass("wrap-w-0");
         $side2.stop(true).animate({ left: "0%" }, duration);
+        // $(this)
+        //   .find("i")
+        //   .removeClass("fa-arrow-right")
+        //   .addClass("fa-arrow-left");
+        $(".graph-info-tab-button")
+          .removeClass("fa-arrow-right")
+          .addClass("fa-arrow-left");
       }
     });
   });

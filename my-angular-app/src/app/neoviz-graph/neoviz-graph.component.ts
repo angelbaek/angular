@@ -5,6 +5,7 @@ import {
   ViewChild,
   ElementRef,
   HostListener,
+  ChangeDetectorRef,
 } from '@angular/core';
 import { ClipboardService } from 'ngx-clipboard';
 import { AngularFaviconService } from 'angular-favicon';
@@ -81,6 +82,7 @@ declare function initializeSomething(): void;
   styleUrls: ['./neoviz-graph.component.css'],
 })
 export class NeovizGraphComponent implements OnInit, AfterViewInit {
+  @ViewChild('graphSearchSetting') graphSearchSetting!: ElementRef;
   @ViewChild('fileInput') fileInput!: ElementRef;
   @ViewChild('jsonSearchfileInput') jsonSearchfileInput!: ElementRef;
   @HostListener('window:keydown', ['$event'])
@@ -104,7 +106,7 @@ export class NeovizGraphComponent implements OnInit, AfterViewInit {
   neo4jIp: string = serverConfig.neo4jIp; // neo4j ip
   neo4jPort: string = serverConfig.neo4jPort; // neo4j port
 
-  visibility: string = 'hidden'; // 기본값은 hidden으로 설정
+  visibility: string = 'visible'; // 기본값은 hidden으로 설정
   loadingVisibility: string = 'visible'; // 로딩 애니메이션
   currentUrl: string = ''; // 현재 브라우저 URL을 저장할 속성
   viz: any; // 그래프
@@ -139,7 +141,8 @@ export class NeovizGraphComponent implements OnInit, AfterViewInit {
     private router: Router,
     private route: ActivatedRoute,
     private clipboardService: ClipboardService,
-    private dataService: DataService
+    private dataService: DataService,
+    private cdr: ChangeDetectorRef
   ) {
     // this.router.events
     //   .pipe(filter((event: any) => event instanceof NavigationEnd))
@@ -200,6 +203,46 @@ export class NeovizGraphComponent implements OnInit, AfterViewInit {
   ngAfterViewInit() {
     initializeSomething();
   }
+
+  graphSettingStyle: any = {};
+  graphSettingLowStyle: any = {};
+  isGraphSettingExtend: boolean = false;
+  graphSettingIconClass: string = 'fa-solid fa-caret-left';
+  isScrollExist: boolean = false;
+
+  widthGet = () => {
+    this.isGraphSettingExtend = !this.isGraphSettingExtend;
+    const scrollWidth = this.graphSearchSetting.nativeElement.scrollWidth;
+    console.log(this.graphSettingWidth, scrollWidth);
+
+    if (this.isGraphSettingExtend) {
+      this.graphSettingStyle = {
+        position: 'absolute',
+        transform: `translate(${
+          this.graphSettingWidth - (scrollWidth + 20)
+        }px,0px)`,
+        'background-color': '#F7F7F7',
+        'border-left': '1px solid rgb(221, 221, 221)',
+        width: this.graphSettingWidth + (scrollWidth - this.graphSettingWidth),
+      };
+      this.graphSettingLowStyle = {
+        'margin-top': '96px',
+      };
+      this.graphSettingIconClass = 'fa-solid fa-caret-right';
+    } else if (!this.isGraphSettingExtend) {
+      this.graphSettingStyle = {
+        position: 'relative',
+        width: this.graphSettingWidth,
+        transform: `translate(0px,0px)`,
+        'background-color': '#F7F7F7',
+        'border-left': 'none',
+      };
+      this.graphSettingLowStyle = {
+        'margin-top': '0px',
+      };
+      this.graphSettingIconClass = 'fa-solid fa-caret-left';
+    }
+  };
 
   patchVersionDisplay: string = 'none';
 
@@ -4618,6 +4661,8 @@ export class NeovizGraphComponent implements OnInit, AfterViewInit {
       keyword: this.aiSearchValue,
       reportData: this.targetWord,
     };
+
+    console.log(params);
     this.http
       .post(`http://${this.pythonIp}:${this.pythonPort}/api/aisearch`, params)
       // .post(`http://192.168.32.22:10300/api/google`, params)
@@ -4760,10 +4805,32 @@ export class NeovizGraphComponent implements OnInit, AfterViewInit {
           );
         });
         console.log(this.graphMultiFilterObj.firstNode.resultArray);
+        this.graphMultiFilterObj.firstNode.selectVal =
+          this.graphMultiFilterObj.firstNode.resultArray[0];
       });
   }
 
+  graphMultiAddOrSearchAccessCount: number = 0;
+  graphSettingWidth: number = 0;
   graphMultiAddOrSearch(param: string) {
+    this.graphMultiAddOrSearchAccessCount++;
+    // 확장 상태 기본으로 바꾸기
+    if (this.graphMultiAddOrSearchAccessCount == 1) {
+      this.graphSettingWidth =
+        this.graphSearchSetting.nativeElement.offsetWidth;
+    }
+    this.graphSettingStyle = {
+      position: 'relative',
+      width: this.graphSettingWidth,
+      transform: `translate(0px,0px)`,
+      'background-color': '#F7F7F7',
+    };
+    this.graphSettingLowStyle = {
+      'margin-top': '0px',
+    };
+    this.graphSettingIconClass = 'fa-solid fa-caret-left';
+    this.isGraphSettingExtend = false;
+
     // 객체의 모든 키를 배열로 가져옵니다.
     const keys = Object.keys(this.graphMultiFilterObj);
     console.log(this.graphMultiFilterObj.firstNode);
@@ -4863,11 +4930,13 @@ export class NeovizGraphComponent implements OnInit, AfterViewInit {
         //짝수
         queryString = queryString;
         query =
-          'path=' + queryString + '-()' + queryWhere + ' RETURN path limit 20';
+          // 'path=' + queryString + '-()' + queryWhere + ' RETURN path limit 20';
+          'path=' + queryString + '-()' + queryWhere + ' RETURN path';
       } else {
         // 홀수
         queryString = queryString;
-        query = 'path=' + queryString + queryWhere + ' RETURN path limit 20';
+        // query = 'path=' + queryString + queryWhere + ' RETURN path limit 20';
+        query = 'path=' + queryString + queryWhere + ' RETURN path';
       }
       const reqObj = {
         depth: depthCount,
@@ -4879,86 +4948,122 @@ export class NeovizGraphComponent implements OnInit, AfterViewInit {
     }
   }
 
+  graphMultiDisplayCount = 20;
+
+  onLoadMore() {
+    this.graphMultiDisplayCount += 20;
+  }
+
+  multiGraphSettingExtendCheck = () => {
+    // 스크롤을 가져와 확장 아이콘 표시 여부 결정하기
+    const scrollWidth = this.graphSearchSetting.nativeElement.scrollWidth;
+    console.log(this.graphSettingWidth, scrollWidth);
+    if (scrollWidth > this.graphSettingWidth) {
+      this.isScrollExist = true;
+    } else if (scrollWidth == this.graphSettingWidth) {
+      this.isScrollExist = false;
+      // 확장 상태 기본으로 바꾸기
+      this.graphSettingStyle = {
+        position: 'relative',
+        width: this.graphSettingWidth,
+        transform: `translate(0px,0px)`,
+        'background-color': '#F7F7F7',
+      };
+      this.graphSettingLowStyle = {
+        'margin-top': '0px',
+      };
+      this.graphSettingIconClass = 'fa-solid fa-caret-left';
+      this.isGraphSettingExtend = false;
+    }
+  };
+
   grapMultiSearchApiReqResultClick(param: number) {
     console.log(this.graphMultiResult[param]);
-
     const findResult = this.graphMultiResult[param].segments;
     for (let i = 0; i < findResult.length; i++) {
-      if (i == findResult.length - 1) {
-        console.log(findResult[i]);
-        const key = Object.keys(findResult[i]);
-        for (let k of key) {
-          if (k != 'relationship') {
-            const rawId = findResult[i][k].identity.low;
-            const rawName = findResult[i][k].properties.name;
-            const rawType = findResult[i][k].properties.type;
-            const rawProperties = findResult[i][k].properties;
-            if (this.viz.network.body.data.nodes.get(rawId) && k == 'end') {
-              this.focusNode(rawId);
-              continue;
-            } else if (this.viz.network.body.data.nodes.get(rawId)) {
-              console.log('이미 있는 노드');
-              // this.focusNode(rawId);
-              continue;
-            }
-            this.viz.network.body.data.nodes.add({
-              id: rawId,
-              label: this.labelReform(rawName),
-              title: rawName,
-              group: rawType,
-              // type: rawName,
-              shape: 'image',
-              image: `../assets/images/${rawType}/${rawType}_4.png`,
-              raw: { properties: rawProperties },
-              visConfig: {
-                nodes: {
-                  size: 55,
-                  font: {
-                    color: '#343434',
-                    size: this.nodeFontSize,
-                    face: 'pretendard',
-                    strokeWidth: 2,
-                  },
-                },
-
-                edges: {
-                  arrows: {
-                    to: { enabled: true },
-                  },
-                  font: {
-                    // background: 'black',
-                    color: '#343434',
-                    size: this.edgeFontSize, // px
-                    face: 'pretendard',
-                    strokeWidth: 2, // px
-                    // strokeColor: "blue",
-                  },
+      // if (i == findResult.length - 1) {
+      console.log(findResult[i]);
+      const key = Object.keys(findResult[i]);
+      for (let k of key) {
+        if (k != 'relationship') {
+          const rawId = findResult[i][k].identity.low;
+          const rawName = findResult[i][k].properties.name;
+          const rawType = findResult[i][k].properties.type;
+          const rawProperties = findResult[i][k].properties;
+          if (this.viz.network.body.data.nodes.get(rawId) && k == 'end') {
+            // this.focusNode(rawId);
+            continue;
+          } else if (this.viz.network.body.data.nodes.get(rawId)) {
+            console.log('이미 있는 노드');
+            // this.focusNode(rawId);
+            continue;
+          }
+          this.viz.network.body.data.nodes.add({
+            id: rawId,
+            label: this.labelReform(rawName),
+            title: rawName,
+            group: rawType,
+            // type: rawName,
+            shape: 'image',
+            image: `../assets/images/${rawType}/${rawType}_4.png`,
+            raw: { properties: rawProperties },
+            visConfig: {
+              nodes: {
+                size: 55,
+                font: {
+                  color: '#343434',
+                  size: this.nodeFontSize,
+                  face: 'pretendard',
+                  strokeWidth: 2,
                 },
               },
-            });
-          } else if (k == 'relationship') {
-            const edgeLabel = findResult[i][k].type;
-            const start = findResult[i][k].start.low;
-            const end = findResult[i][k].end.low;
-            if (this.viz.network.body.data.edges.get(start + '_from_' + end)) {
-              console.log('이미 있는 edge');
-              continue;
-            }
-            //그룹노드와 원본노드 엣지 추가
-            this.viz.network.body.data.edges.add({
-              label: edgeLabel,
-              id: start + '_from_' + end,
-              from: start,
-              to: end,
-            });
+
+              edges: {
+                arrows: {
+                  to: { enabled: true },
+                },
+                font: {
+                  // background: 'black',
+                  color: '#343434',
+                  size: this.edgeFontSize, // px
+                  face: 'pretendard',
+                  strokeWidth: 2, // px
+                  // strokeColor: "blue",
+                },
+              },
+            },
+          });
+        } else if (k == 'relationship') {
+          const edgeLabel = findResult[i][k].type;
+          const start = findResult[i][k].start.low;
+          const end = findResult[i][k].end.low;
+          if (this.viz.network.body.data.edges.get(start + '_from_' + end)) {
+            console.log('이미 있는 edge');
+            continue;
           }
+          //그룹노드와 원본노드 엣지 추가
+          this.viz.network.body.data.edges.add({
+            label: edgeLabel,
+            id: start + '_from_' + end,
+            from: start,
+            to: end,
+          });
         }
       }
+      // }
     }
   }
 
   grapMultiSearchApiReqResult: any[] = [];
-
+  grapMultiSearchResultLabel: any = {
+    firstNode: '',
+    firstRel: '',
+    secondNode: '',
+    secondRel: '',
+    thirdNode: '',
+    thirdRel: '',
+    fourthNode: '',
+  };
   grapMultiSearchApiReq(params: any) {
     const depth = params.depth;
     this.searchLoadingOn();
@@ -4967,21 +5072,34 @@ export class NeovizGraphComponent implements OnInit, AfterViewInit {
         `http://${this.angularIp}:${this.backendNodeExpressPort}/api/graph/multi/search`,
         params
       )
-      .subscribe((response: any) => {
-        if (response.length == 0) {
-          this.searchLoadingOff();
-          this.alarmOn('검색 결과가 없습니다');
-          return;
-        }
-        this.graphMultiResult = [];
-        response.forEach((element: any) => {
-          this.graphMultiResult.push(element._fields[0]);
-        });
+      .subscribe(
+        (response: any) => {
+          if (response.length == 0) {
+            this.searchLoadingOff();
+            this.alarmOn('검색 결과가 없습니다');
+            return;
+          }
+          this.graphMultiResult = [];
+          response.forEach((element: any) => {
+            this.graphMultiResult.push(element._fields[0]);
+          });
 
-        this.graphMultiResultLength = this.graphMultiResult.length;
-        console.log(this.graphMultiResult);
-        this.searchLoadingOff();
-      });
+          this.graphMultiResultLength = this.graphMultiResult.length;
+          console.log(this.graphMultiResult);
+          this.searchLoadingOff();
+          const keys = Object.keys(this.graphMultiFilterObj);
+          keys.forEach((key) => {
+            console.log(key, this.graphMultiFilterObj[key].selectVal);
+            this.grapMultiSearchResultLabel[key] =
+              this.graphMultiFilterObj[key].selectVal;
+          });
+          console.log(this.grapMultiSearchResultLabel);
+        },
+        (error: any) => {
+          this.searchLoadingOff();
+          this.alarmOn('결과 값이 너무 많거나 유효하지 않습니다.');
+        }
+      );
   }
   graphMultiResult: any[] = [];
   graphMultiResultLength: number = 0;
@@ -5030,9 +5148,39 @@ export class NeovizGraphComponent implements OnInit, AfterViewInit {
       };
     }
     this.depth--;
+    // 변경 감지 수행
+    this.cdr.detectChanges();
+    // 확장 상태 기본으로 바꾸기
+    this.graphSettingStyle = {
+      position: 'relative',
+      width: this.graphSettingWidth,
+      transform: `translate(0px,0px)`,
+      'background-color': '#F7F7F7',
+    };
+    this.graphSettingLowStyle = {
+      'margin-top': '0px',
+    };
+    this.graphSettingIconClass = 'fa-solid fa-caret-left';
+    this.isGraphSettingExtend = false;
+    // 스크롤 확인 함수 호출
+    this.multiGraphSettingExtendCheck();
   }
 
   graphMultiInit() {
+    // 확장 상태 기본으로 바꾸기
+    this.graphSettingStyle = {
+      position: 'relative',
+      width: this.graphSettingWidth,
+      transform: `translate(0px,0px)`,
+      'background-color': '#F7F7F7',
+    };
+    this.isScrollExist = false;
+    this.graphSettingLowStyle = {
+      'margin-top': '0px',
+    };
+    this.graphSettingIconClass = 'fa-solid fa-caret-left';
+    this.isGraphSettingExtend = false;
+
     this.graphMultiFilterObj = {
       firstNode: {
         resultArray: this.graphMultiFilterObj.firstNode.resultArray,
@@ -5047,6 +5195,8 @@ export class NeovizGraphComponent implements OnInit, AfterViewInit {
       fourthNode: { resultArray: [], selectVal: '', inputText: '' },
     };
     this.depth = 0;
+    this.graphMultiFilterObj.firstNode.selectVal =
+      this.graphMultiFilterObj.firstNode.resultArray[0];
   }
 
   grapMultiAddApiReq(params: any) {
@@ -5074,18 +5224,49 @@ export class NeovizGraphComponent implements OnInit, AfterViewInit {
         });
         if (depth == 1) {
           this.graphMultiFilterObj.firstRel.resultArray = resultArray;
+          this.graphMultiFilterObj.firstRel.selectVal = resultArray[0];
         } else if (depth == 2) {
           this.graphMultiFilterObj.secondNode.resultArray = resultArray;
+          this.graphMultiFilterObj.secondNode.selectVal = resultArray[0];
         } else if (depth == 3) {
           this.graphMultiFilterObj.secondRel.resultArray = resultArray;
+          this.graphMultiFilterObj.secondRel.selectVal = resultArray[0];
         } else if (depth == 4) {
           this.graphMultiFilterObj.thirdNode.resultArray = resultArray;
+          this.graphMultiFilterObj.thirdNode.selectVal = resultArray[0];
         } else if (depth == 5) {
           this.graphMultiFilterObj.thirdRel.resultArray = resultArray;
+          this.graphMultiFilterObj.thirdRel.selectVal = resultArray[0];
         } else if (depth == 6) {
           this.graphMultiFilterObj.fourthNode.resultArray = resultArray;
+          this.graphMultiFilterObj.fourthNode.selectVal = resultArray[0];
         }
         this.searchLoadingOff();
+        // 변경 감지 수행
+        this.cdr.detectChanges();
+        // 스크롤 확인 함수 호출
+        this.multiGraphSettingExtendCheck();
       });
   }
+
+  wikiDisplay: string = 'none';
+  aiDisplay: string = 'none';
+
+  wikiToggle = () => {
+    this.aiDisplay = 'none';
+    if (this.wikiDisplay == 'none') {
+      this.wikiDisplay = 'flex';
+    } else if (this.wikiDisplay == 'flex') {
+      this.wikiDisplay = 'none';
+    }
+  };
+
+  aiToggle = () => {
+    this.wikiDisplay = 'none';
+    if (this.aiDisplay == 'none') {
+      this.aiDisplay = 'flex';
+    } else if (this.aiDisplay == 'flex') {
+      this.aiDisplay = 'none';
+    }
+  };
 }

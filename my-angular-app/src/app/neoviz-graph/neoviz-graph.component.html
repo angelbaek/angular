@@ -181,6 +181,18 @@
       <!--좌측 공간을잡기 위한것-->
     </div>
     <div class="left-box">
+      <div class="btn-no-bg pl-10" style="position: relative">
+        <button
+          class="left-btn color-1 ai-search left-search-btn-ai ptb-8"
+          id="graph-info"
+        >
+          그래프 정보
+          <i
+            class="fa-solid fa-arrow-left graph-info-tab-button"
+            style="padding-left: 10px"
+          ></i>
+        </button>
+      </div>
       <!--박스 전체 상단 제목-->
       <div class="box-title left-bg">
         <div class="box-title-text">그래프 정보</div>
@@ -421,7 +433,7 @@
           </div>
         </div>
       </div>
-      <div class="left-foot-search-ai wrap-h-0">
+      <div class="left-foot-search-ai" [style.display]="aiDisplay">
         <!--검색-->
         <div class="con-search w-90p">
           <div class="con-search-input">
@@ -433,13 +445,19 @@
         </div>
       </div>
 
-      <div class="left-foot-search-wiki wrap-h-0">
+      <div class="left-foot-search-wiki" [style.display]="wikiDisplay">
         <!--검색-->
         <div class="con-search w-90p">
           <div class="con-search-input">
-            <input type="text" placeholder="WIKI SEARCH" />
+            <input
+              type="text"
+              [(ngModel)]="webSearchText"
+              placeholder="웹 기반 검색"
+              id="web-search-input"
+              (keyup.enter)="webSearchOnEnterPress()"
+            />
           </div>
-          <div class="con-search-btn">
+          <div class="con-search-btn" (click)="webSearch()">
             <span class="material-symbols-outlined side-btn">search</span>
           </div>
         </div>
@@ -459,14 +477,14 @@
               >
                 Graph serach
               </button> -->
-            <button
+            <!-- <button
               class="color-1 ai-search left-search-btn-ai ptb-8"
               id="web-search"
               (click)="webSearchShow()"
             >
               웹기반 검색
               <i class="fa-solid fa-arrow-right" style="padding-left: 10px"></i>
-            </button>
+            </button> -->
           </div>
           <!-- 뒤로, 앞으로 -->
           <button
@@ -487,18 +505,18 @@
           >
             <i class="fa-solid fa-forward"></i>
           </button>
-          <!--검색-->
+          <!--웹 기반 검색-->
           <div class="con-search">
             <div class="con-search-input">
               <input
-                type="text"
-                [(ngModel)]="webSearchText"
-                placeholder="웹 기반 검색"
                 id="web-search-input"
-                (keyup.enter)="webSearchOnEnterPress()"
+                type="text"
+                [(ngModel)]="graphSearchValue"
+                placeholder="그래프 검색"
+                (keyup.enter)="graphSearchOnEnterPress()"
               />
             </div>
-            <div class="con-search-btn" (click)="webSearch()">
+            <div class="con-search-btn" (click)="graphSearch()">
               <span class="material-symbols-outlined side-btn">search</span>
             </div>
           </div>
@@ -741,13 +759,13 @@
             >
               조건 검색
             </div>
-            <div
+            <!-- <div
               class="nav-item tab-one right-tab-4"
               data-bs-toggle="pill"
               href="#con-06"
             >
               AI 검색
-            </div>
+            </div> -->
           </div>
         </div>
 
@@ -762,7 +780,7 @@
           <!--첫번째 탭-->
 
           <div class="tab-pane active" id="con-03">
-            <div class="con-search" id="graph-search-input">
+            <!-- <div class="con-search" id="graph-search-input">
               <div class="con-search-input">
                 <input
                   type="text"
@@ -774,7 +792,7 @@
               <div class="con-search-btn" (click)="graphSearch()">
                 <span class="material-symbols-outlined side-btn">search</span>
               </div>
-            </div>
+            </div> -->
             <!--그래프 검색결과-->
             <div class="box-tab right-bb">
               <div class="tab-one right-bg chk-on">그래프 검색결과</div>
@@ -869,6 +887,48 @@
               </ul>
             </div>
 
+            <div class="box-tab right-bb">
+              <div class="tab-one right-bg chk-on">AI 검색</div>
+            </div>
+            <div class="tab-pane" id="con-06">
+              <div class="con-search" id="graph-search-input">
+                <div class="con-search-input">
+                  <input
+                    type="text"
+                    [(ngModel)]="aiSearchValue"
+                    placeholder="AI 검색"
+                  />
+                </div>
+                <div class="con-search-btn" (click)="aiSearch()">
+                  <span class="material-symbols-outlined side-btn">search</span>
+                </div>
+              </div>
+              <div
+                class="box-tab right-bb mt-20"
+                *ngIf="aiSearchResultArray.length > 0"
+              >
+                <div class="tab-one right-bg chk-on">
+                  AI 검색결과 {{ aiSearchResultArray.length }}
+                </div>
+              </div>
+
+              <!--기본 검색결과-->
+              <div class="box-basic-result">
+                <div class="basic-result-con">
+                  <ul class="basic-resul-list">
+                    <li
+                      *ngFor="let item of aiSearchResultArray"
+                      (click)="aiResultClick(item)"
+                    >
+                      {{ item.name }}
+                    </li>
+                  </ul>
+                  <!-- <div class="result-btn">
+                      <button class="color-2">MORE</button>
+                    </div> -->
+                </div>
+              </div>
+            </div>
             <!--박스 탭-->
             <!-- <div class="box-tab right-bb mt-20">
                 <div class="tab-one right-bg chk-on">Basic Result</div>
@@ -923,8 +983,21 @@
                   </button>
                 </div>
               </div>
-              <div class="graph-search-setting">
+              <div
+                #graphSearchSetting
+                class="graph-search-setting"
+                [ngStyle]="graphSettingStyle"
+              >
+                <!-- <button >widhtTest</button> -->
                 <div class="graph-sort">
+                  <!-- 확장/비확장 -->
+                  <div (click)="widthGet()">
+                    <i
+                      [class]="graphSettingIconClass"
+                      id="graphIcon"
+                      *ngIf="isScrollExist"
+                    ></i>
+                  </div>
                   <!--노드선택-->
                   <div class="graph-node">
                     <div class="">
@@ -1145,54 +1218,79 @@
               class="box-tab right-bb mt-20"
               *ngIf="graphMultiResult.length > 0"
             >
-              <div class="tab-one right-bg chk-on">
+              <div
+                class="tab-one right-bg chk-on"
+                [style]="graphSettingLowStyle"
+              >
                 그래프 다중 검색결과 <span>{{ graphMultiResultLength }}</span>
               </div>
             </div>
 
             <div class="graph-multi-box" *ngIf="graphMultiResult.length > 0">
               <div class="graph-multi-path">
-                <div *ngIf="graphMultiFilterObj.firstNode.selectVal != ''">
-                  {{ graphMultiFilterObj.firstNode.selectVal }}
+                <div *ngIf="grapMultiSearchResultLabel.firstNode != ''">
+                  {{ grapMultiSearchResultLabel.firstNode }}
                 </div>
-                <div *ngIf="graphMultiFilterObj.firstRel.selectVal != ''">
-                  {{ graphMultiFilterObj.firstRel.selectVal }}
+                <div *ngIf="grapMultiSearchResultLabel.firstRel != ''">
+                  {{ grapMultiSearchResultLabel.firstRel }}
                 </div>
-                <div *ngIf="graphMultiFilterObj.secondNode.selectVal != ''">
-                  {{ graphMultiFilterObj.secondNode.selectVal }}
+                <div *ngIf="grapMultiSearchResultLabel.secondNode != ''">
+                  {{ grapMultiSearchResultLabel.secondNode }}
                 </div>
-                <div *ngIf="graphMultiFilterObj.secondRel.selectVal != ''">
-                  {{ graphMultiFilterObj.secondRel.selectVal }}
+                <div *ngIf="grapMultiSearchResultLabel.secondRel != ''">
+                  {{ grapMultiSearchResultLabel.secondRel }}
                 </div>
-                <div *ngIf="graphMultiFilterObj.thirdNode.selectVal != ''">
-                  {{ graphMultiFilterObj.thirdNode.selectVal }}
+                <div *ngIf="grapMultiSearchResultLabel.thirdNode != ''">
+                  {{ grapMultiSearchResultLabel.thirdNode }}
                 </div>
-                <div *ngIf="graphMultiFilterObj.thirdRel.selectVal != ''">
-                  {{ graphMultiFilterObj.thirdRel.selectVal }}
+                <div *ngIf="grapMultiSearchResultLabel.thirdRel != ''">
+                  {{ grapMultiSearchResultLabel.thirdRel }}
                 </div>
-                <div *ngIf="graphMultiFilterObj.fourthNode.selectVal != ''">
-                  {{ graphMultiFilterObj.fourthNode.selectVal }}
+                <div *ngIf="grapMultiSearchResultLabel.fourthNode != ''">
+                  {{ grapMultiSearchResultLabel.fourthNode }}
                 </div>
               </div>
-
-              <!--기본 검색결과-->
               <div class="box-basic-result2">
                 <div class="basic-result-con2">
                   <ul class="basic-resul-list2">
                     <li
-                      *ngFor="let item of graphMultiResult; let i = index"
+                      *ngFor="
+                        let item of graphMultiResult
+                          | slice : 0 : graphMultiDisplayCount;
+                        let i = index
+                      "
                       (click)="grapMultiSearchApiReqResultClick(i)"
                     >
-                      {{
-                        item.start.properties.name +
-                          "-" +
-                          item.end.properties.name
-                      }}
+                      <div
+                        *ngFor="let segment of item.segments; let isLast = last"
+                        style="display: contents"
+                      >
+                        <span *ngIf="!isLast">
+                          {{
+                            (segment.start.properties.name | slice : 0 : 30) +
+                              "..."
+                          }}
+                        </span>
+                        <span *ngIf="isLast">
+                          {{
+                            (segment.start.properties.name | slice : 0 : 30) +
+                              "..." +
+                              (segment.end.properties.name | slice : 0 : 30) +
+                              "..."
+                          }}
+                        </span>
+                      </div>
                     </li>
                   </ul>
-                  <!-- <div class="result-btn">
-                      <button class="color-2">MORE</button>
-                    </div> -->
+                </div>
+                <div class="result-btn" id="graphMorebtn">
+                  <button
+                    class="color-2"
+                    (click)="onLoadMore()"
+                    *ngIf="graphMultiDisplayCount < graphMultiResult.length"
+                  >
+                    MORE
+                  </button>
                 </div>
               </div>
             </div>
@@ -1487,10 +1585,16 @@
           <img src="assets/images/logo-nsr.png" alt="" />
         </div>
         <div class="search">
-          <button class="color-1 ai-search left-search-btn-ai" href="#con-06">
+          <button
+            class="color-1 ai-search left-search-btn-ai"
+            href="#con-06"
+            (click)="aiToggle()"
+          >
             AI
           </button>
-          <button class="ai-search left-search-btn-wiki">WIKI</button>
+          <button class="ai-search left-search-btn-wiki" (click)="wikiToggle()">
+            WEB
+          </button>
         </div>
       </div>
       <div class="center" (click)="timeGraphToggle()">

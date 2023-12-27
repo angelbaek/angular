@@ -41,4 +41,5 @@ COPY --from=builder /app ./
 # 포트 3000을 열고 서버를 실행
 EXPOSE 3000
 
-CMD ["node", "server.js"]
+# CMD ["node", "server.js"]
+CMD ["node", "--max-old-space-size=8192", "server.js"]

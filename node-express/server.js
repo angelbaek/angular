@@ -26,8 +26,10 @@ app.use(
     credentials: true, // 쿠키를 통한 인증을 허용
   })
 );
+
 // JSON 요청 본문 파싱
 app.use(bodyParser.json());
+
 // 세션 설정
 app.use(
   session({
@@ -66,16 +68,19 @@ app.post("/api/graph/multi/search", async (req, res) => {
 
   const session = driver.session();
   try {
-    const result = await session.run(`
-      MATCH ${query}
-      `);
+    const result = await session.run(`MATCH ${query}`);
     res.json(result.records);
   } catch (error) {
+    console.error("Error occurred:", error);
     res
       .status(500)
       .send({ error: "An error occurred while fetching data from Neo4j." });
+  } finally {
+    await session.close(); // 세션을 닫아 메모리 누수 방지
   }
 });
+
+// solated multiGraphSearch
 
 // 그래프 다중검색 추가 버튼 API
 app.post("/api/graph/multi/add", async (req, res) => {
@@ -359,43 +364,84 @@ app.post("/api/hnkgd", async (req, res) => {
     let records = [];
     let one = 0;
     while (retry || one == 1) {
-      const result = await session.run(
-        "MATCH (n)-[r]-(m) WHERE m.name CONTAINS $findWord AND m.type=$findType WITH m, COLLECT(DISTINCT type(r)) AS relationshipTypes RETURN m, relationshipTypes SKIP $findSkip LIMIT 10",
-        {
-          findType: type,
-          findWord: word,
-          findSkip: neo4j.int(skip),
-        }
-      );
-      console.log(
-        "MATCH (n)-[r]-(m) WHERE m.name CONTAINS $findWord AND m.type=$findType WITH m, COLLECT(DISTINCT type(r)) AS relationshipTypes RETURN m, relationshipTypes SKIP $findSkip LIMIT 10",
-        {
-          findType: type,
-          findWord: word,
-          findSkip: neo4j.int(skip),
-        }
-      );
-      records = result.records.map((record) => record.toObject());
+      if (type == "report") {
+        const result = await session.run(
+          "MATCH (n)-[r:refers_to]-(m) WHERE m.name CONTAINS $findWord AND m.type=$findType WITH m, COLLECT(DISTINCT type(r)) AS relationshipTypes RETURN m, relationshipTypes SKIP $findSkip LIMIT 10",
+          {
+            findType: type,
+            findWord: word,
+            findSkip: neo4j.int(skip),
+          }
+        );
+        console.log(
+          "MATCH (n)-[r:refers_to]-(m) WHERE m.name CONTAINS $findWord AND m.type=$findType WITH m, COLLECT(DISTINCT type(r)) AS relationshipTypes RETURN m, relationshipTypes SKIP $findSkip LIMIT 10",
+          {
+            findType: type,
+            findWord: word,
+            findSkip: neo4j.int(skip),
+          }
+        );
+        records = result.records.map((record) => record.toObject());
 
-      if (records.length == 0 && retry) {
-        console.log(records, records.length, retry);
-        one++;
-        if (type == "Technique") {
-          type = "attack-pattern";
-        } else if (type == "Software") {
-          type = "tool";
-        } else if (type == "Group") {
-          type = "Group";
-        } else if (type == "ipv4_addr") {
-          type = "intrusion-set";
-        } else if (type == "registry") {
-          type = "windows-registry-key";
+        if (records.length == 0 && retry) {
+          console.log(records, records.length, retry);
+          one++;
+          if (type == "Technique") {
+            type = "attack-pattern";
+          } else if (type == "Software") {
+            type = "tool";
+          } else if (type == "Group") {
+            type = "Group";
+          } else if (type == "ipv4_addr") {
+            type = "intrusion-set";
+          } else if (type == "registry") {
+            type = "windows-registry-key";
+          }
+          console.log("No records found, retrying once...");
+          retry = false; // 재시도 플래그 해제
+          // 필요하다면 skip 값을 조정하거나 다른 로직을 적용하세요.
+        } else {
+          break; // 결과가 있거나 이미 재시도한 경우 반복문 탈출
         }
-        console.log("No records found, retrying once...");
-        retry = false; // 재시도 플래그 해제
-        // 필요하다면 skip 값을 조정하거나 다른 로직을 적용하세요.
       } else {
-        break; // 결과가 있거나 이미 재시도한 경우 반복문 탈출
+        const result = await session.run(
+          "MATCH (n)-[r]-(m) WHERE m.name CONTAINS $findWord AND m.type=$findType WITH m, COLLECT(DISTINCT type(r)) AS relationshipTypes RETURN m, relationshipTypes SKIP $findSkip LIMIT 10",
+          {
+            findType: type,
+            findWord: word,
+            findSkip: neo4j.int(skip),
+          }
+        );
+        console.log(
+          "MATCH (n)-[r]-(m) WHERE m.name CONTAINS $findWord AND m.type=$findType WITH m, COLLECT(DISTINCT type(r)) AS relationshipTypes RETURN m, relationshipTypes SKIP $findSkip LIMIT 10",
+          {
+            findType: type,
+            findWord: word,
+            findSkip: neo4j.int(skip),
+          }
+        );
+        records = result.records.map((record) => record.toObject());
+
+        if (records.length == 0 && retry) {
+          console.log(records, records.length, retry);
+          one++;
+          if (type == "Technique") {
+            type = "attack-pattern";
+          } else if (type == "Software") {
+            type = "tool";
+          } else if (type == "Group") {
+            type = "Group";
+          } else if (type == "ipv4_addr") {
+            type = "intrusion-set";
+          } else if (type == "registry") {
+            type = "windows-registry-key";
+          }
+          console.log("No records found, retrying once...");
+          retry = false; // 재시도 플래그 해제
+          // 필요하다면 skip 값을 조정하거나 다른 로직을 적용하세요.
+        } else {
+          break; // 결과가 있거나 이미 재시도한 경우 반복문 탈출
+        }
       }
     }
     console.log("상위 노드가 keyword인 그룹노드 API response");
@@ -668,82 +714,47 @@ app.post("/api/lgnafgn", async (req, res) => {
     }
     let idPart = parseInt(parts[1]); // "410699"
 
-    // else if (typePart == "domain_name") {
-    //   typePart = "domain-name";
-    // }
     console.log("파생 노드 확인!!!", typePart, idPart);
     console.log("findSkip:", skip, typeof skip);
     console.log("findLimit:", limit, typeof limit);
 
     const session = driver.session();
     try {
-      const result = await session.run(
-        // "MATCH (n)-[r]-(m) WHERE ID(n) = $findID and m.type=$findType RETURN r,m skip $findSkip limit $findLimit",
-        // "MATCH (n)-[r]-(m) WHERE ID(n) = $findID and m.type=$findType WITH DISTINCT m, COLLECT(r) as rels RETURN rels,m skip $findSkip limit $findLimit",
-        // {
-        //   findType: typePart,
-        //   findID: idPart,
-        //   findSkip: neo4j.int(skip),
-        //   findLimit: neo4j.int(limit),
-        // }
-        "MATCH (n)-[r]-(m) WHERE ID(n) = $findID and m.type=$findType WITH DISTINCT m, COLLECT(r) as rels RETURN rels,m skip $findSkip limit 10",
-        {
-          findType: typePart,
-          findID: idPart,
-          findSkip: neo4j.int(skip),
-        }
-        // "MATCH (n)-[r]-(m) WHERE ID(n) = $findID and m.type=$findType RETURN r,m skip 0 limit 10",
-        // { findType: typePart, findID: idPart }
+      if (typePart == "report") {
+        const result = await session.run(
+          "MATCH (n)-[r:refers_to]-(m) WHERE ID(n) = $findID and m.type=$findType WITH DISTINCT m, COLLECT(r) as rels RETURN rels,m skip $findSkip limit 10",
+          {
+            findType: typePart,
+            findID: idPart,
+            findSkip: neo4j.int(skip),
+          }
+        );
+        console.log(
+          "MATCH (n)-[r:refers_to]-(m) WHERE ID(n) = $findID and m.type=$findType RETURN r,m skip $findSkip limit 10",
+          { findType: typePart, findID: idPart, findSkip: skip }
+        );
+        const records = result.records.map((record) => record.toObject());
+        // console.log(records);
 
-        // "MATCH (n)-[r]-(m) WHERE ID(n) = $findID and m.type=$findType and tolower(n.name) contains tolower($content) RETURN m limit 10",
-        // { findType: typePart, findID: idPart, content: word }
-      );
-      console.log(
-        // "MATCH (n)-[r]-(m) WHERE ID(n) = $findID and m.type=$findType RETURN r,m skip $findSkip limit $findLimit",
-        // { findType: typePart, findID: idPart, findSkip: skip, findLimit: limit }
-        "MATCH (n)-[r]-(m) WHERE ID(n) = $findID and m.type=$findType RETURN r,m skip $findSkip limit 10",
-        { findType: typePart, findID: idPart, findSkip: skip }
-        // "MATCH (n)-[r]-(m) WHERE ID(n) = $findID and m.type=$findType RETURN r,m skip 0 limit 10",
-        // { findType: typePart, findID: idPart }
-        // "MATCH (n)-[r]-(m) WHERE ID(n) = $findID and m.type=$findType and tolower(n.name) contains tolower($content) RETURN m limit 10",
-        // { findType: typePart, findID: idPart, content: word }
-      );
-      const records = result.records.map((record) => record.toObject());
-      // console.log(records);
+        res.json(records);
+      } else {
+        const result = await session.run(
+          "MATCH (n)-[r]-(m) WHERE ID(n) = $findID and m.type=$findType WITH DISTINCT m, COLLECT(r) as rels RETURN rels,m skip $findSkip limit 10",
+          {
+            findType: typePart,
+            findID: idPart,
+            findSkip: neo4j.int(skip),
+          }
+        );
+        console.log(
+          "MATCH (n)-[r]-(m) WHERE ID(n) = $findID and m.type=$findType RETURN r,m skip $findSkip limit 10",
+          { findType: typePart, findID: idPart, findSkip: skip }
+        );
+        const records = result.records.map((record) => record.toObject());
+        // console.log(records);
 
-      res.json(records);
-      // let typeLength=[];
-      // let typeLengthSet = new Set(); // Set 객체 생성
-      // records.forEach((element) => {
-      //   console.log(element);
-      //   console.log(element.m.properties);
-      //   if (element.m.properties.type == "windows-registry-key") {
-      //     element.m.properties.type = "registry";
-      //   }
-      //   // console.log(element.n);
-      //   if (element.m.labels) {
-      //     element.m.labels.forEach((label) => {
-      //       typeLengthSet.add(label); // Set에 label 추가 (중복은 자동으로 제거됨)
-      //       console.log("라벨::::", label);
-      //     });
-      //   }
-      // });
-
-      // let typeLength = [...typeLengthSet]; // Set을 배열로 변환
-      // console.log(typeLength);
-      // if (typeLength.length == 1) {
-      //   const response = {
-      //     // node: records.n,
-      //     // edge: records.r,
-      //     data: records,
-      //   };
-      //   res.json(response);
-      // } else {
-      //   console.log("다중 노드그룹 확인!!!!! 추가 로직 필요");
-      //   console.log(typeLength.length);
-      //   res.json(response);
-      // }
-      // console.log(records);
+        res.json(records);
+      }
     } catch (error) {
       console.error(error); // 에러 로그 출력
       res.status(500).send(error.message);
@@ -752,10 +763,6 @@ app.post("/api/lgnafgn", async (req, res) => {
     }
     return;
   }
-
-  // else if (typePart == "domain_name") {
-  //   typePart = "domain-name";
-  // }
 
   console.log(type, word);
   const session = driver.session();

@@ -45,6 +45,7 @@ body {
   word-break: break-all;
   padding-top: var(--con-height);
   padding-bottom: var(--con-bottom-height);
+  overflow: hidden;
 }
 section {
   position: relative;
@@ -347,7 +348,7 @@ select option:hover {
   background-color: #fff;
   border-right: 1px solid var(--color-b2);
   transition: 0.5s;
-  overflow: hidden;
+  /* overflow: hidden; */
 }
 .center-box {
   flex-grow: 1;
@@ -1751,7 +1752,7 @@ select option:hover {
   left: 0;
   width: 100%;
   height: 5rem;
-  background-color: var(--color-bg-2);
+  background-color: var(--color-sub-1);
   transition: 0.5s;
 }
 .left-foot-search-wiki {
@@ -1763,7 +1764,7 @@ select option:hover {
   left: 0;
   width: 100%;
   height: 5rem;
-  background-color: var(--color-bg-2);
+  background-color: var(--color-sub-1);
   transition: 0.5s;
 }
 
@@ -1846,6 +1847,8 @@ select option:hover {
 
 .basic-resul-list2 {
   width: 100%;
+  max-height: 500px;
+  overflow-y: scroll;
 }
 .basic-resul-list2 li {
   padding: 0.5rem 1.5rem;
@@ -1932,6 +1935,7 @@ select option:hover {
 .graph-multi-box {
   overflow-x: scroll;
   padding-bottom: 1rem;
+  /* max-height: 550px; */
 }
 .graph-multi-path {
   width: auto;
@@ -2807,7 +2811,7 @@ button.alarm-button {
   /* display: block; */
   padding: 10px;
   border: 1px solid var(--color-b2);
-  margin: 5px 10px 5px 10px;
+  margin: 20px 10px 5px 10px;
 }
 #graph-search-input input {
   text-align: center;
@@ -2967,11 +2971,15 @@ button.alarm-button {
 }
 
 .loading_div {
+  background-color: #fff;
+  border-radius: 20px;
   position: fixed;
   left: 50%;
   top: 50%;
   z-index: 10;
   transform: translate(-50%, -50%);
+  box-shadow: 1px 1px 10px 1px gray;
+  opacity: 0.9;
 }
 
 .loading {
@@ -3020,4 +3028,40 @@ li.detail {
   max-height: 495px;
   white-space: initial;
   overflow: scroll;
+}
+
+/* 그래프 세팅 아이콘 */
+#graphIcon {
+  display: flex;
+  height: 62px;
+  padding: 0px 10px 0px 0px;
+  margin-left: -10px;
+  align-items: center;
+  border-radius: 10px;
+}
+
+#graphIcon:hover {
+  color: var(--color-sub-1);
+  cursor: pointer;
+}
+
+/* 그래프 검색 탭 그래프 검색결과 */
+#con-03 .box-depth {
+  max-height: 300px;
+  overflow-y: scroll;
+}
+
+/* 그래프 더보기 버튼 */
+#graphMorebtn {
+  margin-bottom: 0;
+}
+
+/* 그래프 정보 */
+#graph-info {
+  width: max-content;
+  border-radius: 0px;
+  border-bottom-right-radius: 2.5rem;
+  border-top-right-radius: 2.5rem;
+  position: absolute;
+  transform: translate(233px, 28px);
 }
